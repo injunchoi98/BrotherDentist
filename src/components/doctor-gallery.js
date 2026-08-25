@@ -9,6 +9,8 @@ export function initDoctorGallery() {
   const quote = root.querySelector("[data-doctor-quote]");
   const careers = root.querySelector("[data-doctor-careers]");
   const thumbs = root.querySelector("[data-doctor-thumbs]");
+  const count = root.querySelector("[data-doctor-count]");
+  let current = 0;
 
   thumbs.innerHTML = doctors.map((doctor, index) => `
     <button class="doctor-thumb" type="button" data-doctor-index="${index}" aria-label="${doctor.name} ${doctor.role} 보기">
@@ -16,7 +18,8 @@ export function initDoctorGallery() {
     </button>`).join("");
 
   const render = (index) => {
-    const doctor = doctors[index];
+    current = (index + doctors.length) % doctors.length;
+    const doctor = doctors[current];
     root.classList.add("is-changing");
     window.setTimeout(() => {
       image.src = doctor.image;
@@ -25,7 +28,11 @@ export function initDoctorGallery() {
       role.textContent = doctor.role;
       quote.textContent = doctor.quote;
       careers.innerHTML = doctor.careers.map((career) => `<li>${career}</li>`).join("");
-      [...thumbs.children].forEach((thumb, i) => thumb.toggleAttribute("aria-current", i === index));
+      count.textContent = `${String(current + 1).padStart(2, "0")} / ${String(doctors.length).padStart(2, "0")}`;
+      [...thumbs.children].forEach((thumb, i) => {
+        if (i === current) thumb.setAttribute("aria-current", "true");
+        else thumb.removeAttribute("aria-current");
+      });
       root.classList.remove("is-changing");
     }, 120);
   };
@@ -33,5 +40,7 @@ export function initDoctorGallery() {
     const button = event.target.closest("[data-doctor-index]");
     if (button) render(Number(button.dataset.doctorIndex));
   });
+  root.querySelector("[data-doctor-prev]").addEventListener("click", () => render(current - 1));
+  root.querySelector("[data-doctor-next]").addEventListener("click", () => render(current + 1));
   render(0);
 }

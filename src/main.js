@@ -3,12 +3,14 @@ import { initConcernScroll } from "./components/concern-scroll.js";
 import { initCoverflow } from "./components/coverflow.js";
 import { initDoctorGallery } from "./components/doctor-gallery.js";
 import { initReviewMarquee } from "./components/review-marquee.js";
+import { initShowcaseScroll } from "./components/showcase-scroll.js";
 
 initConcernScroll();
 initBrandReveal();
 initCoverflow();
 initDoctorGallery();
 initReviewMarquee();
+initShowcaseScroll();
 
 const header = document.querySelector("[data-header]");
 const hero = document.querySelector(".hero");

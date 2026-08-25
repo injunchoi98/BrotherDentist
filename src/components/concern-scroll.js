@@ -1,36 +1,46 @@
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { concerns } from "../data.js";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export function initConcernScroll() {
   const section = document.querySelector("[data-concern]");
   if (!section) return;
+  const panel = section.querySelector(".concern-sticky");
   const eyebrow = section.querySelector("[data-concern-eyebrow]");
   const title = section.querySelector("[data-concern-title]");
   const copy = section.querySelector("[data-concern-copy]");
   const patient = section.querySelector("[data-patient]");
-  const dots = [...section.querySelectorAll("[data-concern-dot]")];
   let current = -1;
 
-  const render = (index) => {
+  const render = (index, animate = true) => {
     if (index === current) return;
     current = index;
     const item = concerns[index];
-    section.classList.add("is-changing");
-    window.setTimeout(() => {
-      eyebrow.textContent = item.eyebrow;
-      title.textContent = item.title;
-      copy.textContent = item.copy;
-      patient.dataset.pose = String(item.pose);
-      dots.forEach((dot, i) => dot.toggleAttribute("aria-current", i === index));
-      section.classList.remove("is-changing");
-    }, 130);
+    eyebrow.textContent = item.eyebrow;
+    title.textContent = item.title;
+    copy.textContent = item.copy;
+    patient.dataset.pose = String(item.pose);
+    patient.setAttribute("aria-label", `${item.eyebrow}, ${item.title}`);
+    if (!animate) return;
+    gsap.fromTo([eyebrow, title, copy], { autoAlpha: .3, y: 8 }, { autoAlpha: 1, y: 0, duration: .28, stagger: .03, overwrite: true });
+    gsap.fromTo(patient, { autoAlpha: .55, y: 14 }, { autoAlpha: 1, y: 0, duration: .35, overwrite: true });
   };
 
-  const update = () => {
-    const rect = section.getBoundingClientRect();
-    const distance = Math.max(1, section.offsetHeight - innerHeight);
-    const progress = Math.min(0.999, Math.max(0, -rect.top / distance));
-    render(Math.min(concerns.length - 1, Math.floor(progress * concerns.length)));
-  };
-  update();
-  addEventListener("scroll", update, { passive: true });
+  render(0, false);
+  const media = gsap.matchMedia();
+  media.add("(prefers-reduced-motion: no-preference)", () => {
+    const trigger = ScrollTrigger.create({
+      trigger: section,
+      pin: panel,
+      start: "top top",
+      end: () => `+=${innerHeight * 3}`,
+      scrub: .35,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+      onUpdate: ({ progress }) => render(Math.min(concerns.length - 1, Math.floor(progress * concerns.length)))
+    });
+    return () => trigger.kill();
+  });
 }
