@@ -2,6 +2,7 @@ import { initBrandReveal } from "./components/brand-reveal.js";
 import { initConcernScroll } from "./components/concern-scroll.js";
 import { initCoverflow } from "./components/coverflow.js";
 import { initDoctorGallery } from "./components/doctor-gallery.js";
+import { initEvidenceScroll } from "./components/evidence-scroll.js";
 import { initReviewMarquee } from "./components/review-marquee.js";
 import { initShowcaseScroll } from "./components/showcase-scroll.js";
 
@@ -9,8 +10,25 @@ initConcernScroll();
 initBrandReveal();
 initCoverflow();
 initDoctorGallery();
+initEvidenceScroll();
 initReviewMarquee();
 initShowcaseScroll();
+
+const heroVideo = document.querySelector(".hero-video");
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const startHeroVideo = () => {
+  if (!heroVideo || reducedMotion.matches) return;
+  heroVideo.play().catch(() => {});
+};
+startHeroVideo();
+heroVideo?.addEventListener("canplay", startHeroVideo, { once: true });
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) startHeroVideo();
+});
+reducedMotion.addEventListener("change", ({ matches }) => {
+  if (matches) heroVideo?.pause();
+  else startHeroVideo();
+});
 
 const header = document.querySelector("[data-header]");
 const hero = document.querySelector(".hero");

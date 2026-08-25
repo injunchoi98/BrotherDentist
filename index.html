@@ -25,23 +25,17 @@
 
     <main id="main">
       <section class="hero" id="top" aria-labelledby="hero-title">
-        <img class="hero-image" src="./assets/images/clinic-exterior.png" alt="365서울감동치과의원 외관 목업" />
-        <div class="hero-shade"></div>
-        <div class="landing-container hero-content">
-          <p class="eyebrow hero-eyebrow">365 DAYS · EVERY MOMENT</p>
-          <h1 id="hero-title">치과에 가는 마음까지<br />편안해지는 곳</h1>
-          <p>365일 이어지는 진료와 충분한 설명으로<br />처음부터 마지막까지 마음 놓을 수 있게.</p>
-          <div class="hero-actions"><a class="button button-primary" href="#concern">우리의 진료 방식</a><a class="button button-ghost" href="#visit">진료 시간 보기</a></div>
-        </div>
-        <div class="hero-meta" aria-label="핵심 진료 정보"><span>365일 진료</span><span>평일 야간 진료</span><span>원내 기공소</span></div>
+        <h1 class="sr-only" id="hero-title">365서울감동치과의원</h1>
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="./assets/images/clinic-exterior.png" aria-hidden="true">
+          <source src="./assets/video/clinic-hero.mp4" type="video/mp4" />
+        </video>
       </section>
 
       <section class="concern-section" id="concern" data-concern aria-labelledby="concern-title">
         <div class="concern-sticky">
           <div class="concern-copy">
-            <p class="eyebrow" data-concern-eyebrow>치과 선택할 때</p>
-            <h2 class="display-title" id="concern-title" data-concern-title>과잉 진료면 어쩌지</h2>
-            <p data-concern-copy>필요한 치료와 선택 가능한 치료를 나눠 설명합니다.</p>
+            <h2 class="display-title" id="concern-title" data-concern-heading>치과 선택할 때</h2>
+            <p data-concern-copy>과잉 진료면 어쩌지</p>
           </div>
           <div class="patient-illustration" data-patient data-pose="0" role="img" aria-label="치과 선택을 고민하는 환자 일러스트"></div>
         </div>
@@ -84,42 +78,48 @@
       <section class="section section-gray treatment-section" id="treatments" aria-labelledby="treatments-title">
         <div class="landing-container treatment-layout">
           <aside class="treatment-intro">
-            <p class="serif-kicker">Gamdong<br />Dental Clinic</p>
-            <div class="treatment-dots" aria-hidden="true"><i></i><i></i><i aria-current="true"></i></div>
             <h2 id="treatments-title">진료를 기본으로,<br />마음까지 살핍니다.</h2>
             <p>꼭 필요한 세 가지 진료를<br />각 분야의 기준에 맞게 세심히 봅니다.</p>
-            <div class="treatment-count"><span>01</span><em>/</em><span>03</span><b>→</b></div>
           </aside>
           <div class="treatment-cards">
-            <a class="treatment-card" href="#visit"><img src="./assets/images/digital-safety.png" alt="임플란트 디지털 진단 목업" /><span>01</span><h3>임플란트</h3><p>기능과 회복 이후의 일상까지 고려합니다.</p></a>
-            <a class="treatment-card" href="#visit"><img src="./assets/images/treatment-room.png" alt="일반 진료 공간 목업" /><span>02</span><h3>일반 진료</h3><p>불편의 원인을 찾고 필요한 치료부터 시작합니다.</p></a>
-            <a class="treatment-card" href="#visit"><img src="./assets/images/consultation.png" alt="치아 미백 상담 목업" /><span>03</span><h3>치아 미백</h3><p>현재 치아에 어울리는 자연스러운 밝기를 찾습니다.</p></a>
+            <a class="treatment-card" href="#visit"><img src="./assets/images/digital-safety.png" alt="임플란트 디지털 진단 목업" /><h3>임플란트</h3><p>기능과 회복 이후의 일상까지 고려합니다.</p></a>
+            <a class="treatment-card" href="#visit"><img src="./assets/images/treatment-room.png" alt="일반 진료 공간 목업" /><h3>일반 진료</h3><p>불편의 원인을 찾고 필요한 치료부터 시작합니다.</p></a>
+            <a class="treatment-card" href="#visit"><img src="./assets/images/consultation.png" alt="치아 미백 상담 목업" /><h3>치아 미백</h3><p>현재 치아에 어울리는 자연스러운 밝기를 찾습니다.</p></a>
           </div>
         </div>
       </section>
 
       <section class="section evidence-section" aria-labelledby="evidence-title">
-        <div class="landing-container evidence-grid">
-          <div class="evidence-sticky"><p class="eyebrow">JUDGE FOR YOURSELF</p><h2 id="evidence-title">믿고 갈 수 있는 곳인지<br />직접 판단해 주세요.</h2></div>
-          <div class="evidence-list">
-            <article><span>01</span><div><h3>실력이 있는지</h3><p>전문의 협진과 정기적인 증례 회의로 치료 계획을 함께 검토합니다.</p></div><img src="./assets/images/treatment-scene.png" alt="의료진 진료 장면 목업" /></article>
-            <article><span>02</span><div><h3>아프진 않을지</h3><p>표면 마취와 단계별 마취, 치료 중 신호 약속으로 불안을 줄입니다.</p></div><img src="./assets/images/consultation.png" alt="환자 상담 장면 목업" /></article>
-            <article><span>03</span><div><h3>정직하게 진료하는지</h3><p>진단 자료를 함께 보고 필요한 치료와 선택 치료를 구분해 설명합니다.</p></div><img src="./assets/images/digital-safety.png" alt="디지털 진단 장비 목업" /></article>
+        <div class="landing-container evidence-heading">
+          <h2 id="evidence-title">믿고 갈 수 있는 곳인지<br />직접 판단해 주세요.</h2>
+        </div>
+        <div class="landing-container evidence-flow" data-evidence>
+          <ol class="evidence-nav" aria-label="치과 선택 기준">
+            <li data-evidence-nav><span>1.</span> 실력이 있는지</li>
+            <li data-evidence-nav><span>2.</span> 아프진 않을지</li>
+            <li data-evidence-nav><span>3.</span> 불친절하지는 않을지</li>
+            <li data-evidence-nav><span>4.</span> 필요한 장비들은 있는지</li>
+            <li data-evidence-nav><span>5.</span> 정직하게 진료하는지</li>
+          </ol>
+          <div class="evidence-panels">
+            <article data-evidence-panel><p class="evidence-question">1. 실력이 있는지</p><img src="./assets/images/treatment-scene.png" alt="의료진이 치료 계획을 함께 살펴보는 장면 목업" /><h3>한 사람의 판단에만 기대지 않습니다</h3><ul><li>분야별 의료진이 함께 검토하는 치료 계획</li><li>정기적인 증례 회의와 단계별 기록</li><li>진단부터 사후 관리까지 이어지는 담당 의료진</li></ul></article>
+            <article data-evidence-panel><p class="evidence-question">2. 아프진 않을지</p><img src="./assets/images/consultation.png" alt="환자에게 치료 과정을 설명하는 장면 목업" /><h3>통증을 줄이는 과정도 치료의 일부입니다</h3><ul><li>스프레이·표면 마취 후 단계적으로 진행</li><li>치료 중 멈출 수 있는 신호를 먼저 약속</li><li>시술 뒤 불편을 줄이는 관리 방법 안내</li></ul></article>
+            <article data-evidence-panel><p class="evidence-question">3. 불친절하지는 않을지</p><img src="./assets/images/consultation.png" alt="환자와 눈높이를 맞춰 상담하는 의료진 목업" /><h3>질문이 끝날 때까지 설명합니다</h3><ul><li>처음 내원한 분도 이해할 수 있는 쉬운 설명</li><li>치료 시간과 비용, 대안을 한 자리에서 안내</li><li>결정을 재촉하지 않는 충분한 상담 시간</li></ul></article>
+            <article data-evidence-panel><p class="evidence-question">4. 필요한 장비들은 있는지</p><img src="./assets/images/treatment-room.png" alt="디지털 장비와 멸균 설비가 있는 진료실 목업" /><h3>필요한 순간에 바로 확인할 수 있도록</h3><ul><li>디지털 진단 장비와 원내 기공 시스템</li><li>치료 단계에 맞춘 장비와 재료 준비</li><li>기구별 멸균·소독 과정을 분리해 관리</li></ul></article>
+            <article data-evidence-panel><p class="evidence-question">5. 정직하게 진료하는지</p><img src="./assets/images/digital-safety.png" alt="디지털 진단 자료를 함께 확인하는 장면 목업" /><h3>보이는 자료를 기준으로 선택하게 합니다</h3><ul><li>진단 이미지를 환자와 같은 화면에서 확인</li><li>꼭 필요한 치료와 선택 가능한 치료를 구분</li><li>치료 범위와 비용을 시작 전에 분명하게 안내</li></ul></article>
           </div>
         </div>
       </section>
 
       <section class="section section-gray doctors-section" id="doctors" aria-labelledby="doctors-title">
         <div class="landing-container">
-          <div class="section-heading compact-heading"><div><p class="eyebrow">MEET OUR DOCTORS</p><h2 id="doctors-title">건강한 미소를 지키는 사람들</h2></div><p>한 명의 목소리로 설명하고,<br />여러 분야의 시선으로 함께 판단합니다.</p></div>
+          <div class="section-heading compact-heading"><div><h2 id="doctors-title">건강한 미소를 지키는 사람들</h2></div><p>한 명의 목소리로 설명하고,<br />여러 분야의 시선으로 함께 판단합니다.</p></div>
           <div class="doctor-gallery" data-doctors>
             <div class="doctor-main">
-              <aside class="doctor-rail">
-                <span data-doctor-count>01 / 04</span>
-                <strong>DOCTORS</strong>
+              <div class="doctor-media">
+                <div class="doctor-portrait"><img data-doctor-image src="./assets/images/doctor-kim.png" alt="김감동 대표원장 프로필 이미지" /></div>
                 <div class="doctor-thumbs" data-doctor-thumbs aria-label="의료진 선택"></div>
-              </aside>
-              <div class="doctor-portrait"><img data-doctor-image src="./assets/images/doctor-kim.png" alt="김감동 대표원장 프로필 이미지" /></div>
+              </div>
               <div class="doctor-content">
                 <p data-doctor-role>대표원장 · 통합치의학과</p><h3 data-doctor-name>김감동</h3>
                 <blockquote data-doctor-quote>설명부터 치료 이후까지, 환자분이 납득할 수 있는 진료를 하겠습니다.</blockquote>
@@ -145,15 +145,15 @@
 
       <section class="showcase" data-showcase aria-labelledby="showcase-title">
         <div class="showcase-sticky" data-showcase-panel>
-          <div class="showcase-images" aria-hidden="true">
-            <img data-showcase-image src="./assets/images/treatment-scene.png" alt="" />
-            <img data-showcase-image src="./assets/images/consultation.png" alt="" />
-            <img data-showcase-image src="./assets/images/treatment-room.png" alt="" />
-            <img data-showcase-image src="./assets/images/digital-safety.png" alt="" />
+          <div class="showcase-images">
+            <figure data-showcase-image><img src="./assets/images/digital-safety.png" alt="디지털 진단 자료 목업" /><figcaption>보이는 진단</figcaption></figure>
+            <figure data-showcase-image><img src="./assets/images/consultation.png" alt="환자와 상담하는 의료진 목업" /><figcaption>충분한 설명</figcaption></figure>
+            <figure data-showcase-image><img src="./assets/images/treatment-scene.png" alt="진료 중인 의료진 목업" /><figcaption>편안한 치료 과정</figcaption></figure>
+            <figure data-showcase-image><img src="./assets/images/treatment-room.png" alt="정돈된 진료실 목업" /><figcaption>이어지는 사후 관리</figcaption></figure>
           </div>
-          <p data-showcase-kicker>소개로 다시 만나는</p>
+          <p data-showcase-kicker>보이는 자료로 함께 확인하고</p>
           <span class="showcase-rule" aria-hidden="true"></span>
-          <h2 id="showcase-title" data-showcase-title>신뢰가 이어지는 치과</h2>
+          <h2 id="showcase-title" data-showcase-title>모호함 없이 설명하는 진료</h2>
         </div>
       </section>
 

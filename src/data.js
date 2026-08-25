@@ -1,8 +1,8 @@
 export const concerns = [
-  { eyebrow: "치과 선택할 때", title: "과잉 진료면 어쩌지", copy: "필요한 치료와 선택 가능한 치료를 나눠 설명합니다.", pose: 0 },
-  { eyebrow: "치료를 앞두고", title: "많이 아프진 않을까", copy: "마취부터 치료 후 관리까지 불편을 줄이는 순서를 설계합니다.", pose: 1 },
-  { eyebrow: "바쁜 일상 속에서", title: "시간을 맞출 수 있을까", copy: "365일 진료와 평일 야간 진료로 선택지를 넓혔습니다.", pose: 2 },
-  { eyebrow: "치료를 마친 뒤", title: "마음 놓고 웃을 수 있게", copy: "치료가 끝난 뒤까지 이어지는 사후 관리를 약속합니다.", pose: 3 }
+  { heading: "치과 선택할 때", copy: "과잉 진료면 어쩌지", pose: 0 },
+  { heading: "치료를 앞두고", copy: "많이 아프진 않을까", pose: 1 },
+  { heading: "바쁜 일상 속에서", copy: "시간을 맞출 수 있을까", pose: 2 },
+  { heading: "수많은 치과들 중\n어디로 갈지 고민 중이시라면", copy: "만족 그 이상의 감동\n365서울감동치과의원", pose: null }
 ];
 
 export const cases = [

@@ -4,9 +4,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const messages = [
-  ["소개로 다시 만나는", "신뢰가 이어지는 치과"],
-  ["치료 뒤에도 다시 찾는", "일상을 함께하는 치과"],
-  ["가족에게도 권하고 싶은", "감동이 이어지는 치과"]
+  ["보이는 자료로 함께 확인하고", "모호함 없이 설명하는 진료"],
+  ["통증과 긴장을 줄이는 순서까지 설계해", "치료받는 과정까지 편안하게"],
+  ["치료 뒤의 변화와 회복까지 살펴", "끝난 뒤에도 이어지는 관리"]
 ];
 
 export function initShowcaseScroll() {

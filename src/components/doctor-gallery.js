@@ -9,7 +9,6 @@ export function initDoctorGallery() {
   const quote = root.querySelector("[data-doctor-quote]");
   const careers = root.querySelector("[data-doctor-careers]");
   const thumbs = root.querySelector("[data-doctor-thumbs]");
-  const count = root.querySelector("[data-doctor-count]");
   let current = 0;
 
   thumbs.innerHTML = doctors.map((doctor, index) => `
@@ -28,7 +27,6 @@ export function initDoctorGallery() {
       role.textContent = doctor.role;
       quote.textContent = doctor.quote;
       careers.innerHTML = doctor.careers.map((career) => `<li>${career}</li>`).join("");
-      count.textContent = `${String(current + 1).padStart(2, "0")} / ${String(doctors.length).padStart(2, "0")}`;
       [...thumbs.children].forEach((thumb, i) => {
         if (i === current) thumb.setAttribute("aria-current", "true");
         else thumb.removeAttribute("aria-current");
