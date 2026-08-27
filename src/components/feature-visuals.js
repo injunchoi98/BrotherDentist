@@ -3,6 +3,8 @@ const QUALITY_TILE_ROW_STEP = QUALITY_TILE_STEP * Math.sin(Math.PI / 3);
 const QUALITY_TILE_RADIUS = QUALITY_TILE_STEP / 2;
 const QUALITY_COLUMNS = 11;
 const QUALITY_ROWS = 7;
+const QUALITY_AUTO_FRAME_INTERVAL = 1000 / 30;
+const QUALITY_AUTO_CYCLE_DURATION = 9000;
 
 function shuffleDeterministically(items) {
   const shuffled = [...items];
@@ -102,7 +104,7 @@ function buildLogoSprite(images) {
   return sprite;
 }
 
-function initQualityLogoCloud(cloud) {
+function initQualityLogoCloud(cloud, reducedMotion) {
   const canvas = cloud.querySelector("[data-quality-logo-canvas]");
   const sourceElements = [...cloud.querySelectorAll("[data-quality-logo-source]")];
   if (!canvas || !sourceElements.length) return;
@@ -125,6 +127,10 @@ function initQualityLogoCloud(cloud) {
   const state = {
     centerX: 0,
     centerY: 0,
+    focusX: 0,
+    focusY: 0,
+    targetFocusX: 0,
+    targetFocusY: 0,
     width: 0,
     height: 0,
     pixelRatio: 1,
@@ -132,6 +138,12 @@ function initQualityLogoCloud(cloud) {
 
   let sprite = null;
   let distribution = [];
+  let animationFrame = 0;
+  let lastRenderedAt = 0;
+  let viewportObserver = null;
+  let visible = !("IntersectionObserver" in window);
+  const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
+  const getMode = () => reducedMotion.matches ? "static" : finePointer.matches ? "pointer" : "auto";
 
   const resize = () => {
     const bounds = canvas.getBoundingClientRect();
@@ -156,14 +168,14 @@ function initQualityLogoCloud(cloud) {
     context.clearRect(0, 0, state.width, state.height);
 
     positions.forEach((position, index) => {
-      const offsetX = position.x;
-      const offsetY = position.y;
+      const offsetX = position.x - state.focusX;
+      const offsetY = position.y - state.focusY;
 
       const radialStrength = Math.exp(-((offsetX * offsetX) + (offsetY * offsetY)) / 33800);
       const scale = .18 + (1.17 * radialStrength);
       const perspective = 1 + ((scale - .18) * .5);
-      const x = (offsetX * perspective) + state.centerX;
-      const y = (offsetY * perspective) + state.centerY;
+      const x = state.centerX + state.focusX + (offsetX * perspective);
+      const y = state.centerY + state.focusY + (offsetY * perspective);
       const size = 44 * scale;
       const halfSize = size / 2;
       if (x + halfSize < 0 || x - halfSize > state.width || y + halfSize < 0 || y - halfSize > state.height) return;
@@ -184,6 +196,73 @@ function initQualityLogoCloud(cloud) {
     context.globalAlpha = 1;
   };
 
+  const stopAnimation = () => {
+    cancelAnimationFrame(animationFrame);
+    animationFrame = 0;
+  };
+
+  const tick = (time) => {
+    animationFrame = 0;
+    if (!sprite || !visible || document.hidden || reducedMotion.matches) return;
+
+    const mode = getMode();
+    if (mode === "auto") {
+      if (time - lastRenderedAt < QUALITY_AUTO_FRAME_INTERVAL) {
+        animationFrame = requestAnimationFrame(tick);
+        return;
+      }
+      const phase = ((time % QUALITY_AUTO_CYCLE_DURATION) / QUALITY_AUTO_CYCLE_DURATION) * Math.PI * 2;
+      state.targetFocusX = Math.cos(phase) * Math.min(state.width * .22, 88);
+      state.targetFocusY = Math.sin(phase) * Math.min(state.height * .16, 52);
+    }
+
+    lastRenderedAt = time;
+    const easing = mode === "auto" ? .14 : .2;
+    state.focusX += (state.targetFocusX - state.focusX) * easing;
+    state.focusY += (state.targetFocusY - state.focusY) * easing;
+    render();
+
+    const unsettled = Math.abs(state.targetFocusX - state.focusX) > .12
+      || Math.abs(state.targetFocusY - state.focusY) > .12;
+    if (mode === "auto" || unsettled) animationFrame = requestAnimationFrame(tick);
+  };
+
+  const startAnimation = () => {
+    if (animationFrame || !sprite || !visible || document.hidden || reducedMotion.matches) return;
+    animationFrame = requestAnimationFrame(tick);
+  };
+
+  const resetFocus = () => {
+    state.targetFocusX = 0;
+    state.targetFocusY = 0;
+    startAnimation();
+  };
+
+  const updatePointerFocus = (event) => {
+    if (getMode() !== "pointer") return;
+    const bounds = cloud.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return;
+    const normalizedX = (((event.clientX - bounds.left) / bounds.width) - .5) * 2;
+    const normalizedY = (((event.clientY - bounds.top) / bounds.height) - .5) * 2;
+    state.targetFocusX = Math.max(-1, Math.min(1, normalizedX)) * Math.min(state.width * .24, 96);
+    state.targetFocusY = Math.max(-1, Math.min(1, normalizedY)) * Math.min(state.height * .2, 64);
+    startAnimation();
+  };
+
+  const handleModeChange = () => {
+    cloud.dataset.qualityMode = getMode();
+    stopAnimation();
+    state.targetFocusX = 0;
+    state.targetFocusY = 0;
+    if (reducedMotion.matches) {
+      state.focusX = 0;
+      state.focusY = 0;
+      render();
+      return;
+    }
+    startAnimation();
+  };
+
   Promise.all(sourceElements.map(waitForImage)).then((loadedImages) => {
     const images = loadedImages.filter(Boolean);
     if (!images.length) return;
@@ -194,13 +273,44 @@ function initQualityLogoCloud(cloud) {
     resize();
 
     cloud.setAttribute("data-quality-ready", "");
+    cloud.dataset.qualityMode = getMode();
     render();
+    startAnimation();
   });
 
   const resizeObserver = new ResizeObserver(() => {
-    if (resize()) render();
+    if (!resize()) return;
+    render();
+    startAnimation();
   });
   resizeObserver.observe(canvas);
+
+  if ("IntersectionObserver" in window) {
+    viewportObserver = new IntersectionObserver((entries) => {
+      visible = entries.some((entry) => entry.isIntersecting);
+      cloud.toggleAttribute("data-quality-active", visible);
+      if (visible) startAnimation();
+      else stopAnimation();
+    }, { rootMargin: "64px 0px", threshold: .05 });
+    viewportObserver.observe(cloud);
+  } else {
+    cloud.setAttribute("data-quality-active", "");
+  }
+
+  cloud.addEventListener("pointerenter", updatePointerFocus, { passive: true });
+  cloud.addEventListener("pointermove", updatePointerFocus, { passive: true });
+  cloud.addEventListener("pointerleave", resetFocus, { passive: true });
+  finePointer.addEventListener("change", handleModeChange);
+  reducedMotion.addEventListener("change", handleModeChange);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopAnimation();
+    else startAnimation();
+  });
+  window.addEventListener("pagehide", () => {
+    stopAnimation();
+    resizeObserver.disconnect();
+    viewportObserver?.disconnect();
+  }, { once: true });
 }
 
 function initCareWorkflow(workflow, reducedMotion) {
@@ -398,12 +508,12 @@ export function initFeatureVisuals() {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         qualityObserver.unobserve(entry.target);
-        initQualityLogoCloud(entry.target);
+        initQualityLogoCloud(entry.target, reducedMotion);
       });
     }, { rootMargin: "256px 0px" });
     qualityClouds.forEach((cloud) => qualityObserver.observe(cloud));
   } else {
-    qualityClouds.forEach(initQualityLogoCloud);
+    qualityClouds.forEach((cloud) => initQualityLogoCloud(cloud, reducedMotion));
   }
   document.querySelectorAll("[data-care-workflow]").forEach((workflow) => {
     initCareWorkflow(workflow, reducedMotion.matches);

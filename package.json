@@ -7,13 +7,14 @@
     "check:images": "node scripts/check-images.mjs",
     "check:typography": "node scripts/check-typography.mjs",
     "build": "npm run generate:images && npm run check:images && npm run check:typography && node scripts/build.mjs",
-    "dev": "npm run generate:images && node scripts/dev.mjs"
+    "dev": "npm run generate:images && vite --host 127.0.0.1 --port 4173 --strictPort"
   },
   "dependencies": {
     "gsap": "^3.13.0"
   },
   "devDependencies": {
     "esbuild": "^0.25.9",
-    "sharp": "^0.34.5"
+    "sharp": "^0.34.5",
+    "vite": "^7.3.6"
   }
 }

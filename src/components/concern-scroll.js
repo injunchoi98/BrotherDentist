@@ -32,8 +32,8 @@ export function initConcernScroll() {
     section,
     minimumHeightRem: ({ layout }) => {
       if (layout === "mobile") return 39;
-      if (layout === "medium") return 45;
-      return 50;
+      if (layout === "medium") return 42;
+      return 40;
     },
     onEnable: () => {
       const trigger = ScrollTrigger.create({

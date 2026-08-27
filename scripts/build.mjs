@@ -20,6 +20,15 @@ await build({
   sourcemap: true
 });
 
+await build({
+  entryPoints: [resolve(root, "src/styles.css")],
+  outfile: resolve(dist, "src/styles.css"),
+  bundle: true,
+  external: ["../assets/*"],
+  minify: false,
+  target: ["es2020"]
+});
+
 const source = await readFile(resolve(root, "index.html"), "utf8");
 const stamp = new Date().toISOString();
 await writeFile(resolve(dist, "index.html"), source.replace("{{BUILD_TIME}}", stamp));

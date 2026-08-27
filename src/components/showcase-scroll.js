@@ -21,6 +21,14 @@ const REFERRAL_POSITIONS = [
   { x: -.78, y: .82, scale: .88, rotate: 3 }
 ];
 
+const REFERRAL_POSITIONS_COMPACT = [
+  { x: -.9, y: -.76, scale: .78, rotate: -4 },
+  { x: .9, y: -.7, scale: .72, rotate: 4 },
+  { x: -.94, y: -.31, scale: .76, rotate: -3 },
+  { x: .94, y: .32, scale: .78, rotate: 3 },
+  { x: -.04, y: .78, scale: .8, rotate: -3 }
+];
+
 const REFERRAL_ORBIT_PATH = [[.78, -.68], [.92, .1], [.8, .58], [0, .84], [-.78, .82], [-.84, 0], [-.8, -.82], [0, -.9], [.78, -.68]];
 const REFERRAL_ORBIT_EXTENSION = [[.78, -.68], [1, -.56], [1.22, -.3]];
 const REFERRAL_ORBIT_STARTS = [.72, .52, .77, .52, .8];
@@ -36,12 +44,12 @@ const REVISIT_PATHS = {
 };
 
 const REVISIT_PATHS_COMPACT = {
-  checkup: [[0, -.34], [0, -.3], [0, -.3], [0, -.34]],
-  revisit: [[0, -.26], [0, -.22], [0, -.22], [0, -.26]],
-  longterm: [[0, -.17], [0, -.14], [0, -.14], [0, -.17]],
-  aftercare: [[0, .15], [0, .13], [0, .13], [0, .15]],
-  "checkup-count": [[0, .24], [0, .21], [0, .21], [0, .24]],
-  next: [[0, .33], [0, .29], [0, .29], [0, .33]]
+  checkup: [[-.6, -.41], [-.54, -.37], [-.52, -.37], [-.6, -.41]],
+  revisit: [[.5, -.34], [.45, -.3], [.43, -.3], [.5, -.34]],
+  longterm: [[-.57, -.22], [-.51, -.2], [-.49, -.2], [-.57, -.22]],
+  aftercare: [[.55, .2], [.49, .18], [.47, .18], [.55, .2]],
+  "checkup-count": [[-.54, .31], [-.48, .28], [-.46, .28], [-.54, .31]],
+  next: [[.57, .41], [.51, .37], [.49, .37], [.57, .41]]
 };
 
 const REGION_MOTIONS = [
@@ -125,11 +133,12 @@ const renderTitle = (element, lock, progress) => {
 const renderReferral = (items, localProgress, alpha, viewportWidth, viewportHeight) => {
   const radiusX = Math.max(140, (viewportWidth / 2) - Math.min(152, viewportWidth * .16));
   const radiusY = Math.max(140, (viewportHeight / 2) - Math.min(150, viewportHeight * .2));
+  const positions = viewportWidth < 768 ? REFERRAL_POSITIONS_COMPACT : REFERRAL_POSITIONS;
   const convoy = smooth((localProgress - .86) / .1);
   const exit = smooth((localProgress - .955) / .045);
 
   items.forEach((item, index) => {
-    const target = REFERRAL_POSITIONS[index] || REFERRAL_POSITIONS.at(-1);
+    const target = positions[index] || positions.at(-1);
     const appear = smooth((localProgress - (.08 + (index * .085))) / .18);
     const orbitStart = REFERRAL_ORBIT_STARTS[index] ?? .8;
     const join = smooth((localProgress - orbitStart) / .07);
@@ -356,8 +365,8 @@ export function initShowcaseScroll() {
     section,
     minimumHeightRem: ({ layout }) => {
       if (layout === "mobile") return 42;
-      if (layout === "medium") return 44;
-      return 48;
+      if (layout === "medium") return 45;
+      return 42;
     },
     onEnable: () => {
       clearMobileMotion();

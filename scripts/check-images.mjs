@@ -29,8 +29,12 @@ const assertions = [
   [viewportState.includes("pinningAllowed: !isMobile"), "mobile pinning must be disabled in the shared viewport state"],
   [!main.includes("Promise.all([...document.images]"), "decoding every image defeats native lazy loading"],
   [qualityColumns * qualityRows <= 80, "quality logo cloud must stay within the static tile budget"],
-  [!qualityCloudSource.includes("requestAnimationFrame"), "quality logo cloud must not redraw every frame"],
-  [!qualityCloudSource.includes("pointermove"), "quality logo cloud must remain static on pointer movement"],
+  [featureVisuals.includes("QUALITY_AUTO_FRAME_INTERVAL = 1000 / 30"), "quality logo cloud mobile animation must stay capped at 30fps"],
+  [qualityCloudSource.includes("requestAnimationFrame"), "quality logo cloud updates must be batched with requestAnimationFrame"],
+  [qualityCloudSource.includes("pointermove"), "quality logo cloud must respond to fine-pointer hover movement"],
+  [qualityCloudSource.includes("IntersectionObserver"), "quality logo cloud animation must pause outside the viewport"],
+  [qualityCloudSource.includes("document.hidden"), "quality logo cloud animation must pause in background tabs"],
+  [qualityCloudSource.includes("reducedMotion.matches"), "quality logo cloud must respect reduced motion"],
 ];
 
 for (const [valid, message] of assertions) {
@@ -46,4 +50,4 @@ for (const file of [
   await access(resolve(root, "assets/images/webp", file));
 }
 
-console.log(`Image delivery contract passed: WebP, srcset, lazy loading, content visibility, mobile pin fallback, and ${qualityColumns * qualityRows}-tile static logo cloud.`);
+console.log(`Image delivery contract passed: WebP, srcset, lazy loading, content visibility, mobile pin fallback, and ${qualityColumns * qualityRows}-tile adaptive logo cloud.`);

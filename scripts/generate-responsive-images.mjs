@@ -8,6 +8,7 @@ const outputDirectory = resolve(root, "assets/images/webp");
 
 const variants = [
   ["clinic-exterior.png", [480, 960, 1440]],
+  ["clinic-hero-poster.jpg", [960, 1920]],
   ["patient-poses-transparent.png", [1254]],
   ["clinic-day-night-wheel.png", [1254]],
   ["clinic-exterior-actual.png", [480, 770]],
