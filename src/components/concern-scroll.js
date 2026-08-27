@@ -30,9 +30,9 @@ export function initConcernScroll() {
   render(0, false);
   return createPinHeightGuard({
     section,
-    minimumHeightRem: () => {
-      if (matchMedia("(max-width: 48rem)").matches) return 39;
-      if (matchMedia("(max-width: 64rem)").matches) return 45;
+    minimumHeightRem: ({ layout }) => {
+      if (layout === "mobile") return 39;
+      if (layout === "medium") return 45;
       return 50;
     },
     onEnable: () => {

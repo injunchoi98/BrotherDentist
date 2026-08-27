@@ -1,5 +1,6 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { subscribeViewportState } from "../utils/viewport-state.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,9 +18,23 @@ export function initEvidenceScroll() {
   };
 
   setCurrent(0);
-  const media = gsap.matchMedia();
-  media.add("(min-width: 64.01rem) and (prefers-reduced-motion: no-preference)", () => {
-    const triggers = panels.map((panel, index) => ScrollTrigger.create({
+  let active = false;
+  let triggers = [];
+
+  return subscribeViewportState(({ layout, pinningAllowed }) => {
+    const nextActive = layout === "desktop" && pinningAllowed;
+    if (nextActive === active) return;
+
+    triggers.forEach((trigger) => trigger.kill());
+    triggers = [];
+    active = nextActive;
+
+    if (!active) {
+      setCurrent(0);
+      return;
+    }
+
+    triggers = panels.map((panel, index) => ScrollTrigger.create({
       trigger: panel,
       start: "top center",
       end: "bottom center",
@@ -27,6 +42,5 @@ export function initEvidenceScroll() {
         if (isActive) setCurrent(index);
       }
     }));
-    return () => triggers.forEach((trigger) => trigger.kill());
   });
 }

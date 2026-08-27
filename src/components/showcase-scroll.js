@@ -1,6 +1,6 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { createPinHeightGuard } from "../utils/pin-height-guard.js";
+import { createPinHeightGuard, getSmallViewportHeight } from "../utils/pin-height-guard.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -122,9 +122,9 @@ const renderTitle = (element, lock, progress) => {
   if (lock.hasAttribute("data-final-title") !== finalTitle) lock.toggleAttribute("data-final-title", finalTitle);
 };
 
-const renderReferral = (items, localProgress, alpha, viewportWidth) => {
+const renderReferral = (items, localProgress, alpha, viewportWidth, viewportHeight) => {
   const radiusX = Math.max(140, (viewportWidth / 2) - Math.min(152, viewportWidth * .16));
-  const radiusY = Math.max(140, (innerHeight / 2) - Math.min(150, innerHeight * .2));
+  const radiusY = Math.max(140, (viewportHeight / 2) - Math.min(150, viewportHeight * .2));
   const convoy = smooth((localProgress - .86) / .1);
   const exit = smooth((localProgress - .955) / .045);
 
@@ -156,9 +156,9 @@ const renderReferral = (items, localProgress, alpha, viewportWidth) => {
   });
 };
 
-const renderRevisit = (items, localProgress, alpha, viewportWidth) => {
+const renderRevisit = (items, localProgress, alpha, viewportWidth, viewportHeight) => {
   const radiusX = viewportWidth * .5;
-  const radiusY = innerHeight * .5;
+  const radiusY = viewportHeight * .5;
   const paths = viewportWidth < 768 ? REVISIT_PATHS_COMPACT : REVISIT_PATHS;
 
   items.forEach((item, index) => {
@@ -176,9 +176,9 @@ const renderRevisit = (items, localProgress, alpha, viewportWidth) => {
   });
 };
 
-const renderRegions = (items, localProgress, alpha, viewportWidth) => {
+const renderRegions = (items, localProgress, alpha, viewportWidth, viewportHeight) => {
   const radiusX = viewportWidth * .5;
-  const radiusY = innerHeight * .5;
+  const radiusY = viewportHeight * .5;
   const arrival = smooth((localProgress - .12) / .38);
   const depart = smooth((localProgress - .61) / .31);
   const fade = smooth((localProgress - .82) / .13);
@@ -232,6 +232,7 @@ export function initShowcaseScroll() {
 
   const render = (progress) => {
     const viewportWidth = getViewportWidth();
+    const viewportHeight = getSmallViewportHeight();
     renderTitle(title, titleLock, progress);
     scenes.forEach((scene, index) => {
       const alpha = sceneAlpha(progress, index);
@@ -242,9 +243,9 @@ export function initShowcaseScroll() {
     const referralProgress = clamp((progress - SCENE_RANGES[0][0]) / (SCENE_RANGES[0][1] - SCENE_RANGES[0][0]));
     const revisitProgress = clamp((progress - SCENE_RANGES[1][0]) / (SCENE_RANGES[1][1] - SCENE_RANGES[1][0]));
     const nationwideProgress = clamp((progress - SCENE_RANGES[2][0]) / (SCENE_RANGES[2][1] - SCENE_RANGES[2][0]));
-    renderReferral(referralItems, referralProgress, sceneAlpha(progress, 0), viewportWidth);
-    renderRevisit(revisitItems, revisitProgress, sceneAlpha(progress, 1), viewportWidth);
-    renderRegions(regionItems, nationwideProgress, sceneAlpha(progress, 2), viewportWidth);
+    renderReferral(referralItems, referralProgress, sceneAlpha(progress, 0), viewportWidth, viewportHeight);
+    renderRevisit(revisitItems, revisitProgress, sceneAlpha(progress, 1), viewportWidth, viewportHeight);
+    renderRegions(regionItems, nationwideProgress, sceneAlpha(progress, 2), viewportWidth, viewportHeight);
     renderMap(map, routes, nationwideProgress, sceneAlpha(progress, 2));
 
     const imageProgress = smooth((progress - .875) / .12);
@@ -264,9 +265,9 @@ export function initShowcaseScroll() {
 
   return createPinHeightGuard({
     section,
-    minimumHeightRem: () => {
-      if (matchMedia("(max-width: 48rem)").matches) return 42;
-      if (matchMedia("(max-width: 64rem)").matches) return 44;
+    minimumHeightRem: ({ layout }) => {
+      if (layout === "mobile") return 42;
+      if (layout === "medium") return 44;
       return 48;
     },
     onEnable: () => {

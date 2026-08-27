@@ -81,7 +81,7 @@ export function initEquipmentStack() {
   const panel = root.closest("[data-evidence-panel]");
   return createPinHeightGuard({
     section: panel,
-    minimumHeightRem: () => matchMedia("(max-width: 48rem)").matches ? 40 : 48,
+    minimumHeightRem: ({ layout }) => layout === "mobile" ? 40 : 48,
     onEnable: () => {
       const trigger = ScrollTrigger.create({
         id: "equipment-pin-progress",

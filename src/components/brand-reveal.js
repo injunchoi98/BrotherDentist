@@ -1,8 +1,11 @@
+import { subscribeViewportState } from "../utils/viewport-state.js";
+
 export function initBrandReveal() {
   const section = document.querySelector("[data-brand-reveal]");
   if (!section) return;
   const mask = section.querySelector("[data-brand-mask]");
   const sticky = section.querySelector(".brand-sticky");
+  let active = false;
 
   const update = () => {
     const rect = section.getBoundingClientRect();
@@ -14,6 +17,21 @@ export function initBrandReveal() {
     mask.style.setProperty("--reveal", eased.toFixed(4));
     mask.classList.toggle("is-visible", scrolled > startDistance);
   };
-  update();
-  addEventListener("scroll", update, { passive: true });
+  const reset = () => {
+    mask.style.removeProperty("--reveal");
+    mask.classList.remove("is-visible");
+  };
+
+  return subscribeViewportState(({ pinningAllowed }) => {
+    if (pinningAllowed === active) return;
+    active = pinningAllowed;
+
+    if (active) {
+      update();
+      addEventListener("scroll", update, { passive: true });
+    } else {
+      removeEventListener("scroll", update);
+      reset();
+    }
+  });
 }
