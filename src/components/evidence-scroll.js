@@ -10,7 +10,10 @@ export function initEvidenceScroll() {
   const panels = [...root.querySelectorAll("[data-evidence-panel]")];
 
   const setCurrent = (index) => {
-    navItems.forEach((item, itemIndex) => item.toggleAttribute("aria-current", itemIndex === index));
+    navItems.forEach((item, itemIndex) => {
+      if (itemIndex === index) item.setAttribute("aria-current", "true");
+      else item.removeAttribute("aria-current");
+    });
   };
 
   setCurrent(0);

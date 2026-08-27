@@ -6,9 +6,9 @@
     <meta name="description" content="365서울감동치과의원 정적 랜딩 페이지 목업" />
     <meta name="build-time" content="{{BUILD_TIME}}" />
     <title>365서울감동치과의원</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%232f6f62%22/><text x=%2232%22 y=%2240%22 font-size=%2226%22 text-anchor=%22middle%22 fill=%22white%22>365</text></svg>" />
-    <link rel="stylesheet" href="./src/styles.css" />
-    <script type="module" src="./src/main.js"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%232763ea%22/><text x=%2232%22 y=%2240%22 font-size=%2226%22 text-anchor=%22middle%22 fill=%22white%22>365</text></svg>" />
+    <link rel="stylesheet" href="./src/styles.css?v=20260826-3" />
+    <script type="module" src="./src/main.js?v=20260826-2"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
@@ -17,10 +17,25 @@
         <strong>365</strong><span>서울감동치과의원</span>
       </a>
       <nav class="site-nav" data-nav aria-label="주요 메뉴">
-        <a href="#treatments">진료 항목</a><a href="#cases">치료 증례</a><a href="#doctors">의료진</a><a href="#visit">오시는 길</a>
+        <a href="#top">치과 소개</a>
+        <div class="nav-group" data-treatment-menu>
+          <button class="nav-disclosure" type="button" data-treatment-toggle aria-expanded="false" aria-controls="treatment-submenu">
+            <span>진료 항목</span><span class="nav-disclosure-indicator" aria-hidden="true"></span>
+          </button>
+          <div class="nav-submenu" id="treatment-submenu" data-treatment-submenu>
+            <div class="nav-submenu-inner">
+              <a href="#treatment-implant">임플란트</a>
+              <a href="#treatment-general">일반 진료</a>
+              <a href="#treatment-whitening">치아 미백</a>
+            </div>
+          </div>
+        </div>
+        <a href="#visit">오시는 길</a>
       </nav>
       <a class="header-cta" href="tel:0000000000">진료 문의</a>
-      <button class="menu-button" type="button" data-menu aria-expanded="false" aria-label="메뉴 열기"><span></span><span></span></button>
+      <button class="menu-button" type="button" data-menu aria-expanded="false" aria-label="메뉴 열기">
+        <span class="menu-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+      </button>
     </header>
 
     <main id="main">
@@ -35,7 +50,9 @@
         <div class="concern-sticky">
           <div class="concern-copy">
             <h2 class="display-title" id="concern-title" data-concern-heading>치과 선택할 때</h2>
-            <p data-concern-copy>과잉 진료면 어쩌지</p>
+            <div class="concern-dialogue" data-concern-dialogue>
+              <p class="concern-bubble" data-concern-copy>과잉 진료면 어쩌지</p>
+            </div>
           </div>
           <div class="patient-illustration" data-patient data-pose="0" role="img" aria-label="치과 선택을 고민하는 환자 일러스트"></div>
         </div>
@@ -43,34 +60,31 @@
 
       <section class="brand-reveal" data-brand-reveal aria-label="브랜드 메시지 전환">
         <div class="brand-sticky">
-          <h2 class="brand-title">만족 그 이<span class="mask-origin">상</span>의 감동</h2>
+          <h2 class="brand-title">
+            <span>필요한 치료만 <span class="brand-accent">정직</span>하게</span>
+            <span>통증 부담을 줄이는 <span class="brand-accent">단계별 마취</span></span>
+            <span><span class="brand-accent">365일</span>·평일 <span class="brand-accent">야간</span> 진료</span>
+          </h2>
           <div class="brand-mask" data-brand-mask aria-hidden="true">
-            <img src="./assets/images/clinic-exterior.png" alt="" />
-            <div class="brand-mask-copy"><p>지금까지 경험해 보지 못한</p><strong>감동적인 진료 경험을 선사합니다</strong></div>
+            <img src="./assets/images/clinic-exterior-actual.png" alt="" />
+            <div class="brand-mask-copy"><p>수많은 치과 중 어디로 갈지 고민이라면</p><strong>만족 그 이상의 <span class="brand-accent">감동</span><br />365서울감동치과의원</strong></div>
           </div>
         </div>
       </section>
 
       <section class="section section-gray case-section" id="cases" aria-labelledby="case-title">
-        <div class="landing-container section-heading">
-          <div><p class="eyebrow">REAL TREATMENT JOURNEY</p><h2 id="case-title">치료 여정을 그대로 담은 증례</h2></div>
-          <p>이미지를 좌우로 움직여 치료 전후를 비교하고,<br />카드를 넘겨 서로 다른 치료 여정을 살펴보세요.</p>
+        <div class="landing-container section-heading case-heading">
+          <div><h2 id="case-title">환자분들의 실제 치료 여정을<br />그대로 담은 치료 증례</h2></div>
         </div>
         <div class="coverflow" data-coverflow tabindex="0" aria-roledescription="carousel" aria-label="치료 증례">
           <div class="coverflow-track" data-coverflow-track aria-live="polite"></div>
-          <div class="coverflow-controls landing-container">
-            <button type="button" data-coverflow-prev aria-label="이전 증례">←</button>
-            <span data-coverflow-status>01 / 03</span>
-            <button type="button" data-coverflow-next aria-label="다음 증례">→</button>
-          </div>
         </div>
-        <p class="mockup-note landing-container">* 현재 증례 이미지와 문구는 레이아웃 확인을 위한 목업 데이터입니다.</p>
       </section>
 
       <section class="section review-section" aria-labelledby="review-title">
-        <div class="landing-container section-heading compact-heading">
-          <div><p class="eyebrow">WORDS FROM PATIENTS</p><h2 id="review-title">진료 뒤에 남은 마음</h2></div>
-          <p>화려한 약속보다 환자가 직접 느낀<br />진료 과정의 차이를 먼저 보여드립니다.</p>
+        <div class="landing-container section-heading compact-heading review-heading">
+          <div><h2 id="review-title">실제 환자분들이 남겨주신<br />솔직한 리뷰</h2></div>
+          <p>건강한 미소를 되찾으신 환자분들의 후기는 저희에게 큰 감동과 자부심을 안겨줍니다.<br />소중한 말씀을 가슴에 새기며, 앞으로도 환자 한 분 한 분께 365일 최선을 다하는 치과가 되도록 노력하겠습니다.</p>
         </div>
         <div class="review-window"><div class="review-track" data-review-track></div></div>
       </section>
@@ -79,18 +93,19 @@
         <div class="landing-container treatment-layout">
           <aside class="treatment-intro">
             <h2 id="treatments-title">진료를 기본으로,<br />마음까지 살핍니다.</h2>
-            <p>꼭 필요한 세 가지 진료를<br />각 분야의 기준에 맞게 세심히 봅니다.</p>
+            <p>꼭 필요한 세 가지 진료를<br />치료 경험을 바탕으로 꼼꼼히 봅니다.</p>
           </aside>
           <div class="treatment-cards">
-            <a class="treatment-card" href="#visit"><img src="./assets/images/digital-safety.png" alt="임플란트 디지털 진단 목업" /><h3>임플란트</h3><p>기능과 회복 이후의 일상까지 고려합니다.</p></a>
-            <a class="treatment-card" href="#visit"><img src="./assets/images/treatment-room.png" alt="일반 진료 공간 목업" /><h3>일반 진료</h3><p>불편의 원인을 찾고 필요한 치료부터 시작합니다.</p></a>
-            <a class="treatment-card" href="#visit"><img src="./assets/images/consultation.png" alt="치아 미백 상담 목업" /><h3>치아 미백</h3><p>현재 치아에 어울리는 자연스러운 밝기를 찾습니다.</p></a>
+            <a class="treatment-card" id="treatment-implant" href="#visit"><img src="./assets/images/treatment-implant-v2.png" alt="의료진과 환자가 함께 확인하는 임플란트 3D CT" /><h3>임플란트</h3><p>3D CT로 잇몸뼈와 신경 위치를 확인한 뒤 식립 위치를 정합니다. 수술에서 끝내지 않고 보철의 씹는 높이와 치료 후 관리까지 이어서 봅니다.</p></a>
+            <a class="treatment-card" id="treatment-general" href="#visit"><img src="./assets/images/treatment-room.png" alt="일반 진료 공간" /><h3>일반 진료</h3><p>같은 통증이라도 충치, 잇몸, 교합 문제에 따라 치료가 달라집니다. 검사 결과를 함께 보고 지금 치료할 부분과 지켜볼 부분을 나눠 설명합니다.</p></a>
+            <a class="treatment-card" id="treatment-whitening" href="#visit"><img src="./assets/images/treatment-whitening-v2.png" alt="치아 색상표로 현재 밝기를 확인하는 미백 상담" /><h3>치아 미백</h3><p>현재 치아의 색과 착색 원인을 먼저 확인합니다. 무조건 하얗게 만들기보다 얼굴과 기존 보철물에 어울리는 밝기를 정해 진행합니다.</p></a>
           </div>
         </div>
       </section>
 
       <section class="section evidence-section" aria-labelledby="evidence-title">
         <div class="landing-container evidence-heading">
+          <p>365서울감동치과</p>
           <h2 id="evidence-title">믿고 갈 수 있는 곳인지<br />직접 판단해 주세요.</h2>
         </div>
         <div class="landing-container evidence-flow" data-evidence>
@@ -102,67 +117,476 @@
             <li data-evidence-nav><span>5.</span> 정직하게 진료하는지</li>
           </ol>
           <div class="evidence-panels">
-            <article data-evidence-panel><p class="evidence-question">1. 실력이 있는지</p><img src="./assets/images/treatment-scene.png" alt="의료진이 치료 계획을 함께 살펴보는 장면 목업" /><h3>한 사람의 판단에만 기대지 않습니다</h3><ul><li>분야별 의료진이 함께 검토하는 치료 계획</li><li>정기적인 증례 회의와 단계별 기록</li><li>진단부터 사후 관리까지 이어지는 담당 의료진</li></ul></article>
-            <article data-evidence-panel><p class="evidence-question">2. 아프진 않을지</p><img src="./assets/images/consultation.png" alt="환자에게 치료 과정을 설명하는 장면 목업" /><h3>통증을 줄이는 과정도 치료의 일부입니다</h3><ul><li>스프레이·표면 마취 후 단계적으로 진행</li><li>치료 중 멈출 수 있는 신호를 먼저 약속</li><li>시술 뒤 불편을 줄이는 관리 방법 안내</li></ul></article>
-            <article data-evidence-panel><p class="evidence-question">3. 불친절하지는 않을지</p><img src="./assets/images/consultation.png" alt="환자와 눈높이를 맞춰 상담하는 의료진 목업" /><h3>질문이 끝날 때까지 설명합니다</h3><ul><li>처음 내원한 분도 이해할 수 있는 쉬운 설명</li><li>치료 시간과 비용, 대안을 한 자리에서 안내</li><li>결정을 재촉하지 않는 충분한 상담 시간</li></ul></article>
-            <article data-evidence-panel><p class="evidence-question">4. 필요한 장비들은 있는지</p><img src="./assets/images/treatment-room.png" alt="디지털 장비와 멸균 설비가 있는 진료실 목업" /><h3>필요한 순간에 바로 확인할 수 있도록</h3><ul><li>디지털 진단 장비와 원내 기공 시스템</li><li>치료 단계에 맞춘 장비와 재료 준비</li><li>기구별 멸균·소독 과정을 분리해 관리</li></ul></article>
-            <article data-evidence-panel><p class="evidence-question">5. 정직하게 진료하는지</p><img src="./assets/images/digital-safety.png" alt="디지털 진단 자료를 함께 확인하는 장면 목업" /><h3>보이는 자료를 기준으로 선택하게 합니다</h3><ul><li>진단 이미지를 환자와 같은 화면에서 확인</li><li>꼭 필요한 치료와 선택 가능한 치료를 구분</li><li>치료 범위와 비용을 시작 전에 분명하게 안내</li></ul></article>
+            <article data-evidence-panel>
+              <h3 class="evidence-question">1. 실력이 있는지</h3>
+              <div class="evidence-panel-copy">
+                <p class="evidence-kicker">2017년부터 이어온 서울감동치과</p>
+                <h4 class="evidence-title">풍부한 치료 경험을 바탕으로 진료합니다</h4>
+                <div class="evidence-prose">
+                  <p>2017년, 서울감동치과는 “만족을 넘어 감동으로”라는 마음으로 첫걸음을 내디뎠습니다. 그 여정 속에서 함께했던 동료와 후배 원장님들은 같은 비전을 품고 각자의 자리에서 성장하며 감동의 가치를 이어가고 있습니다.</p>
+                  <p>그 흐름은 이제 대한민국 8개의 서울감동치과의원으로 확장되었고, 화도읍 본점 개원을 통해 한 단계 더 큰 도약을 준비하고 있습니다.</p>
+                  <p>200평 규모의 넓은 공간과 최신 의료 장비, 풍부한 치료 경험을 바탕으로 보다 체계적이고 신뢰받는 진료를 완성하겠습니다.</p>
+                </div>
+              </div>
+              <img src="./assets/images/treatment-scene.png" alt="의료진이 환자를 진료하는 모습" />
+            </article>
+
+            <article data-evidence-panel>
+              <h3 class="evidence-question">2. 아프진 않을지</h3>
+              <div class="evidence-panel-copy">
+                <p class="evidence-kicker">조금이라도 덜 아플 수 없을까</p>
+                <h4 class="evidence-title">치과치료, 아프지 않을까?</h4>
+                <div class="evidence-prose">
+                  <p>남녀노소 누구나 치과에 내원하기 전에는 똑같은 고민을 할 것이라고 생각합니다. 사실 대부분 치과 치료는 마취를 하고 시작하지만, 중요한 점은 마취 주사가 아프다는 것입니다.</p>
+                  <p>과거의 경험 때문에 치과를 무서워하는 아이들, 바늘 공포가 심한 분들을 위해 무바늘 마취 주사를 도입하여 환자분들이 걱정하는 통증을 최대한 줄이고 있습니다.</p>
+                  <p>365서울감동치과는 내원하시는 분들을 위해 항상 “조금이라도 덜 아플 수 없을까?”를 고민합니다.</p>
+                </div>
+                <ol class="anesthesia-steps" aria-label="통증을 줄이는 마취 3단계">
+                  <li><span>1단계</span><strong>표면 마취</strong><p>표면에 마취제를 이용해 바늘이 들어가는 부분을 먼저 마취합니다.</p></li>
+                  <li><span>2단계</span><strong>무바늘 마취</strong><p>바늘 없이 마취액을 전달해 마취 과정의 긴장과 통증을 줄입니다.</p></li>
+                  <li><span>3단계</span><strong>극미세침 마취</strong><p>더 가는 주사침을 사용해 깊은 부위까지 천천히 마취합니다.</p></li>
+                </ol>
+              </div>
+              <img src="./assets/images/anesthesia-care-v2.png" alt="단계별 마취를 준비하며 환자에게 설명하는 의료진" />
+            </article>
+
+            <article data-evidence-panel>
+              <h3 class="evidence-question">3. 불친절하지는 않을지</h3>
+              <div class="evidence-panel-copy">
+                <p class="evidence-kicker">이해가 안되시나요?</p>
+                <h4 class="evidence-title">이해가 되실 때까지 물어보셔도 됩니다</h4>
+                <div class="evidence-prose">
+                  <p>저 또한 사람이라 다른 병원에 갔을 때 의사가 “00병이니까 약 드세요”라고만 하며 무관심한 태도에 불친절한 설명을 받는다면 굉장히 아쉬운 마음이 남습니다.</p>
+                  <p>그렇기에 365서울감동치과에 오시는 분들에게는 의사만 아는 어려운 용어가 아닌 환자분들 입장에서 이해하기 쉽게 설명드리려 노력합니다.</p>
+                  <p>“이렇게 많이 질문하면 진상이지 않을까?” 혹시 이런 마음을 갖고 계신가요?</p>
+                  <p>365서울감동치과에서는 모든 질문을 환영합니다. 궁금하신 내용은 마음껏 물어봐 주세요.</p>
+                </div>
+              </div>
+              <img src="./assets/images/evidence-friendly.png" alt="환자에게 진료 내용을 설명하는 의료진" />
+            </article>
+
+            <article class="equipment-evidence-panel" data-evidence-panel>
+              <div class="equipment-sticky-content">
+                <div class="equipment-static-intro">
+                  <h3 class="evidence-question">4. 필요한 장비들은 있는지</h3>
+                  <p class="evidence-kicker">365서울감동치과 의료장비</p>
+                </div>
+                <div class="equipment-sticky-anchor">
+                  <div class="evidence-panel-copy">
+                    <h4 class="evidence-title">첨단 장비로 더 편안한 치료 경험과 만족스러운 결과를 완성합니다</h4>
+                  </div>
+                  <div class="equipment-card-stack" data-equipment-stack tabindex="0" aria-label="스크롤하거나 좌우로 넘겨 보는 의료장비 카드">
+                    <div class="equipment-stack-stage">
+                    <article class="equipment-card" data-equipment-card>
+                      <div class="equipment-card-media"><img src="./assets/images/equipment-01.png" alt="3D 구강스캐너" /></div>
+                      <div class="equipment-card-copy"><h5>3D 구강스캐너</h5><p>기존에는 고무 재료로 치아 모양을 본떠야 해 환자가 불편했고 오차가 생길 수 있었습니다.</p><p>3D 구강스캐너는 입안을 빠르게 촬영해 더 정확하고 편하게 구강 정보를 얻습니다.</p></div>
+                    </article>
+                    <article class="equipment-card" data-equipment-card>
+                      <div class="equipment-card-media"><img src="./assets/images/equipment-02.png" alt="디지털 밀링기" /></div>
+                      <div class="equipment-card-copy"><h5>밀링기</h5><p>구강스캐너로 저장한 3D 구강 데이터를 바탕으로 치아에 맞는 수복물을 가공합니다.</p><p>진료와 제작을 가까이 연결해 보철의 모양과 맞물림을 세밀하게 조정합니다.</p></div>
+                    </article>
+                    <article class="equipment-card" data-equipment-card>
+                      <div class="equipment-card-media"><img src="./assets/images/equipment-03.png" alt="3D프린터" /></div>
+                      <div class="equipment-card-copy"><h5>3D프린터</h5><p>구강스캐너로 얻은 정보를 이용해 환자에게 필요한 보철물이나 임시치아를 제작합니다.</p><p>제작 시간을 줄이면서도 환자의 구강 형태에 맞춘 결과물을 만들 수 있습니다.</p></div>
+                    </article>
+                    <article class="equipment-card" data-equipment-card>
+                      <div class="equipment-card-media"><img src="./assets/images/equipment-04.png" alt="3D CT" /></div>
+                      <div class="equipment-card-copy"><h5>3D CT</h5><p>얼굴과 머리뼈 전반을 3차원으로 촬영해 치아와 신경관, 주변 구조물의 위치를 확인합니다.</p><p>임플란트의 위치·각도·길이를 정하거나 사랑니 발치, 교정, 치주·턱관절 진료를 계획할 때 사용합니다.</p></div>
+                    </article>
+                    <article class="equipment-card" data-equipment-card>
+                      <div class="equipment-card-media"><img src="./assets/images/equipment-05.png" alt="턱관절 물리치료기" /></div>
+                      <div class="equipment-card-copy"><h5>턱관절 물리치료기</h5><p>턱관절의 상태와 통증 원인을 먼저 살핀 뒤 비수술 자극요법을 진행합니다.</p><p>굳은 근육을 풀고 턱의 움직임과 좌우 균형을 되찾는 데 사용합니다.</p></div>
+                    </article>
+                    <article class="equipment-card" data-equipment-card>
+                      <div class="equipment-card-media"><img src="./assets/images/equipment-07.png" alt="플라즈마 멸균기" /></div>
+                      <div class="equipment-card-copy"><h5>플라즈마 멸균기</h5><p>과산화수소를 이용해 의료기구를 멸균하고, 사용 후 남은 기체는 수증기와 산소로 바꿉니다.</p><p>열에 민감한 기구까지 멸균하면서 유독성 잔류물을 남기지 않도록 관리합니다.</p></div>
+                    </article>
+                      <div class="equipment-stack-status" aria-live="polite"><span data-equipment-status>1</span><span aria-hidden="true">/</span><span>6</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article data-evidence-panel>
+              <h3 class="evidence-question">5. 정직하게 진료하는지</h3>
+              <div class="evidence-panel-copy">
+                <p class="evidence-kicker">치아 과잉 보호</p>
+                <h4 class="evidence-title">과잉 진료하지 않을까 걱정되시나요?</h4>
+                <div class="evidence-prose">
+                  <p>365서울감동치과의 진료 철학은 ‘치아 과잉 보호’입니다. 누구나 진료 항목별 수가를 확인할 수 있으며, 진짜 맞춤 진료는 소통에서부터 시작된다고 믿습니다.</p>
+                  <p>치아에 어떤 문제가 있는지, 이 치료가 왜 필요한지, 어떤 과정으로 진행하고 싶은지 먼저 설명합니다.</p>
+                  <p>치료 방법과 비용, 시간까지 환자분과 함께 결정합니다. “이렇게 해야 합니다”가 아닌 “어떻게 하고 싶으세요?”라고 묻는 곳이 되겠습니다.</p>
+                </div>
+              </div>
+              <img src="./assets/images/digital-safety.png" alt="디지털 진단 자료를 환자와 함께 확인하는 모습" />
+            </article>
           </div>
         </div>
       </section>
 
       <section class="section section-gray doctors-section" id="doctors" aria-labelledby="doctors-title">
         <div class="landing-container">
-          <div class="section-heading compact-heading"><div><h2 id="doctors-title">건강한 미소를 지키는 사람들</h2></div><p>한 명의 목소리로 설명하고,<br />여러 분야의 시선으로 함께 판단합니다.</p></div>
+          <div class="doctors-heading">
+            <p class="doctors-eyebrow">365 감동 치과 의료진</p>
+            <h2 id="doctors-title">건강한 미소를 지키는 사람들</h2>
+            <p>치료 경험이 다른 의료진이 한곳에서 환자분께 필요한 방법을 함께 고민합니다.</p>
+          </div>
           <div class="doctor-gallery" data-doctors>
             <div class="doctor-main">
               <div class="doctor-media">
-                <div class="doctor-portrait"><img data-doctor-image src="./assets/images/doctor-kim.png" alt="김감동 대표원장 프로필 이미지" /></div>
-                <div class="doctor-thumbs" data-doctor-thumbs aria-label="의료진 선택"></div>
+                <div class="doctor-portrait"><img data-doctor-image src="./assets/images/doctor-lee-jungwoong.png" alt="이정웅 대표원장 프로필 이미지" /></div>
+                <div class="doctor-media-footer">
+                  <div class="doctor-thumbs" data-doctor-thumbs aria-label="의료진 선택"></div>
+                </div>
               </div>
               <div class="doctor-content">
-                <p data-doctor-role>대표원장 · 통합치의학과</p><h3 data-doctor-name>김감동</h3>
-                <blockquote data-doctor-quote>설명부터 치료 이후까지, 환자분이 납득할 수 있는 진료를 하겠습니다.</blockquote>
+                <p data-doctor-role>대표원장 · 통합치의학과 전문의</p><h3 data-doctor-name>이정웅</h3>
+                <blockquote data-doctor-quote>환자분이 이해하고 선택할 수 있도록 치료의 이유부터 설명하겠습니다.</blockquote>
                 <ul data-doctor-careers></ul>
-                <div class="doctor-footer"><a href="#visit">진료 일정 확인 <span>↗</span></a><div><button type="button" data-doctor-prev aria-label="이전 의료진">←</button><button type="button" data-doctor-next aria-label="다음 의료진">→</button></div></div>
+                <div class="doctor-controls"><button type="button" data-doctor-prev aria-label="이전 의료진">←</button><button type="button" data-doctor-next aria-label="다음 의료진">→</button></div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="section features-section" aria-labelledby="features-title">
-        <div class="landing-container"><div class="section-heading"><div><p class="eyebrow">FOR A BETTER VISIT</p><h2 id="features-title">감동이 일상이 되도록</h2></div><p>진료실 안팎의 작은 불편까지<br />운영의 기준으로 바꿨습니다.</p></div>
-          <div class="feature-grid">
-            <article class="feature-wide"><span>365</span><h3>주말과 공휴일까지<br />365일 진료</h3><p>필요한 날 치료를 미루지 않도록 진료 시간을 넓혔습니다.</p></article>
-            <article><span>22:00</span><h3>평일 매일 야간 진료</h3><p>퇴근 뒤에도 여유 있게 방문할 수 있습니다.</p></article>
-            <article><span>LAB</span><h3>대형 원내 기공소</h3><p>진료와 기공의 거리를 줄여 더 세밀하게 조율합니다.</p></article>
-            <article><span>SAFE</span><h3>철저한 멸균 관리</h3><p>동선과 기구 단계별 관리 원칙을 지킵니다.</p></article>
-            <article class="feature-photo"><img src="./assets/images/treatment-room.png" alt="디지털 장비가 있는 진료실 목업" /><h3>다양한 디지털 장비</h3></article>
+      <section class="section features-section" id="features" aria-labelledby="features-title">
+        <div class="landing-container">
+          <div class="features-heading">
+            <h2 id="features-title">치료를 미루지 않아도 되는 치과</h2>
+            <p>365일 진료부터 원내 기공소, 멸균, 검증된 재료와 치료 후 관리까지 한곳에서 이어집니다.</p>
+          </div>
+          <div class="feature-bento">
+            <article class="feature-card feature-card-hours" data-feature-card>
+              <div class="feature-visual hours-visual" aria-hidden="true">
+                <img class="hours-celestial-wheel" src="./assets/images/clinic-day-night-wheel-v2-transparent.png" alt="" />
+                <img class="hours-building" src="./assets/images/clinic-exterior-actual.png" alt="" />
+              </div>
+              <div class="feature-copy">
+                <h3>365일, 불빛이 꺼지지 않는 치과</h3>
+                <p>평일 야간과 주말·공휴일까지, 치료가 필요한 순간에도 문을 엽니다.</p>
+              </div>
+            </article>
+
+            <article class="feature-card feature-card-cost" data-feature-card>
+              <div class="feature-visual cost-visual" aria-hidden="true">
+                <div class="comparison-chart" data-comparison-chart>
+                  <div class="comparison-chart-head"><strong>치료 부담</strong><span>치료 만족도</span></div>
+                  <div class="comparison-chart-plot">
+                    <div class="comparison-y-axis" aria-hidden="true"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div>
+                    <div class="comparison-grid" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+                    <div class="comparison-groups">
+                      <div class="comparison-group">
+                        <div class="comparison-bars">
+                          <div class="comparison-bar comparison-bar-neutral" style="--bar-value: 84" data-bar-value="84"><span></span></div>
+                          <div class="comparison-bar comparison-bar-brand" style="--bar-value: 24" data-bar-start="84" data-bar-value="24"><span></span></div>
+                        </div>
+                      </div>
+                      <div class="comparison-group">
+                        <div class="comparison-bars">
+                          <div class="comparison-bar comparison-bar-neutral" style="--bar-value: 42" data-bar-value="42"><span></span></div>
+                          <div class="comparison-bar comparison-bar-brand" style="--bar-value: 100" data-bar-start="42" data-bar-value="100"><span></span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="comparison-legend"><span><i></i>일반 치과</span><span><i></i>감동치과</span></div>
+                </div>
+              </div>
+              <div class="feature-copy">
+                <h3>부담 적은 합리적인 비용</h3>
+                <p>필요한 치료와 지켜볼 치료를 나누고 예상 횟수와 비용을 먼저 설명합니다.</p>
+              </div>
+            </article>
+
+            <article class="feature-card feature-card-lab" data-feature-card>
+              <div class="feature-visual lab-visual" aria-hidden="true">
+                <div class="lab-queue" data-lab-queue>
+                  <div class="lab-queue-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.73167 5.77133 5.66953 9.91436C4.3848 11.6526 3.74244 12.5217 4.09639 13.205c.00586.0114.0119.0226.01811.0337.37495.673 1.48438.673 3.70325.673 1.23304 0 1.84955 0 2.23625.3637l.02.0192 3.872-4.57-.02-.01925c-.3786-.37155-.3786-.9639-.3786-2.14859v-.3097c0-3.28463 0-4.92694-.9233-5.20991-.9234-.28296-1.9131 1.05606-3.89243 3.73412Z"/><path opacity=".5" d="M10.4527 16.4432v.3096c0 3.2846 0 4.9269.9233 5.2099.9234.283 1.9131-1.056 3.8925-3.7341l3.0621-4.143c1.2848-1.7382 1.9271-2.6073 1.5732-3.2907l-.0181-.0336c-.375-.673-1.4844-.673-3.7033-.673-1.233 0-1.8495 0-2.2362-.3637l-3.872 4.57c.3786.3715.3785.9639.3785 2.1486Z"/></svg></div>
+                  <div class="lab-queue-copy"><strong>보철물 제작 중</strong><span data-lab-stage>설계 데이터 확인 중</span></div>
+                  <strong class="lab-queue-percent" data-lab-percent>0%</strong>
+                  <div class="lab-queue-blocks" aria-hidden="true">
+                    <i><span></span></i><i><span></span></i><i><span></span></i><i><span></span></i><i><span></span></i><i><span></span></i><i><span></span></i><i><span></span></i>
+                  </div>
+                </div>
+              </div>
+              <div class="feature-copy">
+                <h3>원내 기공소에서 더 빠르게</h3>
+                <p>오랜 경력의 기공 스페셜리스트가 의료진과 바로 확인해 보철물 제작 시간을 줄입니다.</p>
+              </div>
+            </article>
+
+            <article class="feature-card feature-card-sterile" data-feature-card>
+              <div class="feature-visual sterile-visual" aria-hidden="true">
+                <div class="circuit-board">
+                  <svg viewBox="0 0 600 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <linearGradient id="circuit-pulse-0" gradientUnits="userSpaceOnUse" x1="293" y1="286" x2="205" y2="158"><stop offset="0" stop-color="#22d3ee" stop-opacity="0"/><stop offset=".3" stop-color="#22d3ee"/><stop offset=".7" stop-color="#34d399"/><stop offset="1" stop-color="#34d399" stop-opacity="0"/><animate attributeName="y1" values="286;30" dur="2s" repeatCount="indefinite"/><animate attributeName="y2" values="158;-98" dur="2s" repeatCount="indefinite"/></linearGradient>
+                      <linearGradient id="circuit-pulse-1" gradientUnits="userSpaceOnUse" x1="395" y1="286" x2="307" y2="158"><stop offset="0" stop-color="#22d3ee" stop-opacity="0"/><stop offset=".3" stop-color="#22d3ee"/><stop offset=".7" stop-color="#34d399"/><stop offset="1" stop-color="#34d399" stop-opacity="0"/><animate attributeName="y1" values="286;30" dur="2s" begin=".2s" repeatCount="indefinite"/><animate attributeName="y2" values="158;-98" dur="2s" begin=".2s" repeatCount="indefinite"/></linearGradient>
+                      <linearGradient id="circuit-pulse-2" gradientUnits="userSpaceOnUse" x1="456" y1="50" x2="238" y2="182"><stop offset="0" stop-color="#22d3ee" stop-opacity="0"/><stop offset=".3" stop-color="#22d3ee"/><stop offset=".7" stop-color="#34d399"/><stop offset="1" stop-color="#34d399" stop-opacity="0"/><animate attributeName="x1" values="456;20" dur="2s" begin=".4s" repeatCount="indefinite"/><animate attributeName="x2" values="238;-198" dur="2s" begin=".4s" repeatCount="indefinite"/></linearGradient>
+                      <linearGradient id="circuit-pulse-3" gradientUnits="userSpaceOnUse" x1="456" y1="218" x2="238" y2="360"><stop offset="0" stop-color="#22d3ee" stop-opacity="0"/><stop offset=".3" stop-color="#22d3ee"/><stop offset=".7" stop-color="#34d399"/><stop offset="1" stop-color="#34d399" stop-opacity="0"/><animate attributeName="x1" values="456;20" dur="2s" begin=".6s" repeatCount="indefinite"/><animate attributeName="x2" values="238;-198" dur="2s" begin=".6s" repeatCount="indefinite"/></linearGradient>
+                      <linearGradient id="circuit-pulse-4" gradientUnits="userSpaceOnUse" x1="144" y1="60" x2="362" y2="182"><stop offset="0" stop-color="#22d3ee" stop-opacity="0"/><stop offset=".3" stop-color="#22d3ee"/><stop offset=".7" stop-color="#34d399"/><stop offset="1" stop-color="#34d399" stop-opacity="0"/><animate attributeName="x1" values="144;580" dur="2s" begin=".8s" repeatCount="indefinite"/><animate attributeName="x2" values="362;798" dur="2s" begin=".8s" repeatCount="indefinite"/></linearGradient>
+                      <linearGradient id="circuit-pulse-5" gradientUnits="userSpaceOnUse" x1="144" y1="218" x2="362" y2="340"><stop offset="0" stop-color="#22d3ee" stop-opacity="0"/><stop offset=".3" stop-color="#22d3ee"/><stop offset=".7" stop-color="#34d399"/><stop offset="1" stop-color="#34d399" stop-opacity="0"/><animate attributeName="x1" values="144;580" dur="2s" begin="1s" repeatCount="indefinite"/><animate attributeName="x2" values="362;798" dur="2s" begin="1s" repeatCount="indefinite"/></linearGradient>
+                      <linearGradient id="circuit-pulse-6" gradientUnits="userSpaceOnUse" x1="50" y1="89" x2="275" y2="242"><stop offset="0" stop-color="#22d3ee" stop-opacity="0"/><stop offset=".3" stop-color="#22d3ee"/><stop offset=".7" stop-color="#34d399"/><stop offset="1" stop-color="#34d399" stop-opacity="0"/><animate attributeName="y1" values="89;395" dur="2s" begin="1.2s" repeatCount="indefinite"/><animate attributeName="y2" values="242;548" dur="2s" begin="1.2s" repeatCount="indefinite"/></linearGradient>
+                      <linearGradient id="circuit-pulse-7" gradientUnits="userSpaceOnUse" x1="325" y1="89" x2="550" y2="242"><stop offset="0" stop-color="#22d3ee" stop-opacity="0"/><stop offset=".3" stop-color="#22d3ee"/><stop offset=".7" stop-color="#34d399"/><stop offset="1" stop-color="#34d399" stop-opacity="0"/><animate attributeName="y1" values="89;395" dur="2s" begin="1.4s" repeatCount="indefinite"/><animate attributeName="y2" values="242;548" dur="2s" begin="1.4s" repeatCount="indefinite"/></linearGradient>
+                    </defs>
+                    <g class="circuit-traces">
+                      <path d="M 291 158 V 48 Q 291 30 273 30 H 205" /><path d="M 309 158 V 48 Q 309 30 327 30 H 395" />
+                      <path d="M 238 182 H 130 Q 110 182 110 162 V 70 Q 110 50 90 50 H 20" /><path d="M 238 218 H 100 Q 80 218 80 238 V 340 Q 80 360 60 360 H 20" />
+                      <path d="M 362 182 H 470 Q 490 182 490 162 V 80 Q 490 60 510 60 H 580" /><path d="M 362 218 H 500 Q 520 218 520 238 V 320 Q 520 340 540 340 H 580" />
+                      <path d="M 275 242 V 340 Q 275 360 255 360 H 70 Q 50 360 50 380 V 395" /><path d="M 325 242 V 300 Q 325 320 345 320 H 530 Q 550 320 550 340 V 395" />
+                    </g>
+                    <g class="circuit-pulses">
+                      <path style="stroke:url(#circuit-pulse-0)" d="M 291 158 V 48 Q 291 30 273 30 H 205"/><path style="stroke:url(#circuit-pulse-1)" d="M 309 158 V 48 Q 309 30 327 30 H 395"/>
+                      <path style="stroke:url(#circuit-pulse-2)" d="M 238 182 H 130 Q 110 182 110 162 V 70 Q 110 50 90 50 H 20"/><path style="stroke:url(#circuit-pulse-3)" d="M 238 218 H 100 Q 80 218 80 238 V 340 Q 80 360 60 360 H 20"/>
+                      <path style="stroke:url(#circuit-pulse-4)" d="M 362 182 H 470 Q 490 182 490 162 V 80 Q 490 60 510 60 H 580"/><path style="stroke:url(#circuit-pulse-5)" d="M 362 218 H 500 Q 520 218 520 238 V 320 Q 520 340 540 340 H 580"/>
+                      <path style="stroke:url(#circuit-pulse-6)" d="M 275 242 V 340 Q 275 360 255 360 H 70 Q 50 360 50 380 V 395"/><path style="stroke:url(#circuit-pulse-7)" d="M 325 242 V 300 Q 325 320 345 320 H 530 Q 550 320 550 340 V 395"/>
+                    </g>
+                    <g class="circuit-pins"><circle cx="291" cy="158" r="3"/><circle cx="309" cy="158" r="3"/><circle cx="238" cy="182" r="3"/><circle cx="238" cy="218" r="3"/><circle cx="362" cy="182" r="3"/><circle cx="362" cy="218" r="3"/><circle cx="275" cy="242" r="3"/><circle cx="325" cy="242" r="3"/></g>
+                    <foreignObject x="225" y="150" width="150" height="100">
+                      <div class="circuit-chip" xmlns="http://www.w3.org/1999/xhtml">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v5c0 5.1-3.4 8.4-8 10-4.6-1.6-8-4.9-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg>
+                        <span>멸균 시스템<br /><strong>가동 중</strong></span>
+                      </div>
+                    </foreignObject>
+                  </svg>
+                </div>
+              </div>
+              <div class="feature-copy">
+                <h3>1인 1기구, 멸균과 소독</h3>
+                <p>1인 1기구 사용을 원칙으로 세척, 포장, 멸균과 소독 과정을 구분해 관리합니다.</p>
+              </div>
+            </article>
+
+            <article class="feature-card feature-card-quality" id="quality-card" data-feature-card>
+              <div class="feature-visual quality-visual" aria-hidden="true">
+                <div class="quality-logo-cloud" data-quality-logo-cloud>
+                  <canvas class="quality-logo-canvas" data-quality-logo-canvas></canvas>
+                  <div class="quality-logo-fallback" data-quality-logo-fallback>
+                    <span class="quality-logo-tile"><img data-quality-logo-source src="./assets/logos/materials/osstem.png" alt="" /></span>
+                    <span class="quality-logo-tile"><img data-quality-logo-source src="./assets/logos/materials/dentium.png" alt="" /></span>
+                    <span class="quality-logo-tile"><img data-quality-logo-source src="./assets/logos/materials/ivoclar.png" alt="" /></span>
+                    <span class="quality-logo-tile"><img data-quality-logo-source src="./assets/logos/materials/gc.png" alt="" /></span>
+                    <span class="quality-logo-tile quality-logo-emblem"><img data-quality-logo-source src="./assets/logos/materials/snu-emblem.png" alt="" /></span>
+                    <span class="quality-logo-tile quality-logo-emblem"><img data-quality-logo-source src="./assets/logos/materials/yonsei.png" alt="" /></span>
+                    <span class="quality-logo-tile quality-logo-emblem"><img data-quality-logo-source src="./assets/logos/materials/khu.png" alt="" /></span>
+
+                    <span class="quality-logo-tile"><img src="./assets/logos/materials/osstem.png" alt="" /></span>
+                    <span class="quality-logo-tile"><img src="./assets/logos/materials/dentium.png" alt="" /></span>
+                    <span class="quality-logo-tile"><img src="./assets/logos/materials/ivoclar.png" alt="" /></span>
+                    <span class="quality-logo-tile quality-logo-emblem"><img src="./assets/logos/materials/snu-emblem.png" alt="" /></span>
+                    <span class="quality-logo-tile quality-logo-emblem"><img src="./assets/logos/materials/yonsei.png" alt="" /></span>
+                    <span class="quality-logo-tile quality-logo-emblem"><img src="./assets/logos/materials/khu.png" alt="" /></span>
+                    <span class="quality-logo-tile"><img src="./assets/logos/materials/gc.png" alt="" /></span>
+                  </div>
+                </div>
+              </div>
+              <div class="feature-copy">
+                <h3>임상 결과로 검증된 재료만 사용합니다</h3>
+                <p>치료 계획에 맞는 재료를 확인해 사용합니다.</p>
+              </div>
+            </article>
+
+            <article class="feature-card feature-card-care" data-feature-card>
+              <div class="feature-visual care-visual" aria-hidden="true">
+                <div class="care-workflow" data-care-workflow>
+                  <div class="care-workflow-header">
+                    <span><strong>치료 관리 체계</strong><small>필요한 시점에 맞춰 자동 안내</small></span>
+                    <em data-care-phase><i></i>진행 중</em>
+                  </div>
+                  <div class="care-workflow-body">
+                    <div class="care-workflow-stage" data-care-stage>
+                      <div class="care-workflow-canvas">
+                        <svg viewBox="0 0 736 226" aria-hidden="true">
+                          <path class="care-link" data-care-link="0" d="M 158 54 C 206 54, 152 174, 200 174" />
+                          <path class="care-link" data-care-link="1" d="M 346 174 C 394 174, 340 54, 388 54" />
+                          <path class="care-link" data-care-link="2" d="M 534 54 C 582 54, 528 174, 576 174" />
+                        </svg>
+                        <span class="care-travel-pulse" data-care-pulse aria-hidden="true"></span>
+                        <div class="care-node care-node-top" data-care-node="0" style="--node-x: 12px; --node-y: 18px" data-tooltip="치료 당일 주의사항과 복약 안내">
+                          <i><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C12.4142 1.25 12.75 1.58579 12.75 2V2.25143C12.8612 2.25311 12.9561 2.25675 13.0446 2.26458C14.8548 2.42465 16.2896 3.85953 16.4497 5.66968C16.4643 5.83512 16.4643 6.02256 16.4643 6.29785L16.4643 7.521C16.4643 11.3903 13.5202 14.5719 9.75001 14.9481V17.0001C9.75001 19.3473 11.6528 21.2501 14 21.2501H14.8824C16.1325 21.2501 17.2247 20.5684 17.8057 19.5558C16.3202 19.0571 15.25 17.6535 15.25 16C15.25 13.9289 16.9289 12.25 19 12.25C21.0711 12.25 22.75 13.9289 22.75 16C22.75 17.9405 21.2761 19.5367 19.3868 19.7303C18.6592 21.5018 16.9174 22.7501 14.8824 22.7501H14C10.8244 22.7501 8.25001 20.1757 8.25001 17.0001V14.9495C4.3217 14.5722 1.25001 11.2625 1.25001 7.23529L1.25 6.29791C1.24997 6.02259 1.24995 5.83514 1.26458 5.66968C1.42465 3.85953 2.85954 2.42465 4.66969 2.26458C4.82536 2.25081 5.00051 2.25002 5.25001 2.24999V2C5.25001 1.58579 5.58579 1.25 6.00001 1.25C6.41422 1.25 6.75001 1.58579 6.75001 2V4C6.75001 4.41421 6.41422 4.75 6.00001 4.75C5.58579 4.75 5.25001 4.41421 5.25001 4V3.75002C4.9866 3.7502 4.88393 3.75148 4.80181 3.75875C3.71573 3.85479 2.85479 4.71572 2.75875 5.80181C2.75074 5.8924 2.75001 6.00802 2.75001 6.3369V7.23529C2.75001 10.6871 5.54823 13.4853 9.00001 13.4853C12.294 13.4853 14.9643 10.815 14.9643 7.521V6.3369C14.9643 6.00802 14.9636 5.8924 14.9555 5.80181C14.8595 4.71572 13.9986 3.85479 12.9125 3.75875C12.8702 3.755 12.8224 3.75285 12.75 3.75162V4C12.75 4.41421 12.4142 4.75 12 4.75C11.5858 4.75 11.25 4.41421 11.25 4V2C11.25 1.58579 11.5858 1.25 12 1.25ZM16.75 16C16.75 14.7574 17.7574 13.75 19 13.75C20.2426 13.75 21.25 14.7574 21.25 16C21.25 17.2426 20.2426 18.25 19 18.25C17.7574 18.25 16.75 17.2426 16.75 16Z"/></svg></i>
+                          <span><strong>치료 당일</strong><small>주의사항 안내</small></span><em>대기</em>
+                        </div>
+                        <div class="care-node care-node-bottom" data-care-node="1" style="--node-x: 200px; --node-y: 138px" data-tooltip="회복 상태와 불편 여부를 확인">
+                          <i><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.26279 3.25871C7.38317 2.12953 8.33887 1.25 9.5 1.25H14.5C15.6611 1.25 16.6168 2.12953 16.7372 3.25871C17.5004 3.27425 18.1602 3.31372 18.7236 3.41721C19.4816 3.55644 20.1267 3.82168 20.6517 4.34661C21.2536 4.94853 21.5125 5.7064 21.6335 6.60651C21.75 7.47348 21.75 8.5758 21.75 9.94339V16.0531C21.75 17.4207 21.75 18.523 21.6335 19.39C21.5125 20.2901 21.2536 21.048 20.6517 21.6499C20.0497 22.2518 19.2919 22.5107 18.3918 22.6317C17.5248 22.7483 16.4225 22.7483 15.0549 22.7483H8.94513C7.57754 22.7483 6.47522 22.7483 5.60825 22.6317C4.70814 22.5107 3.95027 22.2518 3.34835 21.6499C2.74643 21.048 2.48754 20.2901 2.36652 19.39C2.24996 18.523 2.24998 17.4207 2.25 16.0531V9.94339C2.24998 8.5758 2.24996 7.47348 2.36652 6.60651C2.48754 5.7064 2.74643 4.94853 3.34835 4.34661C3.87328 3.82168 4.51835 3.55644 5.27635 3.41721C5.83977 3.31372 6.49963 3.27425 7.26279 3.25871ZM7.26476 4.75913C6.54668 4.77447 5.99332 4.81061 5.54735 4.89253C4.98054 4.99664 4.65246 5.16382 4.40901 5.40727C4.13225 5.68403 3.9518 6.07261 3.85315 6.80638C3.75159 7.56173 3.75 8.56285 3.75 9.99826V15.9983C3.75 17.4337 3.75159 18.4348 3.85315 19.1901C3.9518 19.9239 4.13225 20.3125 4.40901 20.5893C4.68577 20.866 5.07435 21.0465 5.80812 21.1451C6.56347 21.2467 7.56458 21.2483 9 21.2483H15C16.4354 21.2483 17.4365 21.2467 18.1919 21.1451C18.9257 21.0465 19.3142 20.866 19.591 20.5893C19.8678 20.3125 20.0482 19.9239 20.1469 19.1901C20.2484 18.4348 20.25 17.4337 20.25 15.9983V9.99826C20.25 8.56285 20.2484 7.56173 20.1469 6.80638C20.0482 6.07261 19.8678 5.68403 19.591 5.40727C19.3475 5.16382 19.0195 4.99664 18.4527 4.89253C18.0067 4.81061 17.4533 4.77447 16.7352 4.75913C16.6067 5.87972 15.655 6.75 14.5 6.75H9.5C8.345 6.75 7.39326 5.87972 7.26476 4.75913ZM9.5 2.75C9.08579 2.75 8.75 3.08579 8.75 3.5V4.5C8.75 4.91421 9.08579 5.25 9.5 5.25H14.5C14.9142 5.25 15.25 4.91421 15.25 4.5V3.5C15.25 3.08579 14.9142 2.75 14.5 2.75H9.5ZM15.5483 10.4883C15.8309 10.7911 15.8146 11.2657 15.5117 11.5483L11.226 15.5483C10.9379 15.8172 10.4907 15.8172 10.2025 15.5483L8.48826 13.9483C8.18545 13.6657 8.16908 13.1911 8.45171 12.8883C8.73433 12.5854 9.20893 12.5691 9.51174 12.8517L10.7143 13.9741L14.4883 10.4517C14.7911 10.1691 15.2657 10.1854 15.5483 10.4883Z"/></svg></i>
+                          <span><strong>회복 확인</strong><small>불편 여부 점검</small></span><em>대기</em>
+                        </div>
+                        <div class="care-node care-node-top" data-care-node="2" style="--node-x: 388px; --node-y: 18px" data-tooltip="전후 기록을 비교해 경과 점검">
+                          <i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.519 7.19855C10.818 7.48517 10.8281 7.95994 10.5414 8.25897L9.26342 9.5923C9.12367 9.73811 8.93102 9.82138 8.72907 9.82329C8.52711 9.8252 8.33292 9.74558 8.19044 9.60244L7.46846 8.87715C7.17624 8.58359 7.17732 8.10872 7.47088 7.8165C7.76444 7.52427 8.23932 7.52536 8.53154 7.81892L8.71184 8.00005L9.45856 7.22101C9.74518 6.92198 10.2199 6.91192 10.519 7.19855Z"/><path d="M12.5 7.59003C12.0858 7.59003 11.75 7.92581 11.75 8.34003C11.75 8.75424 12.0858 9.09003 12.5 9.09003H16C16.4142 9.09003 16.75 8.75424 16.75 8.34003C16.75 7.92581 16.4142 7.59003 16 7.59003H12.5Z"/><path d="M10.519 11.0286C10.818 11.3153 10.8281 11.79 10.5414 12.089L9.26342 13.4224C9.12367 13.5682 8.93102 13.6515 8.72907 13.6534C8.52711 13.6553 8.33292 13.5757 8.19044 13.4325L7.46846 12.7072C7.17624 12.4137 7.17732 11.9388 7.47088 11.6466C7.76444 11.3544 8.23932 11.3554 8.53154 11.649L8.71184 11.8301L9.45856 11.0511C9.74518 10.7521 10.2199 10.742 10.519 11.0286Z"/><path d="M12.5 11.42C12.0858 11.42 11.75 11.7558 11.75 12.17C11.75 12.5843 12.0858 12.92 12.5 12.92H16C16.4142 12.92 16.75 12.5843 16.75 12.17C16.75 11.7558 16.4142 11.42 16 11.42H12.5Z"/><path d="M8 16C8 15.4477 8.44772 15 9 15C9.55228 15 10.0001 15.4477 10.0001 16C10.0001 16.5523 9.55238 17 9.0001 17C8.44782 17 8 16.5523 8 16Z"/><path d="M11.75 15.25C11.3358 15.25 11 15.5858 11 16C11 16.4142 11.3358 16.75 11.75 16.75H16C16.4142 16.75 16.75 16.4142 16.75 16C16.75 15.5858 16.4142 15.25 16 15.25H11.75Z"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.367 1.25H15.633C16.7251 1.24999 17.5906 1.24999 18.2883 1.30699C19.0017 1.36527 19.6053 1.48688 20.1565 1.76772C21.0502 2.22312 21.7769 2.94978 22.2323 3.84355C22.5131 4.39472 22.6347 4.99834 22.693 5.71173C22.75 6.40935 22.75 7.27484 22.75 8.36698V15.633C22.75 16.7252 22.75 17.5906 22.693 18.2883C22.6347 19.0017 22.5131 19.6053 22.2323 20.1565C21.7769 21.0502 21.0502 21.7769 20.1565 22.2323C19.6053 22.5131 19.0017 22.6347 18.2883 22.693C17.5906 22.75 16.7252 22.75 15.633 22.75H8.36698C7.27484 22.75 6.40935 22.75 5.71173 22.693C4.99834 22.6347 4.39472 22.5131 3.84355 22.2323C2.94978 21.7769 2.22312 21.0502 1.76772 20.1565C1.48688 19.6053 1.36527 19.0017 1.30699 18.2883C1.24999 17.5906 1.24999 16.7252 1.25 15.633V8.367C1.24999 7.27486 1.24999 6.40935 1.30699 5.71173C1.36527 4.99834 1.48688 4.39472 1.76772 3.84355C2.22312 2.94978 2.94978 2.22312 3.84355 1.76772C4.39472 1.48688 4.99834 1.36527 5.71173 1.30699C6.40935 1.24999 7.27486 1.24999 8.367 1.25ZM5.83388 2.80201C5.21325 2.85271 4.829 2.94909 4.52453 3.10423C3.913 3.41582 3.41582 3.913 3.10423 4.52453C2.94909 4.829 2.85271 5.21325 2.80201 5.83388C2.75058 6.46327 2.75 7.26752 2.75 8.4V15.6C2.75 16.7325 2.75058 17.5367 2.80201 18.1661C2.85271 18.7867 2.94909 19.171 3.10423 19.4755C3.41582 20.087 3.913 20.5842 4.52453 20.8958C4.829 21.0509 5.21325 21.1473 5.83388 21.198C6.46327 21.2494 7.26752 21.25 8.4 21.25H15.6C16.7325 21.25 17.5367 21.2494 18.1661 21.198C18.7867 21.1473 19.171 21.0509 19.4755 20.8958C20.087 20.5842 20.5842 20.087 20.8958 19.4755C21.0509 19.171 21.1473 18.7867 21.198 18.1661C21.2494 17.5367 21.25 16.7325 21.25 15.6V8.4C21.25 7.26752 21.2494 6.46327 21.198 5.83388C21.1473 5.21325 21.0509 4.829 20.8958 4.52453C20.5842 3.913 20.087 3.41582 19.4755 3.10423C19.171 2.94909 18.7867 2.85271 18.1661 2.80201C17.5367 2.75058 16.7325 2.75 15.6 2.75H8.4C7.26752 2.75 6.46327 2.75058 5.83388 2.80201Z"/></svg></i>
+                          <span><strong>경과 점검</strong><small>상태 비교</small></span><em>대기</em>
+                        </div>
+                        <div class="care-node care-node-bottom" data-care-node="3" style="--node-x: 576px; --node-y: 138px" data-tooltip="다음 정기 검진 일정 안내">
+                          <i><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M5 2.75C3.75736 2.75 2.75 3.75736 2.75 5C2.75 6.24264 3.75736 7.25 5 7.25C6.24264 7.25 7.25 6.24264 7.25 5C7.25 3.75736 6.24264 2.75 5 2.75ZM1.25 5C1.25 2.92893 2.92893 1.25 5 1.25C7.07107 1.25 8.75 2.92893 8.75 5C8.75 7.07107 7.07107 8.75 5 8.75C2.92893 8.75 1.25 7.07107 1.25 5ZM10.25 5C10.25 4.58579 10.5858 4.25 11 4.25H16.1319C18.8831 4.25 19.9294 7.843 17.6083 9.32007L7.19703 15.9454C6.14197 16.6168 6.61756 18.25 7.86812 18.25H11.1893L10.9697 18.0303C10.6768 17.7374 10.6768 17.2626 10.9697 16.9697C11.2626 16.6768 11.7374 16.6768 12.0303 16.9697L13.5303 18.4697C13.8232 18.7626 13.8232 19.2374 13.5303 19.5303L12.0303 21.0303C11.7374 21.3232 11.2626 21.3232 10.9697 21.0303C10.6768 20.7374 10.6768 20.2626 10.9697 19.9697L11.1893 19.75H7.86812C5.11688 19.75 4.07062 16.157 6.39172 14.6799L16.803 8.05458C17.858 7.38318 17.3824 5.75 16.1319 5.75H11C10.5858 5.75 10.25 5.41421 10.25 5ZM19 16.75C17.7574 16.75 16.75 17.7574 16.75 19C16.75 20.2426 17.7574 21.25 19 21.25C20.2426 21.25 21.25 20.2426 21.25 19C21.25 17.7574 20.2426 16.75 19 16.75ZM15.25 19C15.25 16.9289 16.9289 15.25 19 15.25C21.0711 15.25 22.75 16.9289 22.75 19C22.75 21.0711 21.0711 22.75 19 22.75C16.9289 22.75 15.25 21.0711 15.25 19Z"/></svg></i>
+                          <span><strong>정기 검진</strong><small>다음 일정 안내</small></span><em>대기</em>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="feature-copy">
+                <h3>치료 후에도 체계적인 사후관리</h3>
+                <p>치료 당일 안내부터 상태 확인과 정기 검진까지 필요한 시점에 맞춰 관리합니다.</p>
+              </div>
+            </article>
           </div>
         </div>
       </section>
 
       <section class="showcase" data-showcase aria-labelledby="showcase-title">
+        <div class="sr-only">
+          <h2 id="showcase-title">치과에 대한 생각을 바꾸는 치과, 365 서울감동치과</h2>
+          <p>소개 환자가 많은 치과, 재방문율 87%·장기 내원 환자 52%·정기검진 환자 570명의 재방문하는 치과, 전국에서 찾아오는 치과. 수많은 치과 중 어디로 가야 좋을지 고민이라면 365 서울감동치과를 만나보세요.</p>
+        </div>
         <div class="showcase-sticky" data-showcase-panel>
-          <div class="showcase-images">
-            <figure data-showcase-image><img src="./assets/images/digital-safety.png" alt="디지털 진단 자료 목업" /><figcaption>보이는 진단</figcaption></figure>
-            <figure data-showcase-image><img src="./assets/images/consultation.png" alt="환자와 상담하는 의료진 목업" /><figcaption>충분한 설명</figcaption></figure>
-            <figure data-showcase-image><img src="./assets/images/treatment-scene.png" alt="진료 중인 의료진 목업" /><figcaption>편안한 치료 과정</figcaption></figure>
-            <figure data-showcase-image><img src="./assets/images/treatment-room.png" alt="정돈된 진료실 목업" /><figcaption>이어지는 사후 관리</figcaption></figure>
+          <div class="showcase-depth-field" aria-hidden="true"></div>
+
+          <article class="showcase-scene showcase-scene-referral" data-showcase-scene="referral" aria-hidden="true">
+            <h3 class="showcase-static-title">소개 환자 많은 치과</h3>
+            <div class="showcase-referral-media" data-referral-media>
+              <figure class="showcase-motion-item showcase-photo showcase-photo-landscape" data-referral-item>
+                <img src="./assets/images/consultation.png" alt="" width="1536" height="1024" />
+              </figure>
+              <figure class="showcase-motion-item showcase-photo showcase-photo-portrait" data-referral-item>
+                <img src="./assets/images/evidence-friendly.png" alt="" width="570" height="500" />
+              </figure>
+              <figure class="showcase-motion-item showcase-photo showcase-photo-landscape showcase-photo-wide" data-referral-item>
+                <img src="./assets/images/treatment-scene.png" alt="" width="1536" height="1024" />
+              </figure>
+              <figure class="showcase-motion-item showcase-photo showcase-photo-landscape" data-referral-item>
+                <img src="./assets/images/digital-safety.png" alt="" width="1536" height="1024" />
+              </figure>
+              <figure class="showcase-motion-item showcase-photo showcase-photo-landscape" data-referral-item>
+                <img src="./assets/images/anesthesia-care-v2.png" alt="" width="1586" height="992" />
+              </figure>
+            </div>
+          </article>
+
+          <article class="showcase-scene showcase-scene-revisit" data-showcase-scene="revisit" aria-hidden="true">
+            <h3 class="showcase-static-title">재방문하는 치과</h3>
+            <div class="showcase-scramble-field" data-revisit-field>
+              <p class="showcase-motion-item showcase-scramble-item showcase-metric" data-revisit-item data-motion="revisit">재방문율 87%</p>
+              <p class="showcase-motion-item showcase-scramble-item showcase-metric-secondary" data-revisit-item data-motion="longterm">장기 내원 환자 52%</p>
+              <p class="showcase-motion-item showcase-scramble-item showcase-metric-secondary" data-revisit-item data-motion="checkup-count">정기검진 환자 570명</p>
+              <p class="showcase-motion-item showcase-scramble-item" data-revisit-item data-motion="next">다음 예약</p>
+              <p class="showcase-motion-item showcase-scramble-item" data-revisit-item data-motion="checkup">정기 검진</p>
+              <p class="showcase-motion-item showcase-scramble-item" data-revisit-item data-motion="aftercare">치료 후 관리</p>
+            </div>
+          </article>
+
+          <article class="showcase-scene showcase-scene-nationwide" data-showcase-scene="nationwide" aria-hidden="true">
+            <h3 class="showcase-static-title">전국에서 찾아오는 치과</h3>
+            <div class="showcase-korea-map">
+              <svg viewBox="0 0 500 600" role="presentation">
+                <defs>
+                  <pattern id="showcase-korea-dots" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="scale(1.282051 1)">
+                    <circle cx="4" cy="4" r="1.45"></circle>
+                  </pattern>
+                  <filter id="showcase-route-glow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="route-blur"></feGaussianBlur>
+                    <feMerge><feMergeNode in="route-blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+                  </filter>
+                  <filter id="showcase-destination-glow" x="-120%" y="-120%" width="340%" height="340%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="2.8" result="near-blur"></feGaussianBlur>
+                    <feMerge><feMergeNode in="near-blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+                  </filter>
+                </defs>
+                <g class="showcase-map-geometry">
+                <g class="showcase-map-land" transform="matrix(.78 0 0 1 55 0)">
+                  <path d="M310.1 25 L436.4 182.2 L430.5 286.8 L455 289.3 L439.3 340.3 L385.4 387.7 L338.2 370.6 L344.2 386.1 L310.9 390.9 L324.7 387.1 L318.5 408.2 L273.5 399.3 L275.1 384 L254 397.7 L233.6 393.3 L216.5 401.1 L240.3 407.6 L224.3 431 L210.1 403.5 L191.6 410.2 L208 433.7 L189.7 434.3 L200.4 438.9 L189.1 448.6 L163.1 438.9 L190.8 422.9 L177.7 416 L136.2 451.3 L122 434.2 L91.6 463.9 L93.8 436.6 L64.8 434 L64.2 417.6 L84.9 434.4 L74.7 421.6 L103.7 429.8 L73 417.7 L108.7 411.8 L97.1 402.3 L74.1 413.5 L81.5 394.2 L67.2 398.6 L74.1 390.6 L59.9 379.8 L80.2 390.3 L66.4 368.7 L88.2 339.1 L111.9 338.2 L85.2 327.5 L129.1 301.8 L91.6 294 L133 284.7 L111.9 291 L88.3 277.7 L101.3 273.6 L88.9 248.4 L103 243 L88.8 245.5 L86.7 215.3 L80.1 229.5 L70.5 215.9 L64.8 231.9 L45 213.8 L66.4 193 L72.1 211 L71.7 189.6 L87.2 205.7 L98.9 200 L89.2 184.1 L104.6 198.6 L124.2 194.1 L130.7 214.6 L153.3 190.3 L138 196.8 L135.4 179.9 L119.3 184.7 L132.3 171.5 L111.1 176.4 L107.9 163.9 L133 162.5 L102.7 151.1 L93.2 111.8 L119.3 125 L108.7 94.6 L159.1 59.3 L271.6 57.4 Z"></path>
+                  <path d="M141.9 546.6 L129.4 563.6 L101.7 570.6 L69.3 570.9 L61.8 575 L48.9 564.5 L66.6 547.9 L87.3 542.2 L123.7 537.9 Z"></path>
+                </g>
+                <g class="showcase-map-routes">
+                  <path pathLength="1" d="M130 555 Q166 314 242 135"></path>
+                  <path pathLength="1" d="M359 381 Q322 248 242 135"></path>
+                  <path pathLength="1" d="M190 356 Q192 230 242 135"></path>
+                  <path pathLength="1" d="M248 319 Q233 228 242 135"></path>
+                  <path pathLength="1" d="M362 184 Q309 137 242 135"></path>
+                </g>
+                <g class="showcase-map-hubs">
+                  <circle data-city="제주" cx="130" cy="555" r="3.5"></circle>
+                  <circle data-city="부산" cx="359" cy="381" r="3.5"></circle>
+                  <circle data-city="전주" cx="190" cy="356" r="3.5"></circle>
+                  <circle data-city="대전" cx="248" cy="319" r="3.5"></circle>
+                  <circle data-city="강릉" cx="362" cy="184" r="3.5"></circle>
+                </g>
+                <circle class="showcase-map-destination-halo" cx="242" cy="135" r="9"></circle>
+                <circle class="showcase-map-destination" cx="242" cy="135" r="4.5"></circle>
+                <text class="showcase-map-destination-label" x="254" y="124">365 서울감동치과</text>
+                </g>
+              </svg>
+            </div>
+            <div class="showcase-region-field" data-region-field>
+              <p class="showcase-motion-item showcase-region" data-region-item>전주</p>
+              <p class="showcase-motion-item showcase-region" data-region-item>강릉</p>
+              <p class="showcase-motion-item showcase-region" data-region-item>제주</p>
+              <p class="showcase-motion-item showcase-region" data-region-item>대전</p>
+              <p class="showcase-motion-item showcase-region" data-region-item>부산</p>
+            </div>
+          </article>
+
+          <div class="showcase-title-lock" aria-hidden="true">
+            <h3><span class="showcase-title-variable"><span data-showcase-variable>소개 환자 많은</span></span><span class="showcase-title-fixed">치과</span></h3>
           </div>
-          <p data-showcase-kicker>보이는 자료로 함께 확인하고</p>
-          <span class="showcase-rule" aria-hidden="true"></span>
-          <h2 id="showcase-title" data-showcase-title>모호함 없이 설명하는 진료</h2>
+
+          <div class="showcase-image-reveal" data-showcase-image aria-hidden="true">
+            <img src="./assets/images/clinic-showcase-night.png" alt="" width="1387" height="560" />
+            <div class="showcase-image-copy">
+              <strong>당신의 미소를 되찾는 감동<br /><span>감동과 함께 웃으세요</span></strong>
+            </div>
+          </div>
+
+          <article class="showcase-static-final" aria-hidden="true">
+            <h3>당신의 미소를 되찾는 감동<br /><span>감동과 함께 웃으세요</span></h3>
+            <img src="./assets/images/clinic-showcase-night.png" alt="" width="1387" height="560" />
+          </article>
         </div>
       </section>
 
-      <section class="section section-gray visit-section" id="visit" aria-labelledby="visit-title">
-        <div class="landing-container visit-grid"><div><p class="eyebrow">VISIT US</p><h2 id="visit-title">처음 오시는 길부터<br />편안하게</h2><p>서울특별시 ○○구 ○○로 365, 감동빌딩 2–5층<br />○○역 3번 출구에서 도보 3분</p><a class="button button-primary" href="tel:0000000000">전화로 문의하기</a></div>
-          <div class="hours"><div><span>평일</span><strong>09:30 — 22:00</strong></div><div><span>주말·공휴일</span><strong>09:30 — 18:00</strong></div><div><span>점심시간</span><strong>13:00 — 14:00</strong></div><p>365일 진료 · 요일별 의료진 일정은 문의해 주세요.</p></div>
+      <section class="visit-section" id="visit" aria-labelledby="visit-title">
+        <div class="landing-container visit-inner">
+          <div class="visit-information">
+            <h2 id="visit-title">처음 오시는 길부터<br />편안하게</h2>
+            <div class="visit-address">
+              <h3>오시는 길</h3>
+              <p>서울특별시 ○○구 ○○로 365, 감동빌딩 2–5층<br />○○역 3번 출구에서 도보 3분</p>
+              <h3>대표번호</h3>
+              <a href="tel:0000000000">000-0000-0000</a>
+            </div>
+            <div class="visit-hours">
+              <h3>진료시간</h3>
+              <dl>
+                <div><dt>평일</dt><dd>오전 09:30 - 오후 10:00</dd></div>
+                <div><dt>주말·공휴일</dt><dd>오전 09:30 - 오후 06:00</dd></div>
+                <div><dt>점심시간</dt><dd>오후 01:00 - 오후 02:00</dd></div>
+              </dl>
+            </div>
+          </div>
+          <div class="visit-divider" aria-hidden="true"></div>
+          <img class="visit-map" src="./assets/images/visit-map-placeholder.png" alt="365서울감동치과의원 위치를 표시한 지도 목업" />
         </div>
       </section>
     </main>
-    <footer><div class="landing-container"><strong>365서울감동치과의원</strong><p>본 페이지의 주소, 의료진 이력, 증례 및 리뷰는 디자인 확인을 위한 목업 데이터입니다.</p><a href="#top">맨 위로 ↑</a></div></footer>
+    <footer class="site-footer">
+      <div class="landing-container footer-main">
+        <div class="footer-brand">
+          <a class="footer-wordmark" href="#top"><strong>365</strong><span>서울감동치과의원</span></a>
+          <p>만족 그 이상의 감동을 전하는 치과.<br />치료 전 설명부터 치료 이후의 관리까지 함께합니다.</p>
+          <div class="footer-social" aria-label="소셜 채널">
+            <a href="#" aria-label="인스타그램"><span aria-hidden="true">◎</span></a>
+            <a href="#" aria-label="페이스북"><span aria-hidden="true">f</span></a>
+            <a href="#" aria-label="유튜브"><span aria-hidden="true">▶</span></a>
+            <a href="#" aria-label="블로그"><span aria-hidden="true">B</span></a>
+          </div>
+        </div>
+        <nav class="footer-navigation" aria-label="사이트 메뉴">
+          <div class="footer-column"><h2><a href="#top">치과 소개</a></h2></div>
+          <div class="footer-column"><h2>진료 항목</h2><a href="#treatment-implant">임플란트</a><a href="#treatment-general">일반 진료</a><a href="#treatment-whitening">치아 미백</a></div>
+          <div class="footer-column"><h2><a href="#visit">오시는 길</a></h2></div>
+        </nav>
+      </div>
+      <div class="landing-container footer-bottom"><p>© 2026 365서울감동치과의원. All rights reserved.</p><div><a href="#">이용약관</a><a href="#">개인정보 처리방침</a></div></div>
+    </footer>
   </body>
 </html>

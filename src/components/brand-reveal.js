@@ -2,16 +2,17 @@ export function initBrandReveal() {
   const section = document.querySelector("[data-brand-reveal]");
   if (!section) return;
   const mask = section.querySelector("[data-brand-mask]");
+  const sticky = section.querySelector(".brand-sticky");
 
   const update = () => {
     const rect = section.getBoundingClientRect();
-    const distance = Math.max(1, section.offsetHeight - innerHeight);
-    const progress = Math.min(1, Math.max(0, -rect.top / distance));
-    const start = 0.08;
-    const growth = Math.max(0, (progress - start) / (1 - start));
+    const distance = Math.max(1, section.offsetHeight - (sticky?.offsetHeight || document.documentElement.clientHeight));
+    const scrolled = Math.min(distance, Math.max(0, -rect.top));
+    const startDistance = Math.min(distance - 1, (distance * .08) + 100);
+    const growth = Math.max(0, (scrolled - startDistance) / Math.max(1, distance - startDistance));
     const eased = growth * growth * (3 - (2 * growth));
     mask.style.setProperty("--reveal", eased.toFixed(4));
-    mask.classList.toggle("is-visible", progress > start);
+    mask.classList.toggle("is-visible", scrolled > startDistance);
   };
   update();
   addEventListener("scroll", update, { passive: true });

@@ -13,7 +13,7 @@ export function initDoctorGallery() {
 
   thumbs.innerHTML = doctors.map((doctor, index) => `
     <button class="doctor-thumb" type="button" data-doctor-index="${index}" aria-label="${doctor.name} ${doctor.role} 보기">
-      <img src="${doctor.image}" alt="" /><span><strong>${doctor.name}</strong><small>${doctor.role.split(" · ")[1]}</small></span>
+      <img src="${doctor.image}" alt="" /><span><strong>${doctor.name}</strong><small>${doctor.role}</small></span>
     </button>`).join("");
 
   const render = (index) => {

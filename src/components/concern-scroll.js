@@ -1,15 +1,16 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { concerns } from "../data.js";
+import { createPinHeightGuard } from "../utils/pin-height-guard.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export function initConcernScroll() {
   const section = document.querySelector("[data-concern]");
   if (!section) return;
-  const panel = section.querySelector(".concern-sticky");
   const heading = section.querySelector("[data-concern-heading]");
   const copy = section.querySelector("[data-concern-copy]");
+  const dialogue = section.querySelector("[data-concern-dialogue]");
   const patient = section.querySelector("[data-patient]");
   let current = -1;
 
@@ -19,28 +20,33 @@ export function initConcernScroll() {
     const item = concerns[index];
     heading.textContent = item.heading;
     copy.textContent = item.copy;
-    panel.toggleAttribute("data-final-scene", item.pose === null);
-    patient.toggleAttribute("aria-hidden", item.pose === null);
-    if (item.pose !== null) patient.dataset.pose = String(item.pose);
-    patient.setAttribute("aria-label", item.pose === null ? "" : `${item.heading}, ${item.copy}`);
+    patient.dataset.pose = String(item.pose);
+    patient.setAttribute("aria-label", `${item.heading}, ${item.copy}`);
     if (!animate) return;
-    gsap.fromTo([heading, copy], { autoAlpha: .3, y: 8 }, { autoAlpha: 1, y: 0, duration: .28, stagger: .04, overwrite: true });
-    gsap.to(patient, { autoAlpha: item.pose === null ? 0 : 1, y: item.pose === null ? 20 : 0, duration: .35, overwrite: true });
+    gsap.fromTo([heading, dialogue], { autoAlpha: .25 }, { autoAlpha: 1, duration: .24, stagger: .04, overwrite: true });
+    gsap.to(patient, { autoAlpha: 1, duration: .24, overwrite: true });
   };
 
   render(0, false);
-  const media = gsap.matchMedia();
-  media.add("(prefers-reduced-motion: no-preference)", () => {
-    const trigger = ScrollTrigger.create({
-      trigger: section,
-      pin: panel,
-      start: "top top",
-      end: () => `+=${innerHeight * 3}`,
-      scrub: .35,
-      anticipatePin: 1,
-      invalidateOnRefresh: true,
-      onUpdate: ({ progress }) => render(Math.min(concerns.length - 1, Math.floor(progress * concerns.length)))
-    });
-    return () => trigger.kill();
+  return createPinHeightGuard({
+    section,
+    minimumHeightRem: () => {
+      if (matchMedia("(max-width: 48rem)").matches) return 39;
+      if (matchMedia("(max-width: 64rem)").matches) return 45;
+      return 50;
+    },
+    onEnable: () => {
+      const trigger = ScrollTrigger.create({
+        id: "concern-pin-progress",
+        trigger: section,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: .35,
+        invalidateOnRefresh: true,
+        onUpdate: ({ progress }) => render(Math.min(concerns.length - 1, Math.floor(progress * concerns.length)))
+      });
+      return () => trigger.kill();
+    },
+    onDisable: () => render(0, false)
   });
 }

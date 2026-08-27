@@ -18,37 +18,73 @@ export function initCoverflow() {
   if (!root) return;
   const track = root.querySelector("[data-coverflow-track]");
   track.innerHTML = cases.map(compareMarkup).join("");
+  root.insertAdjacentHTML("beforeend", `
+    <div class="coverflow-controls" aria-label="치료 증례 이동">
+      <button type="button" data-case-prev aria-label="이전 치료 증례">←</button>
+      <span aria-live="polite"><strong data-case-current>01</strong> / ${String(cases.length).padStart(2, "0")}</span>
+      <button type="button" data-case-next aria-label="다음 치료 증례">→</button>
+    </div>`);
   const cards = [...track.children];
-  const status = root.querySelector("[data-coverflow-status]");
+  const currentLabel = root.querySelector("[data-case-current]");
   let active = 0;
   let pointerStart = null;
+  let autoplay = null;
 
   const render = () => {
     cards.forEach((card, index) => {
-      const offset = index - active;
+      let offset = index - active;
+      const half = Math.floor(cards.length / 2);
+      if (offset > half) offset -= cards.length;
+      if (offset < -half) offset += cards.length;
       card.style.setProperty("--offset", offset);
       card.style.setProperty("--abs-offset", Math.abs(offset));
       card.style.zIndex = String(cards.length - Math.abs(offset));
       card.toggleAttribute("data-active", offset === 0);
+      card.toggleAttribute("data-neighbor", Math.abs(offset) === 1);
+      card.toggleAttribute("data-visible", Math.abs(offset) <= 1);
       card.setAttribute("aria-hidden", offset === 0 ? "false" : "true");
       card.querySelector("input").tabIndex = offset === 0 ? 0 : -1;
     });
-    status.textContent = `${String(active + 1).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
+    currentLabel.textContent = String(active + 1).padStart(2, "0");
   };
   const move = (amount) => { active = (active + amount + cards.length) % cards.length; render(); };
-  root.querySelector("[data-coverflow-prev]").addEventListener("click", () => move(-1));
-  root.querySelector("[data-coverflow-next]").addEventListener("click", () => move(1));
+  const stopAutoplay = () => { window.clearInterval(autoplay); autoplay = null; };
+  const startAutoplay = () => {
+    stopAutoplay();
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) autoplay = window.setInterval(() => move(1), 4200);
+  };
   root.addEventListener("keydown", (event) => {
     if (event.key === "ArrowLeft") move(-1);
     if (event.key === "ArrowRight") move(1);
   });
-  track.addEventListener("pointerdown", (event) => { pointerStart = event.clientX; });
+  track.addEventListener("click", (event) => {
+    const card = event.target.closest("[data-case-card]");
+    if (!card || card.hasAttribute("data-active")) return;
+    active = cards.indexOf(card);
+    render();
+    startAutoplay();
+  });
+  track.addEventListener("pointerdown", (event) => {
+    if (event.target.closest("[data-compare]")) return;
+    pointerStart = event.clientX;
+    stopAutoplay();
+  });
   track.addEventListener("pointerup", (event) => {
+    if (event.target.closest("[data-compare]")) { pointerStart = null; return; }
     if (pointerStart === null) return;
     const delta = event.clientX - pointerStart;
     if (Math.abs(delta) > 48) move(delta > 0 ? -1 : 1);
     pointerStart = null;
+    startAutoplay();
   });
+  track.addEventListener("pointercancel", () => { pointerStart = null; startAutoplay(); });
+  root.addEventListener("mouseenter", stopAutoplay);
+  root.addEventListener("mouseleave", startAutoplay);
+  root.addEventListener("focusin", stopAutoplay);
+  root.addEventListener("focusout", startAutoplay);
+  root.querySelector("[data-case-prev]").addEventListener("click", () => { move(-1); startAutoplay(); });
+  root.querySelector("[data-case-next]").addEventListener("click", () => { move(1); startAutoplay(); });
   initImageCompare(track);
   render();
+  startAutoplay();
 }

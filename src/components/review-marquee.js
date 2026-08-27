@@ -6,6 +6,10 @@ export function initReviewMarquee() {
   const items = [...reviews, ...reviews];
   track.innerHTML = items.map((review, index) => `
     <article class="review-card" ${index >= reviews.length ? "aria-hidden=\"true\"" : ""}>
-      <div class="review-stars" aria-label="별점 5점">★★★★★</div><p>${review}</p><small>방문 환자 목업 리뷰</small>
+      <header class="review-card-header">
+        <img class="review-avatar" src="${review.avatar}" alt="" />
+        <span><strong>${review.nickname}</strong><small>${review.counts}</small></span>
+      </header>
+      <p>${review.message}</p>
     </article>`).join("");
 }
