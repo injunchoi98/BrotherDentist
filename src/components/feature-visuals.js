@@ -1,12 +1,8 @@
 const QUALITY_TILE_STEP = 46;
 const QUALITY_TILE_ROW_STEP = QUALITY_TILE_STEP * Math.sin(Math.PI / 3);
 const QUALITY_TILE_RADIUS = QUALITY_TILE_STEP / 2;
-const QUALITY_COLUMNS = 15;
-const QUALITY_ROWS = 19;
-const QUALITY_FIELD_WIDTH = QUALITY_TILE_STEP * QUALITY_COLUMNS;
-const QUALITY_FIELD_HEIGHT = QUALITY_TILE_ROW_STEP * QUALITY_ROWS;
-const QUALITY_FIELD_HALF_HEIGHT = QUALITY_FIELD_HEIGHT / 2;
-const QUALITY_FRAME_MS = 1000 / 60;
+const QUALITY_COLUMNS = 11;
+const QUALITY_ROWS = 7;
 
 function shuffleDeterministically(items) {
   const shuffled = [...items];
@@ -44,12 +40,15 @@ function distributeLogoIndexes(length, total) {
   return distribution;
 }
 
-function loadImage(source) {
+function waitForImage(image) {
   return new Promise((resolve) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => resolve(null);
-    image.src = source;
+    if (image.complete && image.naturalWidth) {
+      resolve(image);
+      return;
+    }
+    image.addEventListener("load", () => resolve(image), { once: true });
+    image.addEventListener("error", () => resolve(null), { once: true });
+    image.loading = "eager";
   });
 }
 
@@ -103,45 +102,36 @@ function buildLogoSprite(images) {
   return sprite;
 }
 
-function initQualityLogoCloud(cloud, reducedMotion) {
+function initQualityLogoCloud(cloud) {
   const canvas = cloud.querySelector("[data-quality-logo-canvas]");
   const sourceElements = [...cloud.querySelectorAll("[data-quality-logo-source]")];
   if (!canvas || !sourceElements.length) return;
 
-  const card = cloud.closest("[data-feature-card]");
   const context = canvas.getContext("2d");
-  if (!card || !context) return;
+  if (!context) return;
 
-  const sources = [...new Set(sourceElements.map((image) => image.getAttribute("src")).filter(Boolean))];
   const positions = [];
   for (let row = 0; row < QUALITY_ROWS; row += 1) {
     for (let column = 0; column < QUALITY_COLUMNS; column += 1) {
       positions.push({
-        x: (column * QUALITY_TILE_STEP) + (row % 2 === 1 ? QUALITY_TILE_RADIUS : 0),
-        y: row * QUALITY_TILE_ROW_STEP,
+        x: ((column - ((QUALITY_COLUMNS - 1) / 2)) * QUALITY_TILE_STEP)
+          + (row % 2 === 1 ? QUALITY_TILE_RADIUS : 0)
+          - (QUALITY_TILE_RADIUS / 2),
+        y: (row - ((QUALITY_ROWS - 1) / 2)) * QUALITY_TILE_ROW_STEP,
       });
     }
   }
 
   const state = {
-    panX: -((QUALITY_TILE_STEP * Math.floor(QUALITY_COLUMNS / 2)) + QUALITY_TILE_RADIUS),
-    panY: -(QUALITY_COLUMNS * QUALITY_TILE_ROW_STEP),
-    velocityX: 0,
-    velocityY: 0,
-    targetVelocityX: 0,
-    targetVelocityY: 0,
     centerX: 0,
     centerY: 0,
     width: 0,
     height: 0,
     pixelRatio: 1,
-    hovering: false,
   };
 
   let sprite = null;
   let distribution = [];
-  let animationFrame = 0;
-  let previousTime = 0;
 
   const resize = () => {
     const bounds = canvas.getBoundingClientRect();
@@ -166,10 +156,8 @@ function initQualityLogoCloud(cloud, reducedMotion) {
     context.clearRect(0, 0, state.width, state.height);
 
     positions.forEach((position, index) => {
-      let offsetX = position.x + state.panX - (QUALITY_FIELD_WIDTH / 2);
-      let offsetY = position.y + state.panY - QUALITY_FIELD_HALF_HEIGHT;
-      offsetX = ((offsetX % QUALITY_FIELD_WIDTH) + QUALITY_FIELD_WIDTH) % QUALITY_FIELD_WIDTH - (QUALITY_FIELD_WIDTH / 2);
-      offsetY = ((offsetY % QUALITY_FIELD_HEIGHT) + QUALITY_FIELD_HEIGHT) % QUALITY_FIELD_HEIGHT - QUALITY_FIELD_HALF_HEIGHT;
+      const offsetX = position.x;
+      const offsetY = position.y;
 
       const radialStrength = Math.exp(-((offsetX * offsetX) + (offsetY * offsetY)) / 33800);
       const scale = .18 + (1.17 * radialStrength);
@@ -196,44 +184,7 @@ function initQualityLogoCloud(cloud, reducedMotion) {
     context.globalAlpha = 1;
   };
 
-  const animate = (time) => {
-    const elapsed = previousTime ? time - previousTime : QUALITY_FRAME_MS;
-    previousTime = time;
-
-    const desktop = matchMedia("(min-width: 64rem)").matches;
-    if (!state.hovering) {
-      state.targetVelocityX = desktop ? 0 : .35;
-      state.targetVelocityY = desktop ? 0 : .12;
-    }
-
-    const frameRatio = Math.min(elapsed / QUALITY_FRAME_MS, 3);
-    const easing = 1 - (.94 ** frameRatio);
-    state.velocityX += (state.targetVelocityX - state.velocityX) * easing;
-    state.velocityY += (state.targetVelocityY - state.velocityY) * easing;
-    state.panX += state.velocityX * frameRatio;
-    state.panY += state.velocityY * frameRatio;
-    render();
-    animationFrame = requestAnimationFrame(animate);
-  };
-
-  const onPointerEnter = (event) => {
-    if (event.pointerType === "mouse") state.hovering = true;
-  };
-  const onPointerMove = (event) => {
-    if (!state.hovering) return;
-    const bounds = card.getBoundingClientRect();
-    const halfWidth = bounds.width / 2;
-    const halfHeight = bounds.height / 2;
-    const normalizedX = (event.clientX - bounds.left - halfWidth) / (halfWidth || 1);
-    const normalizedY = (event.clientY - bounds.top - halfHeight) / (halfHeight || 1);
-    state.targetVelocityX = -(5 * normalizedX);
-    state.targetVelocityY = -(5 * normalizedY);
-  };
-  const onPointerLeave = () => {
-    state.hovering = false;
-  };
-
-  Promise.all(sources.map(loadImage)).then((loadedImages) => {
+  Promise.all(sourceElements.map(waitForImage)).then((loadedImages) => {
     const images = loadedImages.filter(Boolean);
     if (!images.length) return;
 
@@ -244,21 +195,12 @@ function initQualityLogoCloud(cloud, reducedMotion) {
 
     cloud.setAttribute("data-quality-ready", "");
     render();
-    if (!reducedMotion) animationFrame = requestAnimationFrame(animate);
   });
 
   const resizeObserver = new ResizeObserver(() => {
     if (resize()) render();
   });
   resizeObserver.observe(canvas);
-
-  if (!reducedMotion) {
-    card.addEventListener("pointerenter", onPointerEnter);
-    card.addEventListener("pointermove", onPointerMove);
-    card.addEventListener("pointerleave", onPointerLeave);
-    card.addEventListener("pointercancel", onPointerLeave);
-    window.addEventListener("pagehide", () => cancelAnimationFrame(animationFrame), { once: true });
-  }
 }
 
 function initCareWorkflow(workflow, reducedMotion) {
@@ -450,6 +392,19 @@ export function initFeatureVisuals() {
   if (!cards.length) return;
 
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const qualityClouds = [...document.querySelectorAll("[data-quality-logo-cloud]")];
+  if ("IntersectionObserver" in window) {
+    const qualityObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        qualityObserver.unobserve(entry.target);
+        initQualityLogoCloud(entry.target);
+      });
+    }, { rootMargin: "256px 0px" });
+    qualityClouds.forEach((cloud) => qualityObserver.observe(cloud));
+  } else {
+    qualityClouds.forEach(initQualityLogoCloud);
+  }
   document.querySelectorAll("[data-care-workflow]").forEach((workflow) => {
     initCareWorkflow(workflow, reducedMotion.matches);
   });

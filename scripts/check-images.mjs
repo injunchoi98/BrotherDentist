@@ -13,6 +13,13 @@ const source = (await Promise.all(files.map((file) => readFile(resolve(root, fil
 const styles = await readFile(resolve(root, "src/styles.css"), "utf8");
 const viewportState = await readFile(resolve(root, "src/utils/viewport-state.js"), "utf8");
 const main = await readFile(resolve(root, "src/main.js"), "utf8");
+const featureVisuals = await readFile(resolve(root, "src/components/feature-visuals.js"), "utf8");
+const qualityColumns = Number(featureVisuals.match(/const QUALITY_COLUMNS = (\d+);/)?.[1]);
+const qualityRows = Number(featureVisuals.match(/const QUALITY_ROWS = (\d+);/)?.[1]);
+const qualityCloudSource = featureVisuals.slice(
+  featureVisuals.indexOf("function initQualityLogoCloud"),
+  featureVisuals.indexOf("function initCareWorkflow"),
+);
 
 const assertions = [
   [source.match(/\.webp/g)?.length >= 20, "responsive WebP sources are missing"],
@@ -21,6 +28,9 @@ const assertions = [
   [styles.includes("content-visibility: auto"), "content-visibility auto is not enabled"],
   [viewportState.includes("pinningAllowed: !isMobile"), "mobile pinning must be disabled in the shared viewport state"],
   [!main.includes("Promise.all([...document.images]"), "decoding every image defeats native lazy loading"],
+  [qualityColumns * qualityRows <= 80, "quality logo cloud must stay within the static tile budget"],
+  [!qualityCloudSource.includes("requestAnimationFrame"), "quality logo cloud must not redraw every frame"],
+  [!qualityCloudSource.includes("pointermove"), "quality logo cloud must remain static on pointer movement"],
 ];
 
 for (const [valid, message] of assertions) {
@@ -36,4 +46,4 @@ for (const file of [
   await access(resolve(root, "assets/images/webp", file));
 }
 
-console.log("Image delivery contract passed: WebP, srcset, lazy loading, content visibility, and mobile pin fallback.");
+console.log(`Image delivery contract passed: WebP, srcset, lazy loading, content visibility, mobile pin fallback, and ${qualityColumns * qualityRows}-tile static logo cloud.`);

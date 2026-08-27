@@ -429,9 +429,12 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .feature-card-quality { position: relative; }
 .feature-card-quality .feature-copy { z-index: 2; order: -1; background: transparent; }
 .quality-visual { position: relative; z-index: 1; width: 100%; flex: 1 1 auto; }
-.quality-logo-cloud { position: absolute; inset: 0; overflow: hidden; pointer-events: none; user-select: none; mask-image: radial-gradient(ellipse 82% 76% at 50% 50%, var(--color-black) 58%, color-mix(in srgb, var(--color-black) 82%, transparent) 76%, transparent 100%); }
-.quality-logo-fallback { position: absolute; top: 50%; left: 50%; display: flex; width: min(32rem, 112%); flex-wrap: wrap; justify-content: center; gap: .7rem; transform: translate(-50%, -50%); }
-.quality-logo-tile { display: flex; min-width: 0; height: 3.5rem; flex: 0 0 calc(25% - .7rem); align-items: center; justify-content: center; gap: .25rem; border: 1px solid color-mix(in srgb, var(--color-line) 62%, transparent); border-radius: .75rem; padding: .55rem; color: var(--color-text); background: color-mix(in srgb, var(--color-white) 94%, transparent); font-size: var(--fluid-quality-label-size); line-height: var(--fluid-quality-label-line); text-align: center; }
+.quality-logo-cloud { position: absolute; inset: 0; overflow: hidden; pointer-events: none; user-select: none; mask-image: radial-gradient(ellipse 68% 66% at 50% 50%, var(--color-black) 46%, color-mix(in srgb, var(--color-black) 82%, transparent) 58%, transparent 100%); }
+.quality-logo-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .2s ease; }
+.quality-logo-cloud[data-quality-ready] .quality-logo-canvas { opacity: 1; }
+.quality-logo-fallback { position: absolute; top: 50%; left: 50%; display: grid; width: min(34rem, 126%); grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .7rem; transform: translate(-50%, -50%); transition: opacity .2s ease; }
+.quality-logo-cloud[data-quality-ready] .quality-logo-fallback { opacity: 0; }
+.quality-logo-tile { display: flex; min-width: 0; height: 3.5rem; align-items: center; justify-content: center; gap: .25rem; border: 1px solid color-mix(in srgb, var(--color-line) 62%, transparent); border-radius: .75rem; padding: .55rem; color: var(--color-text); background: color-mix(in srgb, var(--color-white) 90%, transparent); font-size: var(--fluid-quality-label-size); line-height: var(--fluid-quality-label-line); text-align: center; }
 .quality-logo-tile img { display: block; width: auto; max-width: 72%; height: auto; max-height: 54%; object-fit: contain; }
 .quality-logo-emblem img { max-width: 48%; max-height: 52%; }
 .quality-logo-tile img[src*="/dio."], .quality-logo-tile img[src*="/straumann."], .quality-logo-tile img[src*="/dentsply-sirona."] { filter: brightness(0); opacity: .72; }
@@ -713,8 +716,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .comparison-chart-plot { height: 12.5rem; }
   .comparison-groups { gap: 1rem; padding-inline: .75rem; }
   .circuit-board { width: 124%; }
-  .quality-logo-fallback { width: min(31rem, 108%); gap: .5rem; }
-  .quality-logo-tile { height: 3.25rem; flex-basis: calc(33.333% - .5rem); padding: .35rem; }
+  .quality-logo-fallback { width: min(31rem, 132%); gap: .5rem; }
+  .quality-logo-tile { height: 3.25rem; padding: .35rem; }
   .care-visual { padding: .75rem; }
   .care-workflow-header { grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; padding: .75rem; }
   .care-workflow-header em { min-width: 4.25rem; padding-inline: .5rem; }
