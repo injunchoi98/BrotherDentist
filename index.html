@@ -7,6 +7,7 @@
     <meta name="build-time" content="{{BUILD_TIME}}" />
     <title>365서울감동치과의원</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%232763ea%22/><text x=%2232%22 y=%2240%22 font-size=%2226%22 text-anchor=%22middle%22 fill=%22white%22>365</text></svg>" />
+    <link rel="preload" as="image" href="./assets/images/webp/clinic-exterior-960.webp" type="image/webp" fetchpriority="high" />
     <link rel="stylesheet" href="./src/styles.css?v=20260826-3" />
     <script type="module" src="./src/main.js?v=20260826-2"></script>
   </head>
@@ -41,7 +42,7 @@
     <main id="main">
       <section class="hero" id="top" aria-labelledby="hero-title">
         <h1 class="sr-only" id="hero-title">365서울감동치과의원</h1>
-        <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="./assets/images/clinic-exterior.png" aria-hidden="true">
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="./assets/images/webp/clinic-exterior-960.webp" aria-hidden="true">
           <source src="./assets/video/clinic-hero.mp4" type="video/mp4" />
         </video>
       </section>
@@ -82,7 +83,7 @@
         </div>
       </section>
 
-      <section class="brand-reveal" data-brand-reveal aria-label="브랜드 메시지 전환">
+      <section class="brand-reveal" id="brand" data-brand-reveal aria-label="브랜드 메시지 전환">
         <div class="brand-sticky">
           <h2 class="brand-title">
             <span>필요한 치료만 <span class="brand-accent">정직</span>하게</span>
@@ -90,7 +91,10 @@
             <span><span class="brand-accent">365일</span>·평일 <span class="brand-accent">야간</span> 진료</span>
           </h2>
           <div class="brand-mask" data-brand-mask aria-hidden="true">
-            <img src="./assets/images/clinic-exterior-actual.png" alt="" />
+            <picture>
+              <source type="image/webp" srcset="./assets/images/webp/clinic-exterior-actual-480.webp 480w, ./assets/images/webp/clinic-exterior-actual-770.webp 770w" sizes="100vw" />
+              <img src="./assets/images/clinic-exterior-actual.png" alt="" width="770" height="501" loading="lazy" decoding="async" />
+            </picture>
             <div class="brand-mask-copy"><p>수많은 치과 중 어디로 갈지 고민이라면</p><strong>만족 그 이상의 <span class="brand-accent">감동</span><br />365서울감동치과의원</strong></div>
           </div>
         </div>
@@ -120,9 +124,9 @@
             <p>꼭 필요한 세 가지 진료를<br />치료 경험을 바탕으로 꼼꼼히 봅니다.</p>
           </aside>
           <div class="treatment-cards">
-            <a class="treatment-card" id="treatment-implant" href="#visit"><img src="./assets/images/treatment-implant-v2.png" alt="의료진과 환자가 함께 확인하는 임플란트 3D CT" /><h3>임플란트</h3><p>3D CT로 잇몸뼈와 신경 위치를 확인한 뒤 식립 위치를 정합니다. 수술에서 끝내지 않고 보철의 씹는 높이와 치료 후 관리까지 이어서 봅니다.</p></a>
-            <a class="treatment-card" id="treatment-general" href="#visit"><img src="./assets/images/treatment-room.png" alt="일반 진료 공간" /><h3>일반 진료</h3><p>같은 통증이라도 충치, 잇몸, 교합 문제에 따라 치료가 달라집니다. 검사 결과를 함께 보고 지금 치료할 부분과 지켜볼 부분을 나눠 설명합니다.</p></a>
-            <a class="treatment-card" id="treatment-whitening" href="#visit"><img src="./assets/images/treatment-whitening-v2.png" alt="치아 색상표로 현재 밝기를 확인하는 미백 상담" /><h3>치아 미백</h3><p>현재 치아의 색과 착색 원인을 먼저 확인합니다. 무조건 하얗게 만들기보다 얼굴과 기존 보철물에 어울리는 밝기를 정해 진행합니다.</p></a>
+            <a class="treatment-card" id="treatment-implant" href="#visit"><picture><source type="image/webp" srcset="./assets/images/webp/treatment-implant-v2-480.webp 480w, ./assets/images/webp/treatment-implant-v2-960.webp 960w, ./assets/images/webp/treatment-implant-v2-1122.webp 1122w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 33vw" /><img src="./assets/images/treatment-implant-v2.png" alt="의료진과 환자가 함께 확인하는 임플란트 3D CT" width="1122" height="1402" loading="lazy" decoding="async" /></picture><h3>임플란트</h3><p>3D CT로 잇몸뼈와 신경 위치를 확인한 뒤 식립 위치를 정합니다. 수술에서 끝내지 않고 보철의 씹는 높이와 치료 후 관리까지 이어서 봅니다.</p></a>
+            <a class="treatment-card" id="treatment-general" href="#visit"><picture><source type="image/webp" srcset="./assets/images/webp/treatment-room-480.webp 480w, ./assets/images/webp/treatment-room-960.webp 960w, ./assets/images/webp/treatment-room-1440.webp 1440w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 33vw" /><img src="./assets/images/treatment-room.png" alt="일반 진료 공간" width="1536" height="1024" loading="lazy" decoding="async" /></picture><h3>일반 진료</h3><p>같은 통증이라도 충치, 잇몸, 교합 문제에 따라 치료가 달라집니다. 검사 결과를 함께 보고 지금 치료할 부분과 지켜볼 부분을 나눠 설명합니다.</p></a>
+            <a class="treatment-card" id="treatment-whitening" href="#visit"><picture><source type="image/webp" srcset="./assets/images/webp/treatment-whitening-v2-480.webp 480w, ./assets/images/webp/treatment-whitening-v2-960.webp 960w, ./assets/images/webp/treatment-whitening-v2-1122.webp 1122w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 33vw" /><img src="./assets/images/treatment-whitening-v2.png" alt="치아 색상표로 현재 밝기를 확인하는 미백 상담" width="1122" height="1402" loading="lazy" decoding="async" /></picture><h3>치아 미백</h3><p>현재 치아의 색과 착색 원인을 먼저 확인합니다. 무조건 하얗게 만들기보다 얼굴과 기존 보철물에 어울리는 밝기를 정해 진행합니다.</p></a>
           </div>
         </div>
       </section>
@@ -152,7 +156,7 @@
                   <p>200평 규모의 넓은 공간과 최신 의료 장비, 풍부한 치료 경험을 바탕으로 보다 체계적이고 신뢰받는 진료를 완성하겠습니다.</p>
                 </div>
               </div>
-              <img src="./assets/images/treatment-scene.png" alt="의료진이 환자를 진료하는 모습" />
+              <picture><source type="image/webp" srcset="./assets/images/webp/treatment-scene-480.webp 480w, ./assets/images/webp/treatment-scene-960.webp 960w, ./assets/images/webp/treatment-scene-1440.webp 1440w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 50vw" /><img src="./assets/images/treatment-scene.png" alt="의료진이 환자를 진료하는 모습" width="1536" height="1024" loading="lazy" decoding="async" /></picture>
             </article>
 
             <article data-evidence-panel>
@@ -171,7 +175,7 @@
                   <li><span>3단계</span><strong>극미세침 마취</strong><p>더 가는 주사침을 사용해 깊은 부위까지 천천히 마취합니다.</p></li>
                 </ol>
               </div>
-              <img src="./assets/images/anesthesia-care-v2.png" alt="단계별 마취를 준비하며 환자에게 설명하는 의료진" />
+              <picture><source type="image/webp" srcset="./assets/images/webp/anesthesia-care-v2-480.webp 480w, ./assets/images/webp/anesthesia-care-v2-960.webp 960w, ./assets/images/webp/anesthesia-care-v2-1440.webp 1440w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 50vw" /><img src="./assets/images/anesthesia-care-v2.png" alt="단계별 마취를 준비하며 환자에게 설명하는 의료진" width="1586" height="992" loading="lazy" decoding="async" /></picture>
             </article>
 
             <article data-evidence-panel>
@@ -186,7 +190,7 @@
                   <p>365서울감동치과에서는 모든 질문을 환영합니다. 궁금하신 내용은 마음껏 물어봐 주세요.</p>
                 </div>
               </div>
-              <img src="./assets/images/evidence-friendly.png" alt="환자에게 진료 내용을 설명하는 의료진" />
+              <picture><source type="image/webp" srcset="./assets/images/webp/evidence-friendly-285.webp 285w, ./assets/images/webp/evidence-friendly-570.webp 570w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 50vw" /><img src="./assets/images/evidence-friendly.png" alt="환자에게 진료 내용을 설명하는 의료진" width="570" height="500" loading="lazy" decoding="async" /></picture>
             </article>
 
             <article class="equipment-evidence-panel" data-evidence-panel>
@@ -202,27 +206,27 @@
                   <div class="equipment-card-stack" data-equipment-stack tabindex="0" aria-label="스크롤하거나 좌우로 넘겨 보는 의료장비 카드">
                     <div class="equipment-stack-stage">
                     <article class="equipment-card" data-equipment-card>
-                      <div class="equipment-card-media"><img src="./assets/images/equipment-01.png" alt="3D 구강스캐너" /></div>
+                      <div class="equipment-card-media"><picture><source type="image/webp" srcset="./assets/images/webp/equipment-01-285.webp 285w, ./assets/images/webp/equipment-01-570.webp 570w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 36rem" /><img src="./assets/images/equipment-01.png" alt="3D 구강스캐너" width="570" height="500" loading="lazy" decoding="async" /></picture></div>
                       <div class="equipment-card-copy"><h5>3D 구강스캐너</h5><p>기존에는 고무 재료로 치아 모양을 본떠야 해 환자가 불편했고 오차가 생길 수 있었습니다.</p><p>3D 구강스캐너는 입안을 빠르게 촬영해 더 정확하고 편하게 구강 정보를 얻습니다.</p></div>
                     </article>
                     <article class="equipment-card" data-equipment-card>
-                      <div class="equipment-card-media"><img src="./assets/images/equipment-02.png" alt="디지털 밀링기" /></div>
+                      <div class="equipment-card-media"><picture><source type="image/webp" srcset="./assets/images/webp/equipment-02-285.webp 285w, ./assets/images/webp/equipment-02-570.webp 570w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 36rem" /><img src="./assets/images/equipment-02.png" alt="디지털 밀링기" width="570" height="500" loading="lazy" decoding="async" /></picture></div>
                       <div class="equipment-card-copy"><h5>밀링기</h5><p>구강스캐너로 저장한 3D 구강 데이터를 바탕으로 치아에 맞는 수복물을 가공합니다.</p><p>진료와 제작을 가까이 연결해 보철의 모양과 맞물림을 세밀하게 조정합니다.</p></div>
                     </article>
                     <article class="equipment-card" data-equipment-card>
-                      <div class="equipment-card-media"><img src="./assets/images/equipment-03.png" alt="3D프린터" /></div>
+                      <div class="equipment-card-media"><picture><source type="image/webp" srcset="./assets/images/webp/equipment-03-285.webp 285w, ./assets/images/webp/equipment-03-570.webp 570w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 36rem" /><img src="./assets/images/equipment-03.png" alt="3D프린터" width="570" height="500" loading="lazy" decoding="async" /></picture></div>
                       <div class="equipment-card-copy"><h5>3D프린터</h5><p>구강스캐너로 얻은 정보를 이용해 환자에게 필요한 보철물이나 임시치아를 제작합니다.</p><p>제작 시간을 줄이면서도 환자의 구강 형태에 맞춘 결과물을 만들 수 있습니다.</p></div>
                     </article>
                     <article class="equipment-card" data-equipment-card>
-                      <div class="equipment-card-media"><img src="./assets/images/equipment-04.png" alt="3D CT" /></div>
+                      <div class="equipment-card-media"><picture><source type="image/webp" srcset="./assets/images/webp/equipment-04-285.webp 285w, ./assets/images/webp/equipment-04-570.webp 570w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 36rem" /><img src="./assets/images/equipment-04.png" alt="3D CT" width="570" height="500" loading="lazy" decoding="async" /></picture></div>
                       <div class="equipment-card-copy"><h5>3D CT</h5><p>얼굴과 머리뼈 전반을 3차원으로 촬영해 치아와 신경관, 주변 구조물의 위치를 확인합니다.</p><p>임플란트의 위치·각도·길이를 정하거나 사랑니 발치, 교정, 치주·턱관절 진료를 계획할 때 사용합니다.</p></div>
                     </article>
                     <article class="equipment-card" data-equipment-card>
-                      <div class="equipment-card-media"><img src="./assets/images/equipment-05.png" alt="턱관절 물리치료기" /></div>
+                      <div class="equipment-card-media"><picture><source type="image/webp" srcset="./assets/images/webp/equipment-05-285.webp 285w, ./assets/images/webp/equipment-05-570.webp 570w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 36rem" /><img src="./assets/images/equipment-05.png" alt="턱관절 물리치료기" width="570" height="500" loading="lazy" decoding="async" /></picture></div>
                       <div class="equipment-card-copy"><h5>턱관절 물리치료기</h5><p>턱관절의 상태와 통증 원인을 먼저 살핀 뒤 비수술 자극요법을 진행합니다.</p><p>굳은 근육을 풀고 턱의 움직임과 좌우 균형을 되찾는 데 사용합니다.</p></div>
                     </article>
                     <article class="equipment-card" data-equipment-card>
-                      <div class="equipment-card-media"><img src="./assets/images/equipment-07.png" alt="플라즈마 멸균기" /></div>
+                      <div class="equipment-card-media"><picture><source type="image/webp" srcset="./assets/images/webp/equipment-07-285.webp 285w, ./assets/images/webp/equipment-07-570.webp 570w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 36rem" /><img src="./assets/images/equipment-07.png" alt="플라즈마 멸균기" width="570" height="500" loading="lazy" decoding="async" /></picture></div>
                       <div class="equipment-card-copy"><h5>플라즈마 멸균기</h5><p>과산화수소를 이용해 의료기구를 멸균하고, 사용 후 남은 기체는 수증기와 산소로 바꿉니다.</p><p>열에 민감한 기구까지 멸균하면서 유독성 잔류물을 남기지 않도록 관리합니다.</p></div>
                     </article>
                       <div class="equipment-stack-status" aria-live="polite"><span data-equipment-status>1</span><span aria-hidden="true">/</span><span>6</span></div>
@@ -243,7 +247,7 @@
                   <p>치료 방법과 비용, 시간까지 환자분과 함께 결정합니다. “이렇게 해야 합니다”가 아닌 “어떻게 하고 싶으세요?”라고 묻는 곳이 되겠습니다.</p>
                 </div>
               </div>
-              <img src="./assets/images/digital-safety.png" alt="디지털 진단 자료를 환자와 함께 확인하는 모습" />
+              <picture><source type="image/webp" srcset="./assets/images/webp/digital-safety-480.webp 480w, ./assets/images/webp/digital-safety-960.webp 960w, ./assets/images/webp/digital-safety-1440.webp 1440w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 50vw" /><img src="./assets/images/digital-safety.png" alt="디지털 진단 자료를 환자와 함께 확인하는 모습" width="1536" height="1024" loading="lazy" decoding="async" /></picture>
             </article>
           </div>
         </div>
@@ -259,7 +263,7 @@
           <div class="doctor-gallery" data-doctors>
             <div class="doctor-main">
               <div class="doctor-media">
-                <div class="doctor-portrait"><img data-doctor-image src="./assets/images/doctor-lee-jungwoong.png" alt="이정웅 대표원장 프로필 이미지" /></div>
+                <div class="doctor-portrait"><picture><source data-doctor-source type="image/webp" srcset="./assets/images/webp/doctor-lee-jungwoong-266.webp 266w, ./assets/images/webp/doctor-lee-jungwoong-532.webp 532w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 33rem" /><img data-doctor-image src="./assets/images/doctor-lee-jungwoong.png" alt="이정웅 대표원장 프로필 이미지" width="532" height="622" loading="lazy" decoding="async" /></picture></div>
                 <div class="doctor-media-footer">
                   <div class="doctor-thumbs" data-doctor-thumbs aria-label="의료진 선택"></div>
                 </div>
@@ -284,8 +288,8 @@
           <div class="feature-bento">
             <article class="feature-card feature-card-hours" data-feature-card>
               <div class="feature-visual hours-visual" aria-hidden="true">
-                <img class="hours-celestial-wheel" src="./assets/images/clinic-day-night-wheel-v2-transparent.png" alt="" />
-                <img class="hours-building" src="./assets/images/clinic-exterior-actual.png" alt="" />
+                <img class="hours-celestial-wheel" src="./assets/images/clinic-day-night-wheel.png" srcset="./assets/images/webp/clinic-day-night-wheel-1254.webp 1254w" sizes="72rem" alt="" width="1254" height="1254" loading="lazy" decoding="async" />
+                <img class="hours-building" src="./assets/images/clinic-exterior-actual.png" srcset="./assets/images/webp/clinic-exterior-actual-480.webp 480w, ./assets/images/webp/clinic-exterior-actual-770.webp 770w" sizes="(max-width: 48rem) 100vw, 48rem" alt="" width="770" height="501" loading="lazy" decoding="async" />
               </div>
               <div class="feature-copy">
                 <h3>365일, 불빛이 꺼지지 않는 치과</h3>
@@ -385,24 +389,15 @@
 
             <article class="feature-card feature-card-quality" id="quality-card" data-feature-card>
               <div class="feature-visual quality-visual" aria-hidden="true">
-                <div class="quality-logo-cloud" data-quality-logo-cloud>
-                  <canvas class="quality-logo-canvas" data-quality-logo-canvas></canvas>
-                  <div class="quality-logo-fallback" data-quality-logo-fallback>
-                    <span class="quality-logo-tile"><img data-quality-logo-source src="./assets/logos/materials/osstem.png" alt="" /></span>
-                    <span class="quality-logo-tile"><img data-quality-logo-source src="./assets/logos/materials/dentium.png" alt="" /></span>
-                    <span class="quality-logo-tile"><img data-quality-logo-source src="./assets/logos/materials/ivoclar.png" alt="" /></span>
-                    <span class="quality-logo-tile"><img data-quality-logo-source src="./assets/logos/materials/gc.png" alt="" /></span>
-                    <span class="quality-logo-tile quality-logo-emblem"><img data-quality-logo-source src="./assets/logos/materials/snu-emblem.png" alt="" /></span>
-                    <span class="quality-logo-tile quality-logo-emblem"><img data-quality-logo-source src="./assets/logos/materials/yonsei.png" alt="" /></span>
-                    <span class="quality-logo-tile quality-logo-emblem"><img data-quality-logo-source src="./assets/logos/materials/khu.png" alt="" /></span>
-
-                    <span class="quality-logo-tile"><img src="./assets/logos/materials/osstem.png" alt="" /></span>
-                    <span class="quality-logo-tile"><img src="./assets/logos/materials/dentium.png" alt="" /></span>
-                    <span class="quality-logo-tile"><img src="./assets/logos/materials/ivoclar.png" alt="" /></span>
-                    <span class="quality-logo-tile quality-logo-emblem"><img src="./assets/logos/materials/snu-emblem.png" alt="" /></span>
-                    <span class="quality-logo-tile quality-logo-emblem"><img src="./assets/logos/materials/yonsei.png" alt="" /></span>
-                    <span class="quality-logo-tile quality-logo-emblem"><img src="./assets/logos/materials/khu.png" alt="" /></span>
-                    <span class="quality-logo-tile"><img src="./assets/logos/materials/gc.png" alt="" /></span>
+                <div class="quality-logo-cloud">
+                  <div class="quality-logo-fallback">
+                    <span class="quality-logo-tile"><img src="./assets/logos/materials/osstem.png" alt="" width="698" height="248" loading="lazy" decoding="async" /></span>
+                    <span class="quality-logo-tile"><img src="./assets/logos/materials/dentium.png" alt="" width="600" height="113" loading="lazy" decoding="async" /></span>
+                    <span class="quality-logo-tile"><img src="./assets/logos/materials/ivoclar.png" alt="" width="600" height="319" loading="lazy" decoding="async" /></span>
+                    <span class="quality-logo-tile"><img src="./assets/logos/materials/gc.png" alt="" width="1200" height="676" loading="lazy" decoding="async" /></span>
+                    <span class="quality-logo-tile quality-logo-emblem"><img src="./assets/logos/materials/snu-emblem.png" alt="" width="257" height="240" loading="lazy" decoding="async" /></span>
+                    <span class="quality-logo-tile quality-logo-emblem"><img src="./assets/logos/materials/yonsei.png" alt="" width="177" height="177" loading="lazy" decoding="async" /></span>
+                    <span class="quality-logo-tile quality-logo-emblem"><img src="./assets/logos/materials/khu.png" alt="" width="257" height="184" loading="lazy" decoding="async" /></span>
                   </div>
                 </div>
               </div>
@@ -470,24 +465,24 @@
             <h3 class="showcase-static-title">소개 환자 많은 치과</h3>
             <div class="showcase-referral-media" data-referral-media>
               <figure class="showcase-motion-item showcase-photo showcase-photo-landscape" data-referral-item>
-                <img src="./assets/images/consultation.png" alt="" width="1536" height="1024" />
+                <picture><source type="image/webp" srcset="./assets/images/webp/consultation-480.webp 480w, ./assets/images/webp/consultation-960.webp 960w, ./assets/images/webp/consultation-1440.webp 1440w" sizes="14rem" /><img src="./assets/images/consultation.png" alt="" width="1536" height="1024" loading="lazy" decoding="async" /></picture>
               </figure>
               <figure class="showcase-motion-item showcase-photo showcase-photo-portrait" data-referral-item>
-                <img src="./assets/images/evidence-friendly.png" alt="" width="570" height="500" />
+                <picture><source type="image/webp" srcset="./assets/images/webp/evidence-friendly-285.webp 285w, ./assets/images/webp/evidence-friendly-570.webp 570w" sizes="10rem" /><img src="./assets/images/evidence-friendly.png" alt="" width="570" height="500" loading="lazy" decoding="async" /></picture>
               </figure>
               <figure class="showcase-motion-item showcase-photo showcase-photo-landscape showcase-photo-wide" data-referral-item>
-                <img src="./assets/images/treatment-scene.png" alt="" width="1536" height="1024" />
+                <picture><source type="image/webp" srcset="./assets/images/webp/treatment-scene-480.webp 480w, ./assets/images/webp/treatment-scene-960.webp 960w, ./assets/images/webp/treatment-scene-1440.webp 1440w" sizes="18rem" /><img src="./assets/images/treatment-scene.png" alt="" width="1536" height="1024" loading="lazy" decoding="async" /></picture>
               </figure>
               <figure class="showcase-motion-item showcase-photo showcase-photo-landscape" data-referral-item>
-                <img src="./assets/images/digital-safety.png" alt="" width="1536" height="1024" />
+                <picture><source type="image/webp" srcset="./assets/images/webp/digital-safety-480.webp 480w, ./assets/images/webp/digital-safety-960.webp 960w, ./assets/images/webp/digital-safety-1440.webp 1440w" sizes="14rem" /><img src="./assets/images/digital-safety.png" alt="" width="1536" height="1024" loading="lazy" decoding="async" /></picture>
               </figure>
               <figure class="showcase-motion-item showcase-photo showcase-photo-landscape" data-referral-item>
-                <img src="./assets/images/anesthesia-care-v2.png" alt="" width="1586" height="992" />
+                <picture><source type="image/webp" srcset="./assets/images/webp/anesthesia-care-v2-480.webp 480w, ./assets/images/webp/anesthesia-care-v2-960.webp 960w, ./assets/images/webp/anesthesia-care-v2-1440.webp 1440w" sizes="14rem" /><img src="./assets/images/anesthesia-care-v2.png" alt="" width="1586" height="992" loading="lazy" decoding="async" /></picture>
               </figure>
             </div>
           </article>
 
-          <article class="showcase-scene showcase-scene-revisit" data-showcase-scene="revisit" aria-hidden="true">
+          <article class="showcase-scene showcase-scene-revisit" id="showcase-revisit" data-showcase-scene="revisit" aria-hidden="true">
             <h3 class="showcase-static-title">재방문하는 치과</h3>
             <div class="showcase-scramble-field" data-revisit-field>
               <p class="showcase-motion-item showcase-scramble-item showcase-metric" data-revisit-item data-motion="revisit">재방문율 87%</p>
@@ -555,15 +550,15 @@
           </div>
 
           <div class="showcase-image-reveal" data-showcase-image aria-hidden="true">
-            <img src="./assets/images/clinic-showcase-night.png" alt="" width="1387" height="560" />
+            <picture><source type="image/webp" srcset="./assets/images/webp/clinic-showcase-night-480.webp 480w, ./assets/images/webp/clinic-showcase-night-960.webp 960w, ./assets/images/webp/clinic-showcase-night-1387.webp 1387w" sizes="100vw" /><img src="./assets/images/clinic-showcase-night.png" alt="" width="1387" height="560" loading="lazy" decoding="async" /></picture>
             <div class="showcase-image-copy">
               <strong>당신의 미소를 되찾는 감동<br /><span>감동과 함께 웃으세요</span></strong>
             </div>
           </div>
 
-          <article class="showcase-static-final" aria-hidden="true">
+          <article class="showcase-static-final" id="showcase-final" aria-hidden="true">
             <h3><span class="showcase-static-final-line">당신의 미소를 되찾는 감동</span><span class="showcase-static-final-line showcase-static-final-accent">감동과 함께 웃으세요</span></h3>
-            <img src="./assets/images/clinic-showcase-night.png" alt="" width="1387" height="560" />
+            <picture><source type="image/webp" srcset="./assets/images/webp/clinic-showcase-night-480.webp 480w, ./assets/images/webp/clinic-showcase-night-960.webp 960w, ./assets/images/webp/clinic-showcase-night-1387.webp 1387w" sizes="(max-width: 48rem) 100vw, 86rem" /><img src="./assets/images/clinic-showcase-night.png" alt="" width="1387" height="560" loading="lazy" decoding="async" /></picture>
           </article>
         </div>
       </section>
@@ -588,7 +583,7 @@
             </div>
           </div>
           <div class="visit-divider" aria-hidden="true"></div>
-          <img class="visit-map" src="./assets/images/visit-map-placeholder.png" alt="365서울감동치과의원 위치를 표시한 지도 목업" />
+          <picture class="visit-map-picture"><source type="image/webp" srcset="./assets/images/webp/visit-map-placeholder-480.webp 480w, ./assets/images/webp/visit-map-placeholder-960.webp 960w, ./assets/images/webp/visit-map-placeholder-1600.webp 1600w" sizes="(max-width: 48rem) 100vw, 50vw" /><img class="visit-map" src="./assets/images/visit-map-placeholder.png" alt="365서울감동치과의원 위치를 표시한 지도 목업" width="1896" height="830" loading="lazy" decoding="async" /></picture>
         </div>
       </section>
     </main>

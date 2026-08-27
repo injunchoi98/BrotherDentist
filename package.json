@@ -3,14 +3,17 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "generate:images": "node scripts/generate-responsive-images.mjs",
+    "check:images": "node scripts/check-images.mjs",
     "check:typography": "node scripts/check-typography.mjs",
-    "build": "npm run check:typography && node scripts/build.mjs",
-    "dev": "node scripts/dev.mjs"
+    "build": "npm run generate:images && npm run check:images && npm run check:typography && node scripts/build.mjs",
+    "dev": "npm run generate:images && node scripts/dev.mjs"
   },
   "dependencies": {
     "gsap": "^3.13.0"
   },
   "devDependencies": {
-    "esbuild": "^0.25.9"
+    "esbuild": "^0.25.9",
+    "sharp": "^0.34.5"
   }
 }

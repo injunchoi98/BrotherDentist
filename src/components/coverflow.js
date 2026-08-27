@@ -1,11 +1,12 @@
 import { cases } from "../data.js";
+import { responsivePicture } from "../utils/responsive-image.js";
 import { initImageCompare } from "./image-compare.js";
 
 const compareMarkup = (item, index) => `
   <article class="case-card" data-case-card>
     <div class="image-compare" data-compare style="--compare: 50%">
-      <div class="compare-half compare-before"><img src="${item.image}" alt="${item.category} 치료 전 목업 이미지" /></div>
-      <div class="compare-half compare-after"><img src="${item.image}" alt="${item.category} 치료 후 목업 이미지" /></div>
+      <div class="compare-half compare-before">${responsivePicture({ source: item.image, widths: [480, 960, 1440], sizes: "(max-width: 48rem) 84vw, 37rem", width: 1774, height: 887, alt: `${item.category} 치료 전 목업 이미지` })}</div>
+      <div class="compare-half compare-after">${responsivePicture({ source: item.image, widths: [480, 960, 1440], sizes: "(max-width: 48rem) 84vw, 37rem", width: 1774, height: 887, alt: `${item.category} 치료 후 목업 이미지` })}</div>
       <div class="compare-line" aria-hidden="true"><span>↔</span></div>
       <input type="range" min="5" max="95" value="50" aria-label="${item.category} 치료 전후 비교 위치" />
       <span class="compare-label compare-label-before">BEFORE</span><span class="compare-label compare-label-after">AFTER</span>

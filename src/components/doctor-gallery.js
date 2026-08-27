@@ -1,9 +1,11 @@
 import { doctors } from "../data.js";
+import { responsivePicture, webpSrcset } from "../utils/responsive-image.js";
 
 export function initDoctorGallery() {
   const root = document.querySelector("[data-doctors]");
   if (!root) return;
   const image = root.querySelector("[data-doctor-image]");
+  const source = root.querySelector("[data-doctor-source]");
   const name = root.querySelector("[data-doctor-name]");
   const role = root.querySelector("[data-doctor-role]");
   const quote = root.querySelector("[data-doctor-quote]");
@@ -13,7 +15,7 @@ export function initDoctorGallery() {
 
   thumbs.innerHTML = doctors.map((doctor, index) => `
     <button class="doctor-thumb" type="button" data-doctor-index="${index}" aria-label="${doctor.name} ${doctor.role} 보기">
-      <img src="${doctor.image}" alt="" /><span><strong>${doctor.name}</strong><small>${doctor.role}</small></span>
+      ${responsivePicture({ source: doctor.image, widths: [266, 532], sizes: "8rem", width: 532, height: 622, alt: "" })}<span><strong>${doctor.name}</strong><small>${doctor.role}</small></span>
     </button>`).join("");
 
   const render = (index) => {
@@ -22,6 +24,7 @@ export function initDoctorGallery() {
     root.classList.add("is-changing");
     window.setTimeout(() => {
       image.src = doctor.image;
+      if (source) source.srcset = webpSrcset(doctor.image, [266, 532]);
       image.alt = `${doctor.name} ${doctor.role} 프로필 이미지`;
       name.textContent = doctor.name;
       role.textContent = doctor.role;

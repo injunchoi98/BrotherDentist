@@ -450,9 +450,6 @@ export function initFeatureVisuals() {
   if (!cards.length) return;
 
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-  document.querySelectorAll("[data-quality-logo-cloud]").forEach((cloud) => {
-    initQualityLogoCloud(cloud, reducedMotion.matches);
-  });
   document.querySelectorAll("[data-care-workflow]").forEach((workflow) => {
     initCareWorkflow(workflow, reducedMotion.matches);
   });

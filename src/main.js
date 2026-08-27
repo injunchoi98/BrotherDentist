@@ -31,7 +31,11 @@ const refreshScrollGeometry = () => {
 refreshScrollGeometry();
 addEventListener("load", refreshScrollGeometry, { once: true });
 document.fonts?.ready.then(refreshScrollGeometry);
-Promise.all([...document.images].map((image) => image.decode().catch(() => {}))).then(refreshScrollGeometry);
+const eagerImages = [...document.images].filter((image) => image.loading !== "lazy");
+Promise.all(eagerImages.map((image) => image.decode().catch(() => {}))).then(refreshScrollGeometry);
+document.addEventListener("load", (event) => {
+  if (event.target instanceof HTMLImageElement && event.target.loading === "lazy") refreshScrollGeometry();
+}, true);
 
 const heroVideo = document.querySelector(".hero-video");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
