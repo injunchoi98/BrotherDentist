@@ -230,6 +230,95 @@ export function initShowcaseScroll() {
   const motionItems = Array.from(section.querySelectorAll(".showcase-motion-item"));
   if (!panel || !title || !titleLock || !image || !map || scenes.length !== 3) return;
 
+  let mobileContext = null;
+  const clearMobileMotion = () => {
+    mobileContext?.revert();
+    mobileContext = null;
+  };
+
+  const enableMobileMotion = () => {
+    clearMobileMotion();
+    if (!matchMedia("(max-width: 48rem)").matches) return;
+
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      routes.forEach((route) => {
+        route.style.opacity = "1";
+        route.style.setProperty("stroke-dashoffset", "0px", "important");
+      });
+      return;
+    }
+
+    const referralScene = section.querySelector('[data-showcase-scene="referral"]');
+    const revisitScene = section.querySelector('[data-showcase-scene="revisit"]');
+    const nationwideScene = section.querySelector('[data-showcase-scene="nationwide"]');
+    const finalScene = section.querySelector(".showcase-static-final");
+    const finalItems = finalScene
+      ? [finalScene.querySelector("h3"), finalScene.querySelector(":scope > picture")].filter(Boolean)
+      : [];
+
+    mobileContext = gsap.context(() => {
+      gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          id: "showcase-mobile-referral",
+          trigger: referralScene,
+          start: "top 80%",
+          end: "center 54%",
+          scrub: .45,
+          invalidateOnRefresh: true
+        }
+      }).fromTo(referralItems,
+        { autoAlpha: 0, y: 28, scale: .86, filter: "blur(10px)" },
+        { autoAlpha: 1, y: 0, scale: 1, filter: "blur(0px)", stagger: .13, duration: .34 }
+      );
+
+      gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          id: "showcase-mobile-revisit",
+          trigger: revisitScene,
+          start: "top 82%",
+          end: "center 52%",
+          scrub: .45,
+          invalidateOnRefresh: true
+        }
+      }).fromTo(revisitItems,
+        { autoAlpha: 0, filter: "blur(9px)" },
+        { autoAlpha: 1, filter: "blur(0px)", stagger: .12, duration: .32 }
+      );
+
+      gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          id: "showcase-mobile-routes",
+          trigger: nationwideScene,
+          start: "top 76%",
+          end: "center 50%",
+          scrub: .5,
+          invalidateOnRefresh: true
+        }
+      }).fromTo(routes,
+        { strokeDashoffset: 1 },
+        { strokeDashoffset: 0, stagger: .1, duration: .45 }
+      );
+
+      gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          id: "showcase-mobile-final",
+          trigger: finalScene,
+          start: "top 84%",
+          end: "center 58%",
+          scrub: .4,
+          invalidateOnRefresh: true
+        }
+      }).fromTo(finalItems,
+        { autoAlpha: 0, y: 24 },
+        { autoAlpha: 1, y: 0, stagger: .18, duration: .45 }
+      );
+    }, section);
+  };
+
   const render = (progress) => {
     const viewportWidth = getViewportWidth();
     const viewportHeight = getSmallViewportHeight();
@@ -263,7 +352,7 @@ export function initShowcaseScroll() {
     title.textContent = TITLES[0].prefix;
   };
 
-  return createPinHeightGuard({
+  const disposeGuard = createPinHeightGuard({
     section,
     minimumHeightRem: ({ layout }) => {
       if (layout === "mobile") return 42;
@@ -271,6 +360,7 @@ export function initShowcaseScroll() {
       return 48;
     },
     onEnable: () => {
+      clearMobileMotion();
       const state = { progress: 0 };
       const context = gsap.context(() => {
         const animation = gsap.timeline({ paused: true, defaults: { ease: "none" }, onUpdate: () => render(state.progress) });
@@ -296,6 +386,14 @@ export function initShowcaseScroll() {
         context.revert();
       };
     },
-    onDisable: reset
+    onDisable: () => {
+      reset();
+      enableMobileMotion();
+    }
   });
+
+  return () => {
+    clearMobileMotion();
+    disposeGuard();
+  };
 }
