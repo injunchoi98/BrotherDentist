@@ -1,32 +1,22 @@
+# 365서울감동치과 랜딩 페이지
 
-# 형제치과 홈페이지
+프레임워크 런타임 없이 빌드되는 SSG 정적 사이트입니다. 빌드 시 `dist/`에 배포 가능한 HTML, CSS, JavaScript와 이미지가 생성됩니다.
 
-## 사용 기술:
-- 코어: React, Nextjs ,JavaScript
-- 상태관리: React-Query, Recoil
-- 스타일링: tailwindcss, vanilla CSS
-- CI/CD: GitHub Actions
-- 배포: Netlify
+```bash
+npm run build
+npm run dev
+```
 
-## 커밋 컨벤션:
-- feat (feature): 새로운 기능 추가
-- fix (bug fix): 버그 수정
-- docs (documentation): 내부 문서 추가/수정
-- style : CSS 등 디자인 추가/수정
-- design (formatting, missing semi colons, …): 코드 스타일 수정
-- refactor: 코드 리팩토링
-- test (when adding missing tests): 테스트 추가/수정
-- chore (maintain): 빌드 관련 코드 수정
-- env: 개발 환경 관련 설정
+## 주요 섹션
 
-## Prettier & EsLint:
-- EsLint: Airbnb Style Guid
-- Prettier: 작은 따옴표, 세미콜론 사용, 들여쓰기 2칸, 한줄에 최대 100줄
+1. 외관 이미지 기반 메인 히어로
+2. 노션 스타일 환자 일러스트가 바뀌는 걱정 스티키
+3. 문장 사이에서 검은 사각형이 확장되는 브랜드 전환
+4. 이미지 비교 슬라이더를 결합한 커버플로우 증례
+5. 목업 리뷰 인피니트 마키
+6. 임플란트·일반 진료·치아 미백 3개 진료 항목
+7. 판단 근거 스티키 콘텐츠
+8. 메인 의료진 프로필과 하단 썸네일 갤러리
+9. 운영 특장점과 방문 정보
 
-## 배포: CI/CD
-### Github Action 사용:
-Continuous Integration : Dev의 에러가 없을 경우 main으로 자동 통합
-
-### Vercel 사용
-- Continuous Delivery : main 브랜치 자동 배포
-- link: https://hyukplant.com/
+이미지, 증례, 리뷰, 의료진 이력과 주소는 초기 디자인 검토용 목업 데이터입니다.

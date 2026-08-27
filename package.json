@@ -1,40 +1,19 @@
 {
-  "name": "bucheondentist",
-  "version": "0.1.0",
+  "name": "gamdong-dental-landing",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "generate:images": "node scripts/generate-responsive-images.mjs",
+    "check:images": "node scripts/check-images.mjs",
+    "check:typography": "node scripts/check-typography.mjs",
+    "build": "npm run generate:images && npm run check:images && npm run check:typography && node scripts/build.mjs",
+    "dev": "npm run generate:images && node scripts/dev.mjs"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.3",
-    "@emotion/styled": "^11.11.0",
-    "@formatjs/intl-localematcher": "^0.5.4",
-    "@vercel/blob": "^0.20.0",
-    "firebase": "^10.8.0",
-    "negotiator": "^0.6.3",
-    "next": "^14.0.5-canary.60",
-    "next-themes": "^0.2.1",
-    "plaiceholder": "^3.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-icons": "^5.0.1",
-    "react-responsive": "^9.0.2",
-    "recoil": "^0.7.7"
+    "gsap": "^3.13.0"
   },
   "devDependencies": {
-    "@types/negotiator": "^0.6.3",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10.0.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.0.4",
-    "postcss": "^8",
-    "prettier": "3.2.2",
-    "tailwindcss": "^3.3.0",
-    "typescript": "^5"
+    "esbuild": "^0.25.9",
+    "sharp": "^0.34.5"
   }
 }
