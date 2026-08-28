@@ -34,33 +34,19 @@ const REFERRAL_ORBIT_EXTENSION = [[.78, -.68], [1, -.56], [1.22, -.3]];
 const REFERRAL_ORBIT_STARTS = [.72, .52, .77, .52, .8];
 const REFERRAL_ORBIT_PHASES = [.75, 0, .625, .25, .5];
 
-const REVISIT_PATHS = {
-  revisit: [[-.42, -.2], [-.31, -.15], [-.29, -.15], [-.42, -.2]],
-  longterm: [[.42, -.2], [.31, -.15], [.29, -.15], [.42, -.2]],
-  "checkup-count": [[-.42, .2], [-.31, .15], [-.29, .15], [-.42, .2]],
-  next: [[.42, .2], [.31, .15], [.29, .15], [.42, .2]],
-  checkup: [[-.58, -.02], [-.53, -.02], [-.51, -.02], [-.58, -.02]],
-  aftercare: [[.56, .02], [.51, .02], [.49, .02], [.56, .02]]
-};
+const REGION_SEQUENCE = ["전주", "강릉", "제주", "대전", "부산"];
 
-const REVISIT_PATHS_COMPACT = {
-  checkup: [[-.6, -.41], [-.54, -.37], [-.52, -.37], [-.6, -.41]],
-  revisit: [[.5, -.34], [.45, -.3], [.43, -.3], [.5, -.34]],
-  longterm: [[-.57, -.22], [-.51, -.2], [-.49, -.2], [-.57, -.22]],
-  aftercare: [[.55, .2], [.49, .18], [.47, .18], [.55, .2]],
-  "checkup-count": [[-.54, .31], [-.48, .28], [-.46, .28], [-.54, .31]],
-  next: [[.57, .41], [.51, .37], [.49, .37], [.57, .41]]
+/*
+ * These are the two exact layout relationships used by the reference:
+ * “Pixel precision” moves edge-left -> far-right -> edge-left, while
+ * “Sharp contrast” moves far-right -> quarter-haze -> far-right.
+ * The pinned scene supplies the vertical travel that normal document scroll
+ * supplies on the reference page; no decorative curve or rotation is added.
+ */
+const TEXT_FLIP_PATTERNS = {
+  pixel: { from: "edge-left", to: "far-right", fromOpacity: .55, toOpacity: .55, fromBlur: 0, toBlur: 0 },
+  sharp: { from: "far-right", to: "quarter", fromOpacity: .55, toOpacity: 1, fromBlur: 0, toBlur: 2 }
 };
-
-const REGION_MOTIONS = [
-  { entry: [.64, .48], approach: [.23, .28], cluster: [-.12, .17] },
-  { entry: [.7, .56], approach: [.18, .31], cluster: [-.06, .21] },
-  { entry: [.77, .47], approach: [.12, .25], cluster: [0, .25] },
-  { entry: [.74, .65], approach: [.06, .34], cluster: [.06, .29] },
-  { entry: [.83, .58], approach: [0, .3], cluster: [.12, .33] }
-];
-const REGION_EXIT_CONTROL = [-.38, -1.02];
-const REGION_EXIT_DESTINATION = [1.18, -.24];
 
 const clamp = (value, minimum = 0, maximum = 1) => Math.min(maximum, Math.max(minimum, value));
 const mix = (from, to, progress) => from + ((to - from) * progress);
@@ -68,6 +54,7 @@ const smooth = (value) => {
   const progress = clamp(value);
   return progress * progress * (3 - (2 * progress));
 };
+const cinematic = gsap.parseEase("expo.inOut");
 
 const sceneAlpha = (progress, index) => {
   const [start, end] = SCENE_RANGES[index];
@@ -96,15 +83,6 @@ const sampleReferralOrbit = (progress) => {
   return samplePath(REFERRAL_ORBIT_EXTENSION, (progress - 1) / .32);
 };
 
-const sampleQuadratic = (from, control, to, progress) => {
-  const curved = smooth(progress);
-  const inverse = 1 - curved;
-  return [
-    (inverse * inverse * from[0]) + (2 * inverse * curved * control[0]) + (curved * curved * to[0]),
-    (inverse * inverse * from[1]) + (2 * inverse * curved * control[1]) + (curved * curved * to[1])
-  ];
-};
-
 const setBlur = (element, blur) => {
   const value = blur > .08 ? `blur(${blur.toFixed(2)}px)` : "none";
   if (element.style.filter !== value) element.style.filter = value;
@@ -112,7 +90,7 @@ const setBlur = (element, blur) => {
 
 const getViewportWidth = () => document.documentElement.clientWidth;
 
-const renderTitle = (element, lock, progress) => {
+const renderTitle = (element, progress) => {
   const index = Math.max(0, TITLES.findLastIndex(({ start }) => progress >= start));
   const stage = TITLES[index];
   const reveal = stage.start === 0 ? 1 : clamp((progress - stage.start) / .05);
@@ -125,9 +103,6 @@ const renderTitle = (element, lock, progress) => {
     return SCRAMBLE_GLYPHS[(frame + (characterIndex * 7)) % SCRAMBLE_GLYPHS.length];
   }).join("");
   if (element.textContent !== text) element.textContent = text;
-
-  const finalTitle = index === TITLES.length - 1;
-  if (lock.hasAttribute("data-final-title") !== finalTitle) lock.toggleAttribute("data-final-title", finalTitle);
 };
 
 const renderReferral = (items, localProgress, alpha, viewportWidth, viewportHeight) => {
@@ -165,58 +140,126 @@ const renderReferral = (items, localProgress, alpha, viewportWidth, viewportHeig
   });
 };
 
-const renderRevisit = (items, localProgress, alpha, viewportWidth, viewportHeight) => {
-  const radiusX = viewportWidth * .5;
-  const radiusY = viewportHeight * .5;
-  const paths = viewportWidth < 768 ? REVISIT_PATHS_COMPACT : REVISIT_PATHS;
+const getRowPitch = (basePitch, localProgress) => {
+  const approach = smooth(localProgress / .28);
+  const gather = smooth((localProgress - .28) / .22);
+  const exit = smooth((localProgress - .58) / .2);
 
-  items.forEach((item, index) => {
-    const delayed = clamp((localProgress - (.04 + (index * .025))) / .88);
-    const path = paths[item.dataset.motion] || Object.values(paths)[index % Object.keys(paths).length];
-    const [normalizedX, normalizedY] = samplePath(path, delayed);
-    const enter = smooth(delayed / .11);
-    const leave = smooth((1 - delayed) / .13);
-    const depth = Math.sin(delayed * Math.PI);
-    const rotate = ((index % 2 ? -1 : 1) * (1 - depth) * 2);
-
-    item.style.opacity = (alpha * enter * leave * (.58 + (depth * .42))).toFixed(3);
-    setBlur(item, (1 - depth) * 1.15);
-    item.style.transform = `translate3d(calc(-50% + ${(normalizedX * radiusX).toFixed(2)}px), calc(-50% + ${(normalizedY * radiusY).toFixed(2)}px), 0) rotate(${rotate.toFixed(2)}deg)`;
-  });
+  /*
+   * Reference rhythm: enter as a tight text block, briefly fan out while
+   * travelling, gather back to one compact stack at focus, then leave with
+   * only a small amount of air between lines.
+   */
+  const approachPitch = mix(.96, 1.14, approach);
+  const gatheredPitch = mix(approachPitch, .9, gather);
+  return basePitch * mix(gatheredPitch, 1.12, exit);
 };
 
-const renderRegions = (items, localProgress, alpha, viewportWidth, viewportHeight) => {
-  const radiusX = viewportWidth * .5;
-  const radiusY = viewportHeight * .5;
-  const arrival = smooth((localProgress - .12) / .38);
-  const depart = smooth((localProgress - .61) / .31);
-  const fade = smooth((localProgress - .82) / .13);
+const getRowLayout = (count, localProgress, viewportHeight, basePitch) => {
+  const gap = getRowPitch(basePitch, localProgress);
+  const exitGap = getRowPitch(basePitch, 1);
+  const startY = viewportHeight * .68;
+  const endY = (-viewportHeight * .68) - ((count - 1) * exitGap);
+  return { gap, groupY: mix(startY, endY, localProgress), startY, endY };
+};
+
+const getRowFocusProgress = (index, count, viewportHeight, basePitch) => {
+  let minimum = 0;
+  let maximum = 1;
+
+  for (let iteration = 0; iteration < 14; iteration += 1) {
+    const progress = (minimum + maximum) * .5;
+    const { gap, groupY } = getRowLayout(count, progress, viewportHeight, basePitch);
+    if (groupY + (index * gap) > 0) minimum = progress;
+    else maximum = progress;
+  }
+
+  return (minimum + maximum) * .5;
+};
+
+const getRowState = (index, count, localProgress, viewportHeight, basePitch) => {
+  const { gap, groupY } = getRowLayout(count, localProgress, viewportHeight, basePitch);
+  const y = groupY + (index * gap);
+  const focusDistance = Math.max(170, viewportHeight * .34);
+  const focus = y >= 0
+    ? cinematic(clamp(1 - (y / focusDistance)))
+    : 1 - cinematic(clamp(-y / focusDistance));
+  const enter = smooth(((viewportHeight * .68) - y) / (viewportHeight * .2));
+  const leave = smooth((y + (viewportHeight * .68)) / (viewportHeight * .2));
+  const scrambleReveal = smooth(((viewportHeight * .66) - y) / (viewportHeight * .18));
+  return { y, focus, visibility: enter * leave, scrambleReveal };
+};
+
+const getHorizontalAnchor = (name, viewportWidth, itemWidth) => {
+  const compact = viewportWidth <= 640;
+  const gutter = compact ? 16 : Math.min(64, Math.max(24, viewportWidth * .04));
+  const safeRight = Math.max(gutter, viewportWidth - itemWidth - gutter);
+  const left = gutter;
+  const farRight = Math.min(viewportWidth * (compact ? .5 : .7), safeRight);
+  const quarter = gutter + (viewportWidth * (compact ? .18 : .25));
+  const leftPosition = name === "edge-left" ? left : name === "quarter" ? quarter : farRight;
+  return leftPosition + (itemWidth * .5) - (viewportWidth * .5);
+};
+
+const renderScramble = (item, reveal, frame) => {
+  const source = item.dataset.scrambleSource || item.textContent || "";
+  if (!item.dataset.scrambleSource) item.dataset.scrambleSource = source;
+  if (reveal >= .995) {
+    if (item.textContent !== source) item.textContent = source;
+    return;
+  }
+
+  const characters = Array.from(source);
+  const revealed = Math.floor(characters.length * reveal);
+  const text = characters.map((character, characterIndex) => {
+    if (/\s/.test(character) || characterIndex < revealed) return character;
+    return SCRAMBLE_GLYPHS[(frame + (characterIndex * 7)) % SCRAMBLE_GLYPHS.length];
+  }).join("");
+  if (item.textContent !== text) item.textContent = text;
+};
+
+const renderReferenceTextGroup = ({ items, localProgress, alpha, viewportWidth, viewportHeight, metrics, patternName }) => {
+  const pattern = TEXT_FLIP_PATTERNS[patternName];
+  const quarterDrop = Math.min(50, Math.max(20, viewportHeight * .05));
+  const frame = Math.floor(localProgress * 520);
+  const basePitch = Math.max(...items.map((item) => metrics.get(item)?.height || 0), 1);
 
   items.forEach((item, index) => {
-    const motion = REGION_MOTIONS[index] || REGION_MOTIONS.at(-1);
-    const enter = smooth((localProgress - (.04 + (index * .03))) / .13);
-    const inCluster = sampleQuadratic(motion.entry, motion.approach, motion.cluster, arrival);
-    const trailProgress = clamp(depart - (index * .028));
-    const [exitX, exitY] = sampleQuadratic(motion.cluster, REGION_EXIT_CONTROL, REGION_EXIT_DESTINATION, trailProgress);
-    const x = (depart > 0 ? exitX : inCluster[0]) * radiusX;
-    const y = (depart > 0 ? exitY : inCluster[1]) * radiusY;
-    const middleBlur = smooth((arrival - .44) / .18) * (1 - smooth((arrival - .8) / .14)) * 2.8;
-    const departureBlur = smooth((trailProgress - .82) / .18) * .4;
-    const blur = middleBlur + departureBlur;
+    const { y, focus, visibility, scrambleReveal } = getRowState(index, items.length, localProgress, viewportHeight, basePitch);
+    const itemWidth = metrics.get(item)?.width || 0;
+    const fromX = getHorizontalAnchor(pattern.from, viewportWidth, itemWidth);
+    const toX = getHorizontalAnchor(pattern.to, viewportWidth, itemWidth);
+    const x = mix(fromX, toX, focus);
+    const targetDrop = patternName === "sharp" ? quarterDrop * focus : 0;
+    const opacity = alpha * visibility * mix(pattern.fromOpacity, pattern.toOpacity, focus);
+    const blur = mix(pattern.fromBlur, pattern.toBlur, focus);
 
-    item.style.opacity = (alpha * enter * (1 - fade)).toFixed(3);
+    renderScramble(item, scrambleReveal, frame + (index * 13));
+    item.style.zIndex = `${6 + Math.round(focus * 5)}`;
+    item.style.opacity = opacity.toFixed(3);
     setBlur(item, blur);
-    item.style.transform = `translate3d(calc(-50% + ${x.toFixed(2)}px), calc(-50% + ${y.toFixed(2)}px), 0)`;
+    item.style.transform = `translate3d(calc(-50% + ${x.toFixed(2)}px), calc(-50% + ${(y + targetDrop).toFixed(2)}px), 0)`;
   });
 };
 
-const renderMap = (map, routes, localProgress, alpha) => {
-  const reveal = smooth((localProgress - .28) / .18);
+const renderRevisit = (items, localProgress, alpha, viewportWidth, viewportHeight, metrics) => {
+  renderReferenceTextGroup({ items, localProgress, alpha, viewportWidth, viewportHeight, metrics, patternName: "pixel" });
+};
+
+const renderRegions = (items, localProgress, alpha, viewportWidth, viewportHeight, metrics) => {
+  renderReferenceTextGroup({ items, localProgress, alpha, viewportWidth, viewportHeight, metrics, patternName: "sharp" });
+};
+
+const renderMap = (map, routes, localProgress, alpha, viewportHeight, regionItems, metrics) => {
+  const reveal = smooth((localProgress - .12) / .2);
   map.style.opacity = (alpha * reveal * .78).toFixed(3);
   map.style.transform = `scale(${(.9 + (reveal * .1)).toFixed(3)})`;
+  const basePitch = Math.max(...regionItems.map((item) => metrics.get(item)?.height || 0), 1);
 
-  routes.forEach((route, index) => {
-    const drawn = smooth((localProgress - (.46 + (index * .04))) / .34);
+  routes.forEach((route) => {
+    const cityIndex = Math.max(0, REGION_SEQUENCE.indexOf(route.dataset.city));
+    const focusProgress = getRowFocusProgress(cityIndex, REGION_SEQUENCE.length, viewportHeight, basePitch);
+    const drawn = smooth((localProgress - (focusProgress - .08)) / .18);
     route.style.opacity = (alpha * drawn).toFixed(3);
     route.style.strokeDashoffset = (1 - drawn).toFixed(4);
   });
@@ -238,6 +281,15 @@ export function initShowcaseScroll() {
   const routes = Array.from(section.querySelectorAll(".showcase-map-routes path"));
   const motionItems = Array.from(section.querySelectorAll(".showcase-motion-item"));
   if (!panel || !title || !titleLock || !image || !map || scenes.length !== 3) return;
+
+  const motionMetrics = new WeakMap();
+  const measureMotionMetrics = () => {
+    motionItems.forEach((item) => {
+      const bounds = item.getBoundingClientRect();
+      motionMetrics.set(item, { width: bounds.width, height: bounds.height });
+    });
+  };
+  measureMotionMetrics();
 
   let mobileContext = null;
   const clearMobileMotion = () => {
@@ -331,7 +383,7 @@ export function initShowcaseScroll() {
   const render = (progress) => {
     const viewportWidth = getViewportWidth();
     const viewportHeight = getSmallViewportHeight();
-    renderTitle(title, titleLock, progress);
+    renderTitle(title, progress);
     scenes.forEach((scene, index) => {
       const alpha = sceneAlpha(progress, index);
       scene.style.visibility = alpha > .005 ? "visible" : "hidden";
@@ -342,9 +394,9 @@ export function initShowcaseScroll() {
     const revisitProgress = clamp((progress - SCENE_RANGES[1][0]) / (SCENE_RANGES[1][1] - SCENE_RANGES[1][0]));
     const nationwideProgress = clamp((progress - SCENE_RANGES[2][0]) / (SCENE_RANGES[2][1] - SCENE_RANGES[2][0]));
     renderReferral(referralItems, referralProgress, sceneAlpha(progress, 0), viewportWidth, viewportHeight);
-    renderRevisit(revisitItems, revisitProgress, sceneAlpha(progress, 1), viewportWidth, viewportHeight);
-    renderRegions(regionItems, nationwideProgress, sceneAlpha(progress, 2), viewportWidth, viewportHeight);
-    renderMap(map, routes, nationwideProgress, sceneAlpha(progress, 2));
+    renderRevisit(revisitItems, revisitProgress, sceneAlpha(progress, 1), viewportWidth, viewportHeight, motionMetrics);
+    renderRegions(regionItems, nationwideProgress, sceneAlpha(progress, 2), viewportWidth, viewportHeight, motionMetrics);
+    renderMap(map, routes, nationwideProgress, sceneAlpha(progress, 2), viewportHeight, regionItems, motionMetrics);
 
     const imageProgress = smooth((progress - .875) / .12);
     image.style.setProperty("--showcase-reveal", imageProgress.toFixed(4));
@@ -356,15 +408,20 @@ export function initShowcaseScroll() {
   const reset = () => {
     [...scenes, ...motionItems, ...routes, map, titleLock, image]
       .forEach((element) => element?.removeAttribute("style"));
+    motionItems.forEach((item) => {
+      if (item.dataset.scrambleSource) item.textContent = item.dataset.scrambleSource;
+    });
     image.classList.remove("is-visible");
-    titleLock.removeAttribute("data-final-title");
     title.textContent = TITLES[0].prefix;
   };
 
   const disposeGuard = createPinHeightGuard({
     section,
+    // The locked headings are the essential content on compact screens;
+    // surrounding photos and map geometry may crop inside the sticky panel.
+    allowMobile: true,
     minimumHeightRem: ({ layout }) => {
-      if (layout === "mobile") return 42;
+      if (layout === "mobile") return 20;
       if (layout === "medium") return 45;
       return 42;
     },
@@ -386,7 +443,8 @@ export function initShowcaseScroll() {
           start: "top top",
           end: "bottom bottom",
           scrub: .7,
-          invalidateOnRefresh: true
+          invalidateOnRefresh: true,
+          onRefreshInit: measureMotionMetrics
         });
         render(0);
       }, section);

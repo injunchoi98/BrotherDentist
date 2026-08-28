@@ -8,6 +8,7 @@ const reducedMotionQuery = matchMedia("(prefers-reduced-motion: reduce)");
 let smallViewportProbe = null;
 let currentState = null;
 let resizeFrame = 0;
+let forceNextNotification = false;
 let started = false;
 
 const getRootFontSize = () => {
@@ -61,24 +62,28 @@ const measureViewportState = () => {
 };
 
 const notifySubscribers = () => {
-  currentState = measureViewportState();
+  const nextState = measureViewportState();
+  const viewportChanged = !currentState
+    || nextState.width !== currentState.width
+    || Math.round(nextState.smallViewportHeight) !== Math.round(currentState.smallViewportHeight)
+    || nextState.reducedMotion !== currentState.reducedMotion;
+
+  if (!viewportChanged && !forceNextNotification) return;
+  forceNextNotification = false;
+  currentState = nextState;
   subscribers.forEach((subscriber) => subscriber(currentState));
 };
 
-const scheduleMeasurement = () => {
+const scheduleMeasurement = (force = false) => {
+  forceNextNotification ||= force;
   cancelAnimationFrame(resizeFrame);
   resizeFrame = requestAnimationFrame(notifySubscribers);
 };
 
 const handleResize = () => {
-  const nextWidth = getViewportWidth();
-  const widthChanged = Math.abs(nextWidth - (currentState?.width ?? nextWidth)) > 1;
-
-  // Mobile Safari fires resize while its browser chrome expands and collapses.
-  // Pinning is disabled at this width, so keep the stable svh snapshot until
-  // an actual width/orientation change occurs.
-  if (currentState?.isMobile && !widthChanged) return;
-
+  // Measure on the next frame: during the resize event, 100svh may still expose
+  // the previous frame's value. Chrome-only mobile resizes are filtered later
+  // because their stable small-viewport dimensions do not actually change.
   scheduleMeasurement();
 };
 
@@ -87,8 +92,8 @@ const startViewportState = () => {
   started = true;
   currentState = measureViewportState();
   addEventListener("resize", handleResize, { passive: true });
-  reducedMotionQuery.addEventListener("change", scheduleMeasurement);
-  document.fonts?.ready.then(scheduleMeasurement);
+  reducedMotionQuery.addEventListener("change", () => scheduleMeasurement(true));
+  document.fonts?.ready.then(() => scheduleMeasurement(true));
 };
 
 export const getViewportState = () => {

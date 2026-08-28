@@ -1,7 +1,10 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { concerns } from "../data.js";
-import { createPinHeightGuard } from "../utils/pin-height-guard.js";
+import {
+  calculatePinMinimumHeightRem,
+  createPinHeightGuard
+} from "../utils/pin-height-guard.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,7 +15,26 @@ export function initConcernScroll() {
   const copy = section.querySelector("[data-concern-copy]");
   const dialogue = section.querySelector("[data-concern-dialogue]");
   const patient = section.querySelector("[data-patient]");
+  const header = document.querySelector("[data-header]");
   let current = -1;
+
+  const getTextMinimumHeightRem = () => {
+    const copyStyles = getComputedStyle(section.querySelector(".concern-copy"));
+    const copyGap = Number.parseFloat(copyStyles.rowGap || copyStyles.gap) || 0;
+    const contentHeightPixels = heading.getBoundingClientRect().height
+      + dialogue.getBoundingClientRect().height
+      + copyGap;
+
+    // The illustration is intentionally allowed to crop. The pin only needs
+    // enough height for the fixed header, the longest heading/bubble pair, and
+    // small safe areas above and below that essential text.
+    return calculatePinMinimumHeightRem({
+      headerHeightPixels: header?.getBoundingClientRect().height || 0,
+      contentHeightPixels,
+      topSafetyRem: 1,
+      bottomSafetyRem: 1
+    });
+  };
 
   const render = (index, animate = true) => {
     if (index === current) return;
@@ -30,11 +52,8 @@ export function initConcernScroll() {
   render(0, false);
   return createPinHeightGuard({
     section,
-    minimumHeightRem: ({ layout }) => {
-      if (layout === "mobile") return 39;
-      if (layout === "medium") return 42;
-      return 40;
-    },
+    allowMobile: true,
+    minimumHeightRem: getTextMinimumHeightRem,
     onEnable: () => {
       const trigger = ScrollTrigger.create({
         id: "concern-pin-progress",

@@ -8,8 +8,8 @@
     <title>365서울감동치과의원</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%232763ea%22/><text x=%2232%22 y=%2240%22 font-size=%2226%22 text-anchor=%22middle%22 fill=%22white%22>365</text></svg>" />
     <link rel="preload" as="image" href="./assets/images/webp/clinic-hero-poster-1920.webp" type="image/webp" fetchpriority="high" />
-    <link rel="stylesheet" href="./src/styles.css?v=20260826-3" />
-    <script type="module" src="./src/main.js?v=20260826-2"></script>
+    <link rel="stylesheet" href="./src/styles.css?v=20260828-showcase-motion-9" />
+    <script type="module" src="./src/main.js?v=20260828-showcase-motion-9"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
@@ -42,6 +42,7 @@
     <main id="main">
       <section class="hero" id="top" aria-labelledby="hero-title">
         <h1 class="sr-only" id="hero-title">365서울감동치과의원</h1>
+        <!-- Safari A/B: native autoplay only; no JS play(), canplay, or visibility listeners. -->
         <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="./assets/images/webp/clinic-hero-poster-1920.webp" aria-hidden="true">
           <source media="(max-width: 64rem)" src="./assets/video/clinic-hero-960.mp4" type="video/mp4" />
           <source src="./assets/video/clinic-hero.mp4" type="video/mp4" />
@@ -51,13 +52,15 @@
       <section class="concern-section" id="concern" data-concern aria-labelledby="concern-title">
         <h2 class="sr-only" id="concern-title">치과를 선택할 때 드는 세 가지 고민</h2>
         <div class="concern-sticky">
-          <div class="concern-copy">
-            <h3 class="display-title" data-concern-heading>치과 선택할 때</h3>
-            <div class="concern-dialogue" data-concern-dialogue>
-              <p class="concern-bubble" data-concern-copy>과잉 진료면 어쩌지</p>
+          <div class="concern-stage">
+            <div class="concern-copy">
+              <h3 class="display-title" data-concern-heading>치과 선택할 때</h3>
+              <div class="concern-dialogue" data-concern-dialogue>
+                <p class="concern-bubble" data-concern-copy>과잉 진료면 어쩌지</p>
+              </div>
             </div>
+            <div class="patient-illustration" data-patient data-pose="0" role="img" aria-label="치과 선택을 고민하는 환자 일러스트"></div>
           </div>
-          <div class="patient-illustration" data-patient data-pose="0" role="img" aria-label="치과 선택을 고민하는 환자 일러스트"></div>
         </div>
         <div class="concern-fallback-list">
           <article class="concern-fallback-item">
@@ -472,7 +475,7 @@
           <div class="showcase-depth-field" aria-hidden="true"></div>
 
           <article class="showcase-scene showcase-scene-referral" data-showcase-scene="referral" aria-hidden="true">
-            <h3 class="showcase-static-title">소개 환자 많은 치과</h3>
+            <h3 class="showcase-static-title"><span>소개 환자 많은</span><span>치과</span></h3>
             <div class="showcase-referral-media" data-referral-media>
               <figure class="showcase-motion-item showcase-photo showcase-photo-landscape" data-referral-item>
                 <picture><source type="image/webp" srcset="./assets/images/webp/consultation-480.webp 480w, ./assets/images/webp/consultation-960.webp 960w, ./assets/images/webp/consultation-1440.webp 1440w" sizes="14rem" /><img src="./assets/images/consultation.png" alt="" width="1536" height="1024" loading="lazy" decoding="async" /></picture>
@@ -493,7 +496,7 @@
           </article>
 
           <article class="showcase-scene showcase-scene-revisit" id="showcase-revisit" data-showcase-scene="revisit" aria-hidden="true">
-            <h3 class="showcase-static-title">재방문하는 치과</h3>
+            <h3 class="showcase-static-title"><span>재방문하는</span><span>치과</span></h3>
             <div class="showcase-scramble-field" data-revisit-field>
               <p class="showcase-motion-item showcase-scramble-item showcase-metric" data-revisit-item data-motion="revisit">재방문율 87%</p>
               <p class="showcase-motion-item showcase-scramble-item showcase-metric-secondary" data-revisit-item data-motion="longterm">장기 내원 환자 52%</p>
@@ -505,7 +508,7 @@
           </article>
 
           <article class="showcase-scene showcase-scene-nationwide" data-showcase-scene="nationwide" aria-hidden="true">
-            <h3 class="showcase-static-title">전국에서 찾아오는 치과</h3>
+            <h3 class="showcase-static-title"><span>전국에서 찾아오는</span><span>치과</span></h3>
             <div class="showcase-korea-map">
               <svg viewBox="0 0 500 600" role="presentation">
                 <defs>
@@ -527,11 +530,11 @@
                   <path d="M141.9 546.6 L129.4 563.6 L101.7 570.6 L69.3 570.9 L61.8 575 L48.9 564.5 L66.6 547.9 L87.3 542.2 L123.7 537.9 Z"></path>
                 </g>
                 <g class="showcase-map-routes">
-                  <path pathLength="1" d="M130 555 Q84 314 242 135"></path>
-                  <path pathLength="1" d="M359 381 Q246 248 242 135"></path>
-                  <path pathLength="1" d="M190 356 Q128 230 242 135"></path>
-                  <path pathLength="1" d="M248 319 Q170 228 242 135"></path>
-                  <path pathLength="1" d="M362 184 Q250 137 242 135"></path>
+                  <path data-city="제주" pathLength="1" d="M130 555 Q84 314 242 135"></path>
+                  <path data-city="부산" pathLength="1" d="M359 381 Q246 248 242 135"></path>
+                  <path data-city="전주" pathLength="1" d="M190 356 Q128 230 242 135"></path>
+                  <path data-city="대전" pathLength="1" d="M248 319 Q170 228 242 135"></path>
+                  <path data-city="강릉" pathLength="1" d="M362 184 Q250 137 242 135"></path>
                 </g>
                 <g class="showcase-map-hubs">
                   <circle data-city="제주" cx="130" cy="555" r="3.5"></circle>
@@ -547,11 +550,11 @@
               </svg>
             </div>
             <div class="showcase-region-field" data-region-field>
-              <p class="showcase-motion-item showcase-region" data-region-item>전주</p>
-              <p class="showcase-motion-item showcase-region" data-region-item>강릉</p>
-              <p class="showcase-motion-item showcase-region" data-region-item>제주</p>
-              <p class="showcase-motion-item showcase-region" data-region-item>대전</p>
-              <p class="showcase-motion-item showcase-region" data-region-item>부산</p>
+              <p class="showcase-motion-item showcase-region" data-region-item data-city="전주">전주</p>
+              <p class="showcase-motion-item showcase-region" data-region-item data-city="강릉">강릉</p>
+              <p class="showcase-motion-item showcase-region" data-region-item data-city="제주">제주</p>
+              <p class="showcase-motion-item showcase-region" data-region-item data-city="대전">대전</p>
+              <p class="showcase-motion-item showcase-region" data-region-item data-city="부산">부산</p>
             </div>
           </article>
 

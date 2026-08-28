@@ -23,35 +23,9 @@ initFeatureVisuals();
 initReviewMarquee();
 initShowcaseScroll();
 
-let refreshFrame = 0;
-const refreshScrollGeometry = () => {
-  cancelAnimationFrame(refreshFrame);
-  refreshFrame = requestAnimationFrame(() => ScrollTrigger.refresh(true));
-};
-refreshScrollGeometry();
-addEventListener("load", refreshScrollGeometry, { once: true });
-document.fonts?.ready.then(refreshScrollGeometry);
-const eagerImages = [...document.images].filter((image) => image.loading !== "lazy");
-Promise.all(eagerImages.map((image) => image.decode().catch(() => {}))).then(refreshScrollGeometry);
-document.addEventListener("load", (event) => {
-  if (event.target instanceof HTMLImageElement && event.target.loading === "lazy") refreshScrollGeometry();
-}, true);
-
-const heroVideo = document.querySelector(".hero-video");
-const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-const startHeroVideo = () => {
-  if (!heroVideo || reducedMotion.matches) return;
-  heroVideo.play().catch(() => {});
-};
-startHeroVideo();
-heroVideo?.addEventListener("canplay", startHeroVideo, { once: true });
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) startHeroVideo();
-});
-reducedMotion.addEventListener("change", ({ matches }) => {
-  if (matches) heroVideo?.pause();
-  else startHeroVideo();
-});
+// ScrollTrigger already refreshes on DOMContentLoaded, load, resize, and visibility changes.
+// Web-font completion is the only extra layout event it cannot observe directly.
+document.fonts?.ready.then(() => ScrollTrigger.refresh());
 
 const header = document.querySelector("[data-header]");
 const hero = document.querySelector(".hero");
