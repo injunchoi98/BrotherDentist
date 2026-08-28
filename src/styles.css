@@ -232,9 +232,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .equipment-evidence-panel[data-pin-disabled] { min-height: 0 !important; }
 .equipment-evidence-panel[data-pin-disabled] .equipment-sticky-content,
 .equipment-evidence-panel[data-pin-disabled] .equipment-sticky-anchor { position: relative; top: auto; }
-.equipment-card-stack { position: relative; width: min(100%, 42rem); margin-inline: auto; }
+.equipment-card-stack { position: relative; width: 100%; margin-inline: auto; container: equipment-stack / inline-size; }
 .equipment-stack-stage { position: relative; height: clamp(26rem, calc(100svh - 18rem), 27.5rem); touch-action: pan-y; user-select: none; }
-.equipment-card { position: absolute; inset: 0; display: block !important; min-height: 0 !important; overflow: hidden; border: 1px solid var(--color-line); border-radius: var(--radius-card); padding: 0 !important; background: var(--color-white); box-shadow: 0 1.4rem 3rem rgba(16,22,21,.09); opacity: 0; transform: translateX(var(--drag-x, 0)) translateY(var(--stack-y, 0)) scale(var(--stack-scale, 1)) rotate(calc(var(--stack-rotate, 0deg) + var(--drag-rotate, 0deg))); transform-origin: center bottom; transition: transform .38s cubic-bezier(.2,.75,.2,1), opacity .28s; pointer-events: none; }
+.equipment-card { position: absolute; inset: 0; display: grid !important; min-height: 0 !important; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 0 !important; overflow: hidden; border: 1px solid var(--color-line); border-radius: var(--radius-card); padding: 0 !important; background: var(--color-white); box-shadow: 0 1.4rem 3rem rgba(16,22,21,.09); opacity: 0; transform: translateX(var(--drag-x, 0)) translateY(var(--stack-y, 0)) scale(var(--stack-scale, 1)) rotate(calc(var(--stack-rotate, 0deg) + var(--drag-rotate, 0deg))); transform-origin: center bottom; transition: transform .38s cubic-bezier(.2,.75,.2,1), opacity .28s; pointer-events: none; }
 .equipment-card[data-active] { cursor: grab; pointer-events: auto; }
 .equipment-card[data-dragging] { cursor: grabbing; transition: none; }
 .equipment-card-media { height: clamp(11.5rem, calc(100svh - 32.5rem), 13rem); overflow: hidden; }
@@ -722,6 +722,16 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .showcase[data-pin-disabled] { content-visibility: visible; contain-intrinsic-size: none; }
   .visit-information { grid-template-columns: 1fr; gap: 2rem; }.visit-information h2 { grid-column: auto; }.visit-map { width: calc(100% + (var(--space-page) * 2)); max-width: none; aspect-ratio: 4 / 3; margin-inline: calc(var(--space-page) * -1); border-radius: 0; }
   .footer-main { grid-template-columns: 1fr 1fr; }.footer-brand, .footer-navigation { grid-column: 1 / -1; }.footer-bottom { align-items: flex-start; flex-direction: column; }
+}
+
+/* The card responds to its own available width because the evidence column can
+ * be narrow on desktop and wide on tablet. A wide card gives the equipment
+ * image a full-height column; a narrow card keeps the mobile reading order. */
+@container equipment-stack (min-width: 40rem) {
+  .equipment-card { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr); }
+  .equipment-card-media { height: 100%; min-height: 0; }
+  .equipment-card-copy { align-self: center; padding: 2rem 1.5rem 3.5rem 1rem; }
+  .equipment-stack-status { right: 1.5rem; bottom: 1.5rem; }
 }
 
 @media (max-width: 37.5rem) {
