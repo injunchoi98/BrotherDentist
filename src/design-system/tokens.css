@@ -1,0 +1,428 @@
+/*
+ * Clinic Landing Design System
+ *
+ * Import this file after ../clinic-seed-design-system.css.
+ * Landing code consumes these aliases instead of raw palette values.
+ */
+
+:root {
+  /* Font family: keep the browser root size intact. */
+  --landing-font-family: var(--seed-font-family-sans);
+
+  /*
+   * Heading 1 — main-page hero statement only.
+   * Continuous anchors: 390=40, 768=60, 1024=60, 1440=80, 1920=92.
+   */
+  --landing-heading-1-size: clamp(
+    2.5rem,
+    calc(1.2103175rem + 5.2910053vw),
+    3.75rem
+  );
+  --landing-heading-1-line-height: clamp(
+    3.2rem,
+    calc(1.8587302rem + 5.5026455vw),
+    4.5rem
+  );
+  --landing-heading-1-letter-spacing: -0.035em;
+
+  /*
+   * Heading 2 — treatment-page title and final reservation CTA title.
+   * Use once per major page region; do not use it for every section.
+   */
+  --landing-heading-2-size: clamp(
+    2.25rem,
+    calc(0rem + 4.6875vw),
+    3rem
+  );
+  --landing-heading-2-line-height: 1.28;
+  --landing-heading-2-letter-spacing: -0.03em;
+
+  /*
+   * Heading 3 — section title such as treatment benefits, process, or FAQ.
+   */
+  --landing-heading-3-size: clamp(
+    1.75rem,
+    calc(1rem + 1.5625vw),
+    2rem
+  );
+  --landing-heading-3-line-height: 1.4;
+  --landing-heading-3-letter-spacing: -0.025em;
+
+  /*
+   * Heading 4 — card title, process-step title, or subsection title.
+   */
+  --landing-heading-4-size: clamp(
+    1.125rem,
+    calc(0.8173077rem + 0.4807692vw),
+    1.25rem
+  );
+  --landing-heading-4-line-height: 1.48;
+  --landing-heading-4-letter-spacing: -0.018em;
+
+  /*
+   * Body 1 — hero lead or a section's single key message.
+   * Larger copy with a short measure of about 30 Korean characters.
+   */
+  --landing-body-1-size: clamp(
+    1.125rem,
+    calc(0.8173077rem + 0.4807692vw),
+    1.25rem
+  );
+  --landing-body-1-line-height: 1.48;
+  --landing-body-1-measure: 30em;
+
+  /*
+   * Body 2 — default landing-section description.
+   * Target about 35–36 Korean characters on tablet and desktop.
+   */
+  --landing-body-2-size: clamp(
+    1rem,
+    calc(0.625rem + 0.4166667vw),
+    1.125rem
+  );
+  --landing-body-2-line-height: 1.6;
+  --landing-body-2-measure: 36em;
+
+  /*
+   * Body 3 — long treatment explanation, FAQ answer, or health guide.
+   * Target no more than about 40 Korean characters per line.
+   */
+  --landing-body-3-size: clamp(
+    1rem,
+    calc(0.625rem + 0.4166667vw),
+    1.125rem
+  );
+  --landing-body-3-line-height: 1.6;
+  --landing-body-3-measure: 40em;
+
+  /*
+   * Body 4 — compact card copy, caption, metadata, or supporting note.
+   * Continuous anchors: 390=14, 768=16, 1440=16, 1920=18.
+   */
+  --landing-body-4-size: clamp(
+    0.875rem,
+    calc(0.7460317rem + 0.5291005vw),
+    1rem
+  );
+  --landing-body-4-line-height: 1.6;
+  --landing-body-4-measure: 26em;
+
+  /*
+   * Component text — fixed roles for navigation, controls, labels, and dense
+   * visual annotations. These roles never replace heading or body copy.
+   */
+  --landing-ui-control-size: 1rem;
+  --landing-ui-control-line-height: 1.375rem;
+  --landing-ui-label-size: 0.875rem;
+  --landing-ui-label-line-height: 1.1875rem;
+  --landing-ui-meta-size: 0.75rem;
+  --landing-ui-meta-line-height: 1rem;
+
+  /* Only these weights are public. */
+  --landing-font-weight-regular: 400;
+  --landing-font-weight-medium: 500;
+  --landing-font-weight-bold: 700;
+
+  /* Color aliases inherited from the Clinic/SEED semantic roles. */
+  --landing-color-text: var(--seed-color-fg-neutral);
+  --landing-color-text-muted: var(--seed-color-fg-neutral-muted);
+  --landing-color-text-subtle: var(--seed-color-fg-neutral-subtle);
+  --landing-color-text-on-solid: var(--seed-color-fg-on-solid);
+  --landing-color-link: var(--seed-color-fg-brand);
+  --landing-color-canvas: var(--seed-color-bg-layer-default);
+  --landing-color-section: var(--clinic-color-bg-section-subtle);
+  --landing-color-card: var(--clinic-color-bg-surface);
+  --landing-color-brand: var(--seed-color-bg-brand-solid);
+  --landing-color-brand-weak: var(--seed-color-bg-brand-weak);
+  --landing-color-divider: var(--clinic-color-stroke-divider);
+  --landing-color-control: var(--clinic-color-stroke-control);
+  --landing-color-focus: var(--seed-color-stroke-focus-ring);
+
+  /* Layout */
+  --landing-content-max: 80rem;
+  --landing-page-gutter: 1rem;
+  --landing-section-space: clamp(4rem, calc(3rem + 5vw), 8rem);
+  --landing-grid-gap: clamp(1rem, calc(0.75rem + 1.25vw), 2rem);
+
+  /* Shape and interaction */
+  --landing-radius-surface: var(--seed-radius-r4);
+  --landing-radius-control: var(--seed-radius-r2-5);
+  --landing-radius-pill: var(--seed-radius-full);
+  --landing-control-min-size: 2.75rem;
+  --landing-focus-ring-width: 0.1875rem;
+  --landing-motion-duration: var(--seed-duration-d4);
+  --landing-motion-easing: var(--seed-easing-standard);
+}
+
+/* Prefer the CJK character measure when the browser supports it. */
+@supports (max-inline-size: 1ic) {
+  :root {
+    --landing-body-1-measure: 30ic;
+    --landing-body-2-measure: 36ic;
+    --landing-body-3-measure: 40ic;
+    --landing-body-4-measure: 26ic;
+  }
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --landing-page-gutter: 1.5rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --landing-heading-1-size: clamp(
+      3.75rem,
+      calc(0.6730769rem + 4.8076923vw),
+      5rem
+    );
+    --landing-heading-1-line-height: clamp(
+      4.5rem,
+      calc(0.8076923rem + 5.7692308vw),
+      6rem
+    );
+  }
+}
+
+@media (min-width: 80rem) {
+  :root {
+    --landing-page-gutter: 2rem;
+  }
+}
+
+@media (min-width: 90rem) {
+  :root {
+    --landing-heading-1-size: clamp(
+      5rem,
+      calc(2.75rem + 2.5vw),
+      5.75rem
+    );
+    --landing-heading-1-line-height: clamp(
+      6rem,
+      calc(3.3rem + 3vw),
+      6.9rem
+    );
+    --landing-heading-2-size: clamp(
+      3rem,
+      calc(0rem + 3.3333vw),
+      4rem
+    );
+    --landing-heading-3-size: clamp(
+      2rem,
+      calc(0.5rem + 1.6667vw),
+      2.5rem
+    );
+    --landing-heading-4-size: clamp(
+      1.25rem,
+      calc(0.5rem + 0.8333vw),
+      1.5rem
+    );
+    --landing-body-1-size: clamp(
+      1.25rem,
+      calc(0.5rem + 0.8333vw),
+      1.5rem
+    );
+    --landing-body-4-size: clamp(
+      1rem,
+      calc(0.625rem + 0.4166667vw),
+      1.125rem
+    );
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--landing-font-family);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-wrap: break-word;
+  background: var(--landing-color-canvas);
+  color: var(--landing-color-text);
+}
+
+img,
+picture,
+video {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: var(--landing-focus-ring-width) solid var(--landing-color-focus);
+  outline-offset: 0.125rem;
+}
+
+.landing-container {
+  inline-size: min(
+    calc(100% - var(--landing-page-gutter) * 2),
+    var(--landing-content-max)
+  );
+  margin-inline: auto;
+}
+
+.landing-section {
+  padding-block: var(--landing-section-space);
+}
+
+.landing-heading-1,
+.landing-heading-2,
+.landing-heading-3,
+.landing-heading-4 {
+  margin: 0;
+  font-weight: var(--landing-font-weight-bold);
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+.landing-heading-1 {
+  font-size: var(--landing-heading-1-size);
+  line-height: var(--landing-heading-1-line-height);
+  letter-spacing: var(--landing-heading-1-letter-spacing);
+}
+
+.landing-heading-2 {
+  font-size: var(--landing-heading-2-size);
+  line-height: var(--landing-heading-2-line-height);
+  letter-spacing: var(--landing-heading-2-letter-spacing);
+}
+
+.landing-heading-3 {
+  font-size: var(--landing-heading-3-size);
+  line-height: var(--landing-heading-3-line-height);
+  letter-spacing: var(--landing-heading-3-letter-spacing);
+}
+
+.landing-heading-4 {
+  font-size: var(--landing-heading-4-size);
+  line-height: var(--landing-heading-4-line-height);
+  letter-spacing: var(--landing-heading-4-letter-spacing);
+}
+
+.landing-body-1,
+.landing-body-2,
+.landing-body-3,
+.landing-body-4 {
+  margin: 0;
+  color: var(--landing-color-text-muted);
+  font-weight: var(--landing-font-weight-regular);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+}
+
+.landing-body-1 {
+  max-inline-size: var(--landing-body-1-measure);
+  font-size: var(--landing-body-1-size);
+  line-height: var(--landing-body-1-line-height);
+}
+
+.landing-body-2 {
+  max-inline-size: var(--landing-body-2-measure);
+  font-size: var(--landing-body-2-size);
+  line-height: var(--landing-body-2-line-height);
+}
+
+.landing-body-3 {
+  max-inline-size: var(--landing-body-3-measure);
+  font-size: var(--landing-body-3-size);
+  line-height: var(--landing-body-3-line-height);
+}
+
+.landing-body-4 {
+  max-inline-size: var(--landing-body-4-measure);
+  font-size: var(--landing-body-4-size);
+  line-height: var(--landing-body-4-line-height);
+}
+
+.landing-ui-control,
+.landing-ui-label,
+.landing-ui-meta {
+  margin: 0;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.landing-ui-control {
+  font-size: var(--landing-ui-control-size);
+  line-height: var(--landing-ui-control-line-height);
+}
+
+.landing-ui-label {
+  font-size: var(--landing-ui-label-size);
+  line-height: var(--landing-ui-label-line-height);
+}
+
+.landing-ui-meta {
+  font-size: var(--landing-ui-meta-size);
+  line-height: var(--landing-ui-meta-line-height);
+}
+
+.landing-button {
+  min-block-size: var(--landing-control-min-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-inline: 1.25rem;
+  border: 0.0625rem solid transparent;
+  border-radius: var(--landing-radius-control);
+  font-size: 1rem;
+  font-weight: var(--landing-font-weight-bold);
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--landing-motion-duration) var(--landing-motion-easing),
+    border-color var(--landing-motion-duration) var(--landing-motion-easing),
+    color var(--landing-motion-duration) var(--landing-motion-easing),
+    transform var(--landing-motion-duration) var(--landing-motion-easing);
+}
+
+.landing-button--primary {
+  background: var(--landing-color-brand);
+  color: var(--landing-color-text-on-solid);
+}
+
+.landing-button--secondary {
+  border-color: var(--landing-color-control);
+  background: var(--landing-color-card);
+  color: var(--landing-color-text);
+}
+
+.landing-card {
+  border: 0.0625rem solid var(--landing-color-divider);
+  border-radius: var(--landing-radius-surface);
+  background: var(--landing-color-card);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

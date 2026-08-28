@@ -3,9 +3,10 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
-const workspaceRoot = resolve(root, "..");
 const css = await readFile(resolve(root, "src/styles.css"), "utf8");
-const tokenCss = await readFile(resolve(workspaceRoot, "landing-design-system/tokens.css"), "utf8");
+// Cloudflare checks out only this repository; validate the committed deployment
+// snapshot instead of relying on the parent workspace's token file.
+const tokenCss = await readFile(resolve(root, "src/design-system/tokens.css"), "utf8");
 const errors = [];
 
 const allowedRoles = [
