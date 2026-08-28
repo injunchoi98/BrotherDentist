@@ -1,9 +1,11 @@
 const QUALITY_TILE_STEP = 46;
 const QUALITY_TILE_ROW_STEP = QUALITY_TILE_STEP * Math.sin(Math.PI / 3);
 const QUALITY_TILE_RADIUS = QUALITY_TILE_STEP / 2;
-const QUALITY_COLUMNS = 11;
-const QUALITY_ROWS = 7;
-const QUALITY_AUTO_FRAME_INTERVAL = 1000 / 30;
+const QUALITY_COLUMNS = 15;
+const QUALITY_ROWS = 19;
+const QUALITY_WORLD_WIDTH = QUALITY_COLUMNS * QUALITY_TILE_STEP;
+const QUALITY_WORLD_HEIGHT = QUALITY_ROWS * QUALITY_TILE_ROW_STEP;
+const QUALITY_AUTO_FRAME_INTERVAL = 1000 / 60;
 const QUALITY_AUTO_CYCLE_DURATION = 9000;
 
 function shuffleDeterministically(items) {
@@ -116,10 +118,8 @@ function initQualityLogoCloud(cloud, reducedMotion) {
   for (let row = 0; row < QUALITY_ROWS; row += 1) {
     for (let column = 0; column < QUALITY_COLUMNS; column += 1) {
       positions.push({
-        x: ((column - ((QUALITY_COLUMNS - 1) / 2)) * QUALITY_TILE_STEP)
-          + (row % 2 === 1 ? QUALITY_TILE_RADIUS : 0)
-          - (QUALITY_TILE_RADIUS / 2),
-        y: (row - ((QUALITY_ROWS - 1) / 2)) * QUALITY_TILE_ROW_STEP,
+        x: (column * QUALITY_TILE_STEP) + (row % 2 === 1 ? QUALITY_TILE_RADIUS : 0),
+        y: row * QUALITY_TILE_ROW_STEP,
       });
     }
   }
@@ -131,6 +131,10 @@ function initQualityLogoCloud(cloud, reducedMotion) {
     focusY: 0,
     targetFocusX: 0,
     targetFocusY: 0,
+    panX: 0,
+    panY: 0,
+    velocityX: 0,
+    velocityY: 0,
     width: 0,
     height: 0,
     pixelRatio: 1,
@@ -143,7 +147,14 @@ function initQualityLogoCloud(cloud, reducedMotion) {
   let viewportObserver = null;
   let visible = !("IntersectionObserver" in window);
   const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
-  const getMode = () => reducedMotion.matches ? "static" : finePointer.matches ? "pointer" : "auto";
+  const mobileLayout = matchMedia("(max-width: 47.99rem)");
+  const getMode = () => reducedMotion.matches
+    ? "static"
+    : mobileLayout.matches
+      ? "pan"
+      : finePointer.matches
+        ? "pointer"
+        : "auto";
 
   const resize = () => {
     const bounds = canvas.getBoundingClientRect();
@@ -167,15 +178,24 @@ function initQualityLogoCloud(cloud, reducedMotion) {
     context.setTransform(state.pixelRatio, 0, 0, state.pixelRatio, 0, 0);
     context.clearRect(0, 0, state.width, state.height);
 
+    const mode = getMode();
+    const wrapCentered = (value, period) => (((value % period) + period) % period) - (period / 2);
+
     positions.forEach((position, index) => {
-      const offsetX = position.x - state.focusX;
-      const offsetY = position.y - state.focusY;
+      const offsetX = mode === "pan"
+        ? wrapCentered(position.x + state.panX, QUALITY_WORLD_WIDTH)
+        : position.x - (QUALITY_WORLD_WIDTH / 2) - state.focusX;
+      const offsetY = mode === "pan"
+        ? wrapCentered(position.y + state.panY, QUALITY_WORLD_HEIGHT)
+        : position.y - (QUALITY_WORLD_HEIGHT / 2) - state.focusY;
 
       const radialStrength = Math.exp(-((offsetX * offsetX) + (offsetY * offsetY)) / 33800);
       const scale = .18 + (1.17 * radialStrength);
       const perspective = 1 + ((scale - .18) * .5);
-      const x = state.centerX + state.focusX + (offsetX * perspective);
-      const y = state.centerY + state.focusY + (offsetY * perspective);
+      const focusX = mode === "pan" ? 0 : state.focusX;
+      const focusY = mode === "pan" ? 0 : state.focusY;
+      const x = state.centerX + focusX + (offsetX * perspective);
+      const y = state.centerY + focusY + (offsetY * perspective);
       const size = 44 * scale;
       const halfSize = size / 2;
       if (x + halfSize < 0 || x - halfSize > state.width || y + halfSize < 0 || y - halfSize > state.height) return;
@@ -206,11 +226,22 @@ function initQualityLogoCloud(cloud, reducedMotion) {
     if (!sprite || !visible || document.hidden || reducedMotion.matches) return;
 
     const mode = getMode();
-    if (mode === "auto") {
-      if (time - lastRenderedAt < QUALITY_AUTO_FRAME_INTERVAL) {
-        animationFrame = requestAnimationFrame(tick);
-        return;
-      }
+    if (time - lastRenderedAt < QUALITY_AUTO_FRAME_INTERVAL) {
+      animationFrame = requestAnimationFrame(tick);
+      return;
+    }
+
+    const frameScale = Math.min((time - lastRenderedAt) / QUALITY_AUTO_FRAME_INTERVAL, 3);
+    if (mode === "pan") {
+      // Ramp's mobile card is a wrapped 2D canvas field, not a one-row marquee.
+      // A small constant diagonal velocity keeps the pattern continuous while
+      // the radial lens makes tiles gather toward the visual center.
+      const velocityEase = 1 - (.94 ** frameScale);
+      state.velocityX += (.35 - state.velocityX) * velocityEase;
+      state.velocityY += (.12 - state.velocityY) * velocityEase;
+      state.panX += state.velocityX * frameScale;
+      state.panY += state.velocityY * frameScale;
+    } else if (mode === "auto") {
       const phase = ((time % QUALITY_AUTO_CYCLE_DURATION) / QUALITY_AUTO_CYCLE_DURATION) * Math.PI * 2;
       state.targetFocusX = Math.cos(phase) * Math.min(state.width * .22, 88);
       state.targetFocusY = Math.sin(phase) * Math.min(state.height * .16, 52);
@@ -224,7 +255,7 @@ function initQualityLogoCloud(cloud, reducedMotion) {
 
     const unsettled = Math.abs(state.targetFocusX - state.focusX) > .12
       || Math.abs(state.targetFocusY - state.focusY) > .12;
-    if (mode === "auto" || unsettled) animationFrame = requestAnimationFrame(tick);
+    if (mode === "pan" || mode === "auto" || unsettled) animationFrame = requestAnimationFrame(tick);
   };
 
   const startAnimation = () => {
@@ -254,6 +285,8 @@ function initQualityLogoCloud(cloud, reducedMotion) {
     stopAnimation();
     state.targetFocusX = 0;
     state.targetFocusY = 0;
+    state.velocityX = 0;
+    state.velocityY = 0;
     if (reducedMotion.matches) {
       state.focusX = 0;
       state.focusY = 0;
@@ -301,6 +334,7 @@ function initQualityLogoCloud(cloud, reducedMotion) {
   cloud.addEventListener("pointermove", updatePointerFocus, { passive: true });
   cloud.addEventListener("pointerleave", resetFocus, { passive: true });
   finePointer.addEventListener("change", handleModeChange);
+  mobileLayout.addEventListener("change", handleModeChange);
   reducedMotion.addEventListener("change", handleModeChange);
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) stopAnimation();
@@ -503,17 +537,23 @@ export function initFeatureVisuals() {
 
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
   const qualityClouds = [...document.querySelectorAll("[data-quality-logo-cloud]")];
+  const initializedQualityClouds = new WeakSet();
+  const initializeQualityCloud = (cloud) => {
+    if (initializedQualityClouds.has(cloud)) return;
+    initializedQualityClouds.add(cloud);
+    initQualityLogoCloud(cloud, reducedMotion);
+  };
   if ("IntersectionObserver" in window) {
     const qualityObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         qualityObserver.unobserve(entry.target);
-        initQualityLogoCloud(entry.target, reducedMotion);
+        initializeQualityCloud(entry.target);
       });
     }, { rootMargin: "256px 0px" });
     qualityClouds.forEach((cloud) => qualityObserver.observe(cloud));
   } else {
-    qualityClouds.forEach((cloud) => initQualityLogoCloud(cloud, reducedMotion));
+    qualityClouds.forEach(initializeQualityCloud);
   }
   document.querySelectorAll("[data-care-workflow]").forEach((workflow) => {
     initCareWorkflow(workflow, reducedMotion.matches);

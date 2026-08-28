@@ -1,6 +1,7 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { createPinHeightGuard, getSmallViewportHeight } from "../utils/pin-height-guard.js";
+import { bindVisualViewportMetrics } from "../utils/visual-viewport.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -39,13 +40,13 @@ const REGION_SEQUENCE = ["전주", "강릉", "제주", "대전", "부산"];
 /*
  * These are the two exact layout relationships used by the reference:
  * “Pixel precision” moves edge-left -> far-right -> edge-left, while
- * “Sharp contrast” moves far-right -> quarter-haze -> far-right.
+ * “Sharp contrast” moves edge-right -> quarter-haze -> edge-right.
  * The pinned scene supplies the vertical travel that normal document scroll
  * supplies on the reference page; no decorative curve or rotation is added.
  */
 const TEXT_FLIP_PATTERNS = {
   pixel: { from: "edge-left", to: "far-right", fromOpacity: .55, toOpacity: .55, fromBlur: 0, toBlur: 0 },
-  sharp: { from: "far-right", to: "quarter", fromOpacity: .55, toOpacity: 1, fromBlur: 0, toBlur: 2 }
+  sharp: { from: "edge-right", to: "quarter", fromOpacity: .55, toOpacity: 1, fromBlur: 0, toBlur: 2 }
 };
 
 const clamp = (value, minimum = 0, maximum = 1) => Math.min(maximum, Math.max(minimum, value));
@@ -197,7 +198,16 @@ const getHorizontalAnchor = (name, viewportWidth, itemWidth) => {
   const left = gutter;
   const farRight = Math.min(viewportWidth * (compact ? .5 : .7), safeRight);
   const quarter = gutter + (viewportWidth * (compact ? .18 : .25));
-  const leftPosition = name === "edge-left" ? left : name === "quarter" ? quarter : farRight;
+  const center = (viewportWidth - itemWidth) * .5;
+  const leftPosition = name === "edge-left"
+    ? left
+    : name === "edge-right"
+      ? safeRight
+      : name === "quarter"
+        ? quarter
+        : name === "center"
+          ? center
+          : farRight;
   return leftPosition + (itemWidth * .5) - (viewportWidth * .5);
 };
 
@@ -399,8 +409,9 @@ export function initShowcaseScroll() {
     renderMap(map, routes, nationwideProgress, sceneAlpha(progress, 2), viewportHeight, regionItems, motionMetrics);
 
     const imageProgress = smooth((progress - .875) / .12);
-    image.style.setProperty("--showcase-reveal", imageProgress.toFixed(4));
-    image.classList.toggle("is-visible", progress > .875);
+    const imageVisible = imageProgress > .006;
+    image.style.setProperty("--showcase-reveal", imageVisible ? imageProgress.toFixed(4) : "0");
+    image.classList.toggle("is-visible", imageVisible);
     titleLock.style.opacity = `${1 - smooth((progress - .89) / .07)}`;
     titleLock.style.transform = `translateY(${(-1.25 * smooth((progress - .89) / .07)).toFixed(2)}rem)`;
   };
@@ -427,6 +438,7 @@ export function initShowcaseScroll() {
     },
     onEnable: () => {
       clearMobileMotion();
+      const unbindVisualViewport = bindVisualViewportMetrics(panel);
       const state = { progress: 0 };
       const context = gsap.context(() => {
         const animation = gsap.timeline({ paused: true, defaults: { ease: "none" }, onUpdate: () => render(state.progress) });
@@ -451,6 +463,7 @@ export function initShowcaseScroll() {
 
       return () => {
         context.revert();
+        unbindVisualViewport();
       };
     },
     onDisable: () => {

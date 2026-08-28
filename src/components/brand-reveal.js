@@ -2,6 +2,7 @@ import {
   calculatePinMinimumHeightRem,
   createPinHeightGuard
 } from "../utils/pin-height-guard.js";
+import { bindVisualViewportMetrics } from "../utils/visual-viewport.js";
 
 export function initBrandReveal() {
   const section = document.querySelector("[data-brand-reveal]");
@@ -43,8 +44,12 @@ export function initBrandReveal() {
     const startDistance = Math.min(distance - 1, (distance * .08) + 100);
     const growth = Math.max(0, (scrolled - startDistance) / Math.max(1, distance - startDistance));
     const eased = growth * growth * (3 - (2 * growth));
-    mask.style.setProperty("--reveal", eased.toFixed(4));
-    mask.classList.toggle("is-visible", scrolled > startDistance);
+    // Keep the layer completely unpainted at the closed end. On iOS Safari,
+    // showing the 1rem-wide mask while its progress is effectively zero can
+    // preserve a stale composited edge when the user reverses the scroll.
+    const visible = eased > .006;
+    mask.style.setProperty("--reveal", visible ? eased.toFixed(4) : "0");
+    mask.classList.toggle("is-visible", visible);
   };
   const reset = () => {
     mask.style.removeProperty("--reveal");
@@ -56,9 +61,13 @@ export function initBrandReveal() {
     allowMobile: true,
     minimumHeightRem: getTextMinimumHeightRem,
     onEnable: () => {
+      const unbindVisualViewport = bindVisualViewportMetrics(sticky);
       update();
       addEventListener("scroll", update, { passive: true });
-      return () => removeEventListener("scroll", update);
+      return () => {
+        removeEventListener("scroll", update);
+        unbindVisualViewport();
+      };
     },
     onDisable: () => {
       removeEventListener("scroll", update);

@@ -13,15 +13,56 @@ import { initShowcaseScroll } from "./components/showcase-scroll.js";
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
 
-initConcernScroll();
-initBrandReveal();
-initCoverflow();
-initDoctorGallery();
-initEquipmentStack();
-initEvidenceScroll();
-initFeatureVisuals();
-initReviewMarquee();
-initShowcaseScroll();
+const mobileTouchInput = matchMedia("(max-width: 48rem) and (any-pointer: coarse)");
+const reducedMotionInput = matchMedia("(prefers-reduced-motion: reduce)");
+let touchScrollNormalized = false;
+const syncTouchScrollNormalization = () => {
+  const shouldNormalize = mobileTouchInput.matches && !reducedMotionInput.matches;
+  if (shouldNormalize === touchScrollNormalized) return;
+  touchScrollNormalized = shouldNormalize;
+
+  if (!shouldNormalize) {
+    ScrollTrigger.normalizeScroll(false);
+    return;
+  }
+
+  /*
+   * Native iOS flick momentum can continue advancing several scroll-linked
+   * scenes after the finger has stopped. Keep the finger's direct movement,
+   * but give ScrollTrigger no synthetic momentum after touchend so a small
+   * gesture cannot skip an entire pinned section.
+   */
+  ScrollTrigger.normalizeScroll({
+    allowNestedScroll: true,
+    lockAxis: true,
+    momentum: () => 0,
+    type: "touch"
+  });
+};
+
+syncTouchScrollNormalization();
+mobileTouchInput.addEventListener("change", syncTouchScrollNormalization);
+reducedMotionInput.addEventListener("change", syncTouchScrollNormalization);
+
+const runInitializer = (name, initializer) => {
+  try {
+    initializer();
+  } catch (error) {
+    // An optional motion failure must not prevent later content from rendering.
+    console.error(`[landing] ${name} initialization failed`, error);
+  }
+};
+
+// Reviews are content, so populate them before canvas and scroll effects.
+runInitializer("review-marquee", initReviewMarquee);
+runInitializer("concern-scroll", initConcernScroll);
+runInitializer("brand-reveal", initBrandReveal);
+runInitializer("coverflow", initCoverflow);
+runInitializer("doctor-gallery", initDoctorGallery);
+runInitializer("equipment-stack", initEquipmentStack);
+runInitializer("evidence-scroll", initEvidenceScroll);
+runInitializer("feature-visuals", initFeatureVisuals);
+runInitializer("showcase-scroll", initShowcaseScroll);
 
 // ScrollTrigger already refreshes on DOMContentLoaded, load, resize, and visibility changes.
 // Web-font completion is the only extra layout event it cannot observe directly.
