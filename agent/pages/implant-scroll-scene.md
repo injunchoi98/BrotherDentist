@@ -148,6 +148,15 @@ clip-path: inset(180px 160px round 80px);
 - `assemblyScale`은 layout 초기화 또는 `ScrollTrigger.refresh()` 때만 계산한다. 스크롤 progress, timeline label, 프레임 clip 상태로 변경하지 않는다.
 - 프레임이 퇴장할 때 홀더는 배경 프레임의 부모 이동을 따르지만, 임플란트의 viewport anchor와 크기는 그대로 유지한다.
 
+현재 확정 자산과 정적 조립 기준은 다음과 같다.
+
+- 단일 제품 원본: `implant-product-complete-2x-alpha.png` (`480 × 1417`, 크라운부터 둥근 픽스처 끝까지 포함)
+- 홀더 원본: `implant-holder-2x-alpha.png` (`695 × 1262`, 임플란트가 중복되지 않은 별도 레이어)
+- 마스터 장면 기준 제품 폭: `262`, 홀더 폭: `247`, 제품 상단에서 홀더 결합점까지: `476`
+- 기본 `assemblyScale` 상한: `0.8`
+- 화면 높이가 부족하면 contain 안전 영역에 맞춰 초기 layout에서만 더 작게 계산할 수 있다. 같은 스크롤 시퀀스 중에는 계산된 값을 바꾸지 않는다.
+- 임플란트와 홀더는 같은 화면 중심 anchor와 같은 `assemblyScale`을 사용한다. 홀더의 `top`은 `productTop + 476 × assemblyScale`로 계산한다.
+
 권장 계산은 다음과 같다.
 
 ```js
@@ -252,8 +261,8 @@ productY = stickyHeight * productAnchorY;
 ## 소스 파일 책임
 
 - `gamdong-dental-landing/implant.html`: 단일 제품 DOM과 배경 프레임 형제 구조
-- `gamdong-dental-landing/src/implant.css`: sticky 좌표계, z-index, contain 크기, fallback
-- `gamdong-dental-landing/src/implant.js`: scroll state machine, clip 계산, frame 이동, canvas 렌더링
+- `gamdong-dental-landing/src/implant-scenes.css`: sticky 좌표계, z-index, contain 크기, fallback
+- `gamdong-dental-landing/src/implant-scenes.js`: scroll state machine, clip 계산, frame 이동, canvas 렌더링
 - `gamdong-dental-landing/assets/images/`: 중복 제품이 없는 배경·홀더·단일 완성 제품 원본
 
 ## 픽셀 검수 기준

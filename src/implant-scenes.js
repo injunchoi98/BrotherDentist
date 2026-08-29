@@ -21,8 +21,10 @@ const precisionImage = precisionCard?.querySelector("img");
 const precisionReveal = precision?.querySelector("[data-implant-reveal]");
 const precisionStage = precision?.querySelector("[data-implant-stage]");
 const precisionRevealImage = precisionReveal?.querySelector(".implant-restoration-background img");
-const precisionSceneProduct = precision?.querySelector("[data-implant-scene-product]");
-const precisionSceneProductImage = precisionSceneProduct?.querySelector("img");
+const precisionProductPlane = precision?.querySelector("[data-implant-product-plane]");
+const precisionProduct = precision?.querySelector("[data-implant-product]");
+const precisionProductImage = precisionProduct?.querySelector("img");
+const precisionHolderPlane = precision?.querySelector("[data-implant-holder-plane]");
 const precisionHolder = precision?.querySelector("[data-implant-holder]");
 const precisionHolderImage = precisionHolder?.querySelector("img");
 const precisionAmbient = precision?.querySelector("[data-implant-ambient]");
@@ -34,39 +36,76 @@ const precisionCopies = [diagnosisCopy, benefitCopy, planCopy].filter(Boolean);
 
 const RESTORATION_STAGE_WIDTH = 1658;
 const RESTORATION_STAGE_HEIGHT = 949;
+const PRODUCT_SOURCE_WIDTH = 480;
+const PRODUCT_SOURCE_HEIGHT = 1417;
+const PRODUCT_REFERENCE_WIDTH = 262;
+const PRODUCT_REFERENCE_HEIGHT = PRODUCT_REFERENCE_WIDTH * PRODUCT_SOURCE_HEIGHT / PRODUCT_SOURCE_WIDTH;
+const HOLDER_REFERENCE_WIDTH = 247;
+const ASSEMBLY_MAX_SCALE = .8;
+const ASSEMBLY_JOIN_OFFSET_Y = 476;
+const ASSEMBLY_ANCHOR_X = .656;
 
-const drawProductAmbient = () => {
+const drawProductAmbient = ({
+  width,
+  height,
+  productLeft,
+  productTop,
+  productWidth,
+  productHeight,
+}) => {
   if (!precisionAmbient) return;
   const context = precisionAmbient.getContext("2d");
   if (!context) return;
 
+  const pixelRatio = Math.min(devicePixelRatio || 1, 2);
+  precisionAmbient.width = Math.round(width * pixelRatio);
+  precisionAmbient.height = Math.round(height * pixelRatio);
+  context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
   const styles = getComputedStyle(precisionAmbient);
   const lightColor = styles.color;
   const shadowColor = styles.borderTopColor;
-  context.clearRect(0, 0, RESTORATION_STAGE_WIDTH, RESTORATION_STAGE_HEIGHT);
+  const centerX = productLeft + productWidth / 2;
+  const centerY = productTop + productHeight * .43;
+  context.clearRect(0, 0, width, height);
 
   context.save();
-  context.translate(570, 390);
-  context.scale(1.18, 1);
-  context.globalAlpha = .34;
-  const halo = context.createRadialGradient(0, -24, 18, 0, -24, 310);
+  context.translate(centerX, centerY);
+  context.scale(1.22, 1);
+  context.globalAlpha = .3;
+  const haloRadius = Math.max(productWidth * 1.45, 180);
+  const halo = context.createRadialGradient(0, 0, 12, 0, 0, haloRadius);
   halo.addColorStop(0, lightColor);
-  halo.addColorStop(.46, lightColor);
+  halo.addColorStop(.42, lightColor);
   halo.addColorStop(1, "transparent");
   context.fillStyle = halo;
-  context.fillRect(-360, -360, 720, 720);
+  context.fillRect(-haloRadius, -haloRadius, haloRadius * 2, haloRadius * 2);
   context.restore();
 
   context.save();
-  context.translate(570, 648);
-  context.scale(1, .18);
-  context.globalAlpha = .24;
-  const shadow = context.createRadialGradient(0, 0, 10, 0, 0, 178);
+  context.translate(centerX, productTop + productHeight * .96);
+  context.scale(1, .12);
+  context.globalAlpha = .08;
+  const shadow = context.createRadialGradient(0, 0, 8, 0, 0, productWidth * .72);
   shadow.addColorStop(0, shadowColor);
-  shadow.addColorStop(.5, shadowColor);
+  shadow.addColorStop(.35, shadowColor);
   shadow.addColorStop(1, "transparent");
   context.fillStyle = shadow;
-  context.fillRect(-190, -190, 380, 380);
+  context.fillRect(-productWidth, -productWidth, productWidth * 2, productWidth * 2);
+  context.restore();
+
+  context.save();
+  context.fillStyle = lightColor;
+  for (let index = 0; index < 42; index += 1) {
+    const angle = index * 2.399963;
+    const radius = productWidth * (.7 + (index % 9) * .115);
+    const x = centerX + Math.cos(angle) * radius;
+    const y = centerY + Math.sin(angle) * radius * .72;
+    context.globalAlpha = .018 + (index % 4) * .006;
+    context.beginPath();
+    context.arc(x, y, .45 + (index % 3) * .22, 0, Math.PI * 2);
+    context.fill();
+  }
   context.restore();
 };
 
@@ -89,11 +128,48 @@ const syncRestorationStage = () => {
     "--restoration-stage-y",
     `${(height - RESTORATION_STAGE_HEIGHT * scale) / 2}px`,
   );
+
+  const topSafe = (header?.offsetHeight || 64) + 32;
+  const bottomSafe = 44;
+  const availableHeight = Math.max(1, height - topSafe - bottomSafe);
+  const availableWidth = Math.max(1, width * .28);
+  const assemblyScale = Math.min(
+    ASSEMBLY_MAX_SCALE,
+    availableHeight / PRODUCT_REFERENCE_HEIGHT,
+    availableWidth / PRODUCT_REFERENCE_WIDTH,
+  );
+  const productWidth = PRODUCT_REFERENCE_WIDTH * assemblyScale;
+  const productHeight = PRODUCT_REFERENCE_HEIGHT * assemblyScale;
+  const holderWidth = HOLDER_REFERENCE_WIDTH * assemblyScale;
+  const centerX = Math.min(
+    width - Math.max(40, productWidth / 2),
+    Math.max(productWidth / 2 + 40, width * ASSEMBLY_ANCHOR_X),
+  );
+  const productLeft = centerX - productWidth / 2;
+  const productTop = topSafe + Math.max(0, (availableHeight - productHeight) / 2);
+  const holderLeft = centerX - holderWidth / 2;
+  const holderTop = productTop + ASSEMBLY_JOIN_OFFSET_Y * assemblyScale;
+
+  precisionSticky.style.setProperty("--implant-product-left", `${productLeft.toFixed(3)}px`);
+  precisionSticky.style.setProperty("--implant-product-top", `${productTop.toFixed(3)}px`);
+  precisionSticky.style.setProperty("--implant-product-width", `${productWidth.toFixed(3)}px`);
+  precisionSticky.style.setProperty("--implant-holder-left", `${holderLeft.toFixed(3)}px`);
+  precisionSticky.style.setProperty("--implant-holder-top", `${holderTop.toFixed(3)}px`);
+  precisionSticky.style.setProperty("--implant-holder-width", `${holderWidth.toFixed(3)}px`);
+  precisionSticky.dataset.implantAssemblyScale = assemblyScale.toFixed(6);
+
+  drawProductAmbient({
+    width,
+    height,
+    productLeft,
+    productTop,
+    productWidth,
+    productHeight,
+  });
 };
 
 const initRestorationStage = () => {
   if (!precisionStage || !precisionSticky) return;
-  drawProductAmbient();
   syncRestorationStage();
   new ResizeObserver(syncRestorationStage).observe(precisionSticky);
 };
@@ -104,15 +180,13 @@ const clearSceneStyles = () => {
     precisionImage,
     precisionReveal,
     precisionRevealImage,
-    precisionSceneProduct,
-    precisionSceneProductImage,
-    precisionHolder,
-    precisionHolderImage,
+    precisionProductPlane,
+    precisionHolderPlane,
     precisionAmbient,
     precisionSceneShade,
     ...precisionCopies,
   ].filter(Boolean), {
-        clearProps: "top,right,bottom,left,borderRadius,clipPath,opacity,visibility,transform,scale,rotation,transformOrigin,xPercent,yPercent",
+        clearProps: "top,right,bottom,left,borderRadius,clipPath,opacity,visibility,transform,x,y,xPercent,yPercent",
   });
 };
 
@@ -171,10 +245,19 @@ const initHeroExpansion = () => {
 };
 
 const initPrecisionSequence = () => {
-  if (!precision || !precisionSticky || !precisionCard || !precisionImage || !precisionReveal || !precisionStage || !precisionRevealImage || !precisionSceneProduct || !precisionSceneProductImage || !precisionHolder || !precisionHolderImage || !precisionAmbient || !precisionSceneShade || precisionCopies.length !== 3) return;
+  if (!precision || !precisionSticky || !precisionCard || !precisionImage || !precisionReveal || !precisionStage || !precisionRevealImage || !precisionProductPlane || !precisionProduct || !precisionProductImage || !precisionHolderPlane || !precisionHolder || !precisionHolderImage || !precisionAmbient || !precisionSceneShade || precisionCopies.length !== 3) return;
 
   const desktopMedia = matchMedia("(min-width: 64.0625rem)");
   let disposeGuard = null;
+
+  const getFrameClipPath = () => {
+    const width = precisionSticky.clientWidth;
+    const height = precisionSticky.clientHeight;
+    const inlineInset = Math.round(Math.min(180, Math.max(56, width * .085)));
+    const blockInset = Math.round(Math.min(152, Math.max(72, height * .16)));
+    const radius = Math.round(Math.min(80, Math.max(40, width * .04)));
+    return `inset(${blockInset}px ${inlineInset}px round ${radius}px)`;
+  };
 
   const syncPrecisionLayout = () => {
     disposeGuard?.();
@@ -184,137 +267,134 @@ const initPrecisionSequence = () => {
     if (!desktopMedia.matches) return;
 
     disposeGuard = createPinHeightGuard({
-    section: precision,
-    allowMobile: false,
-    minimumHeightRem: () => calculatePinMinimumHeightRem({
-      headerHeightPixels: header?.offsetHeight || 0,
-      contentHeightPixels: Math.max(...precisionCopies.map((copy) => copy.offsetHeight)),
-      topSafetyRem: 6,
-      bottomSafetyRem: 6,
-    }),
-    onEnable: () => {
-      const copyX = 0;
-      const copyY = -50;
-      const timeline = gsap.timeline({
-        defaults: { ease: "none" },
-        scrollTrigger: {
-          id: "implant-photo-sequence",
-          trigger: precision,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: .7,
-          invalidateOnRefresh: true,
-        },
-      });
+      section: precision,
+      allowMobile: false,
+      minimumHeightRem: () => calculatePinMinimumHeightRem({
+        headerHeightPixels: header?.offsetHeight || 0,
+        contentHeightPixels: Math.max(...precisionCopies.map((copy) => copy.offsetHeight)),
+        topSafetyRem: 6,
+        bottomSafetyRem: 6,
+      }),
+      onEnable: () => {
+        const copyX = 0;
+        const copyY = -50;
+        const timeline = gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: {
+            id: "implant-photo-sequence",
+            trigger: precision,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: .7,
+            invalidateOnRefresh: true,
+            onRefreshInit: syncRestorationStage,
+          },
+        });
 
-      gsap.set(diagnosisCopy, { autoAlpha: 1, xPercent: copyX, yPercent: copyY });
-      gsap.set([benefitCopy, planCopy], { autoAlpha: 0, xPercent: copyX, yPercent: copyY });
-      gsap.set(precisionCard, { autoAlpha: 1, yPercent: 0 });
-      gsap.set(precisionReveal, {
-        autoAlpha: 1,
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        borderRadius: 0,
-        clipPath: "inset(0px round 0px)",
-        yPercent: 100,
-      });
-      gsap.set(precisionHolder, {
-        autoAlpha: 1,
-        xPercent: 0,
-        yPercent: 0,
-        rotation: 0,
-        scaleX: 1,
-        scaleY: 1,
-      });
-      gsap.set(precisionSceneProduct, {
-        autoAlpha: 1,
-        xPercent: 0,
-        yPercent: 0,
-        rotation: 0,
-        scaleX: 1,
-        scaleY: 1,
-        transformOrigin: "34.35% 41.25%",
-      });
-      gsap.set(precisionAmbient, { autoAlpha: .2 });
-      gsap.set(precisionSceneShade, { autoAlpha: 1 });
+        syncRestorationStage();
+        gsap.set(diagnosisCopy, { autoAlpha: 1, xPercent: copyX, yPercent: copyY });
+        gsap.set([benefitCopy, planCopy], { autoAlpha: 0, xPercent: copyX, yPercent: copyY });
+        gsap.set(precisionCard, { autoAlpha: 1, yPercent: 0 });
+        gsap.set(precisionReveal, {
+          autoAlpha: 1,
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          borderRadius: 0,
+          clipPath: "inset(0px round 0px)",
+          yPercent: 100,
+        });
+        gsap.set(precisionProductPlane, {
+          clipPath: "inset(100% 0 0)",
+        });
+        gsap.set(precisionHolderPlane, {
+          clipPath: "inset(0px round 0px)",
+          yPercent: 100,
+        });
+        gsap.set(precisionAmbient, { opacity: .2 });
+        gsap.set(precisionSceneShade, { autoAlpha: 1 });
 
-      timeline.addLabel("diagnosis", 0);
-      timeline.to(precisionImage, {
-        scale: 1.075,
-        xPercent: 0,
-        duration: .9,
-      }, "diagnosis");
-      timeline.to({}, { duration: .48 });
+        timeline.addLabel("diagnosis", 0);
+        timeline.to(precisionImage, {
+          scale: 1.075,
+          xPercent: 0,
+          duration: .9,
+        }, "diagnosis");
+        timeline.to({}, { duration: .48 });
 
-      timeline.addLabel("photo-rise", ">");
-      timeline.to(diagnosisCopy, {
-        autoAlpha: 0,
-        yPercent: copyY,
-        duration: .28,
-      }, "photo-rise+=.08");
+        timeline.addLabel("implant-scene", ">");
+        timeline.to(diagnosisCopy, {
+          autoAlpha: 0,
+          yPercent: copyY,
+          duration: .28,
+        }, "implant-scene+=.08");
+        timeline.to([precisionReveal, precisionHolderPlane], {
+          yPercent: 0,
+          duration: 1.3,
+        }, "implant-scene");
+        timeline.to(precisionProductPlane, {
+          clipPath: "inset(0% 0 0)",
+          duration: 1.3,
+        }, "implant-scene");
+        timeline.fromTo(benefitCopy, {
+          autoAlpha: 0,
+          xPercent: copyX,
+          yPercent: copyY,
+        }, {
+          autoAlpha: 1,
+          xPercent: copyX,
+          yPercent: copyY,
+          duration: .42,
+        }, "implant-scene+=.82");
+        timeline.to({}, { duration: .72 });
 
-      timeline.to(precisionReveal, {
-        yPercent: 0,
-        duration: 1.3,
-      }, "photo-rise");
+        timeline.addLabel("frame-shrink", ">");
+        timeline.set(precisionCard, { autoAlpha: 0 }, "frame-shrink");
+        timeline.to(benefitCopy, {
+          autoAlpha: 0,
+          yPercent: copyY,
+          duration: .32,
+        }, "frame-shrink");
+        timeline.to([precisionReveal, precisionHolderPlane], {
+          clipPath: getFrameClipPath,
+          duration: 1.15,
+        }, "frame-shrink");
+        timeline.to(precisionAmbient, {
+          opacity: 1,
+          duration: 1.15,
+        }, "frame-shrink");
 
-      timeline.fromTo(benefitCopy, {
-        autoAlpha: 0,
-        xPercent: copyX,
-        yPercent: copyY,
-      }, {
-        autoAlpha: 1,
-        xPercent: copyX,
-        yPercent: copyY,
-        duration: .42,
-      }, "photo-rise+=.82");
-      timeline.to({}, { duration: .9 });
+        timeline.addLabel("frame-hold", ">");
+        timeline.to({}, { duration: .48 });
 
-      timeline.addLabel("product-focus", ">");
-      timeline.to(benefitCopy, {
-        autoAlpha: 0,
-        yPercent: copyY,
-        duration: .32,
-      }, "product-focus");
-      timeline.to(precisionHolder, {
-        autoAlpha: 0,
-        yPercent: 5,
-        duration: 1.05,
-      }, "product-focus");
-      timeline.to(precisionSceneProduct, {
-        scale: 1.08,
-        duration: 1.05,
-      }, "product-focus");
-      timeline.to(precisionAmbient, {
-        autoAlpha: 1,
-        duration: 1.05,
-      }, "product-focus");
-      timeline.to(precisionSceneShade, {
-        opacity: .16,
-        duration: 1.05,
-      }, "product-focus");
-      timeline.fromTo(planCopy, {
-        autoAlpha: 0,
-        xPercent: copyX,
-        yPercent: copyY,
-      }, {
-        autoAlpha: 1,
-        xPercent: copyX,
-        yPercent: copyY,
-        duration: .52,
-      }, "product-focus+=.5");
-      timeline.to({}, { duration: .9 });
+        timeline.addLabel("frame-exit", ">");
+        timeline.to([precisionReveal, precisionHolderPlane], {
+          yPercent: -100,
+          duration: 1.05,
+        }, "frame-exit");
 
-      return () => {
-        timeline.scrollTrigger?.kill();
-        timeline.kill();
-        clearSceneStyles();
-      };
-    },
-    onDisable: clearSceneStyles,
-  });
+        timeline.addLabel("final-copy", ">");
+        timeline.fromTo(planCopy, {
+          autoAlpha: 0,
+          xPercent: copyX,
+          yPercent: copyY,
+        }, {
+          autoAlpha: 1,
+          xPercent: copyX,
+          yPercent: copyY,
+          duration: .52,
+        }, "final-copy");
+        timeline.to({}, { duration: .78 });
+
+        return () => {
+          timeline.scrollTrigger?.kill();
+          timeline.kill();
+          clearSceneStyles();
+        };
+      },
+      onDisable: clearSceneStyles,
+    });
   };
 
   syncPrecisionLayout();
@@ -411,7 +491,7 @@ initPrecisionSequence();
 
 Promise.all([
   document.fonts?.ready,
-  ...[heroImage, precisionImage, precisionRevealImage, precisionSceneProductImage, precisionHolderImage]
+  ...[heroImage, precisionImage, precisionRevealImage, precisionProductImage, precisionHolderImage]
     .filter(Boolean)
     .map((image) => image.decode?.().catch(() => {})),
 ]).then(() => ScrollTrigger.refresh());

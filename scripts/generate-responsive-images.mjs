@@ -27,6 +27,8 @@ const variants = [
   ["implant-restoration-scene-implant-alpha.png", [480, 960, 1658]],
   ["implant-restoration-scene-holder-alpha.png", [480, 960, 1658]],
   ["implant-restoration-complete-v3-alpha.png", [190, 379]],
+  ["implant-product-complete-2x-alpha.png", [240, 480]],
+  ["implant-holder-2x-alpha.png", [348, 695]],
   ["treatment-room.png", [480, 960, 1440]],
   ["treatment-whitening-v2.png", [480, 960, 1122]],
   ["doctor-lee-jungwoong.png", [266, 532]],
@@ -48,6 +50,11 @@ const variants = [
   ["review-profile-06.png", [48, 96]],
 ];
 
+const losslessAlphaSources = new Set([
+  "implant-product-complete-2x-alpha.png",
+  "implant-holder-2x-alpha.png",
+]);
+
 await rm(outputDirectory, { recursive: true, force: true });
 await mkdir(outputDirectory, { recursive: true });
 sharp.cache(false);
@@ -67,10 +74,13 @@ for (const [file, widths] of variants) {
     const width = Math.min(requestedWidth, metadata.width || requestedWidth);
     const stem = basename(file).replace(/\.[^.]+$/, "");
     const output = resolve(outputDirectory, `${stem}-${width}.webp`);
+    const webpOptions = losslessAlphaSources.has(file)
+      ? { lossless: true, effort: 6 }
+      : { quality: 80, alphaQuality: 92, effort: 6, smartSubsample: true };
     await sharp(source)
       .rotate()
       .resize({ width, fit: "inside", withoutEnlargement: true })
-      .webp({ quality: 80, alphaQuality: 92, effort: 6, smartSubsample: true })
+      .webp(webpOptions)
       .toFile(output);
     const generatedMetadata = await sharp(output).metadata();
     if (!pixelStats.isOpaque && !generatedMetadata.hasAlpha) {

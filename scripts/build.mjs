@@ -13,7 +13,7 @@ await cp(resolve(root, "src"), resolve(dist, "src"), { recursive: true });
 await build({
   entryPoints: {
     main: resolve(root, "src/main.js"),
-    implant: resolve(root, "src/implant.js")
+    implant: resolve(root, "src/implant-scenes.js")
   },
   outdir: resolve(dist, "src"),
   bundle: true,
@@ -26,7 +26,7 @@ await build({
 await build({
   entryPoints: {
     styles: resolve(root, "src/styles.css"),
-    implant: resolve(root, "src/implant.css")
+    implant: resolve(root, "src/implant-scenes.css")
   },
   outdir: resolve(dist, "src"),
   bundle: true,

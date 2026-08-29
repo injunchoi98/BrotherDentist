@@ -118,6 +118,12 @@
 }
 
 .implant-precision-sticky {
+  --implant-product-left: 66%;
+  --implant-product-top: 6rem;
+  --implant-product-width: 13.1rem;
+  --implant-holder-left: 66%;
+  --implant-holder-top: 30rem;
+  --implant-holder-width: 12.35rem;
   background: var(--color-white);
 }
 
@@ -188,10 +194,7 @@
 }
 
 .implant-restoration-background,
-.implant-restoration-background img,
-.implant-product-ambient,
-.implant-restoration-layer,
-.implant-restoration-layer img {
+.implant-restoration-background img {
   position: absolute;
   inset: 0;
   display: block;
@@ -203,45 +206,76 @@
   z-index: 1;
 }
 
+.implant-restoration-background img {
+  will-change: transform;
+}
+
+.implant-product-plane,
+.implant-holder-plane {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: clip-path, transform;
+}
+
+.implant-product-plane {
+  z-index: 3;
+  overflow: hidden;
+  clip-path: inset(100% 0 0);
+}
+
+.implant-holder-plane {
+  z-index: 4;
+  overflow: hidden;
+  clip-path: inset(100% 0 0);
+}
+
 .implant-product-ambient {
-  z-index: 2;
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
   color: var(--color-white);
   border-color: var(--color-black);
-  visibility: hidden;
-  opacity: 0;
+  opacity: .2;
   pointer-events: none;
   will-change: opacity;
 }
 
-.implant-restoration-layer--implant {
-  z-index: 3;
-  transform-origin: 34.35% 41.25%;
-}
-
-.implant-restoration-layer--holder {
-  z-index: 4;
-}
-
-.implant-restoration-layer {
-  visibility: hidden;
-  opacity: 0;
+.implant-product,
+.implant-holder {
+  position: absolute;
+  display: block;
+  height: auto;
   pointer-events: none;
-  will-change: opacity, transform;
 }
 
-.implant-restoration-background img,
-.implant-restoration-layer img {
-  will-change: transform;
+.implant-product {
+  z-index: 2;
+  top: var(--implant-product-top);
+  left: var(--implant-product-left);
+  width: var(--implant-product-width);
 }
 
-.implant-restoration-layer--implant img {
+.implant-holder {
+  top: var(--implant-holder-top);
+  left: var(--implant-holder-left);
+  width: var(--implant-holder-width);
+}
+
+.implant-product img,
+.implant-holder img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.implant-product img {
   filter:
     drop-shadow(0 .75rem 1.1rem color-mix(in srgb, var(--color-black) 16%, transparent))
     drop-shadow(0 .125rem .3rem color-mix(in srgb, var(--color-white) 18%, transparent));
-}
-
-.implant-restoration-layer--holder img {
-  transform: translateY(-.25rem);
 }
 
 .implant-precision-scene-shade {
