@@ -11,7 +11,10 @@ const variants = [
   ["clinic-hero-poster.jpg", [960, 1920]],
   ["patient-poses-transparent.png", [1254]],
   ["clinic-day-night-wheel.png", [1254]],
-  ["clinic-exterior-actual.png", [480, 770]],
+  // This photograph is painted across a full-viewport reveal. Deliver 2x
+  // variants so the browser does not have to enlarge the 770px source at the
+  // common 480px and 770px CSS display widths.
+  ["clinic-exterior-actual.png", [960, 1540]],
   ["clinic-showcase-night.png", [480, 960, 1387]],
   ["case-general.png", [480, 960, 1440]],
   ["case-implant.png", [480, 960, 1440]],
@@ -21,6 +24,7 @@ const variants = [
   ["treatment-scene.png", [480, 960, 1440]],
   ["anesthesia-care-v2.png", [480, 960, 1440]],
   ["evidence-friendly.png", [285, 570]],
+  ["treatment-implant-v2.png", [480, 960, 1122]],
   ["treatment-implant-clean.png", [480, 960, 1122]],
   ["implant-restoration-lab-v1.png", [480, 960, 1536]],
   ["implant-restoration-lab-v1-2x.png", [960, 1658, 3316]],
@@ -58,6 +62,10 @@ const losslessAlphaSources = new Set([
   "implant-restoration-product-master-2x-alpha.png",
 ]);
 
+const enlargementSources = new Set([
+  "clinic-exterior-actual.png",
+]);
+
 await rm(outputDirectory, { recursive: true, force: true });
 await mkdir(outputDirectory, { recursive: true });
 sharp.cache(false);
@@ -74,17 +82,25 @@ for (const [file, widths] of variants) {
   sourceBytes += sourceStats.size;
 
   for (const requestedWidth of widths) {
-    const width = Math.min(requestedWidth, metadata.width || requestedWidth);
+    const width = enlargementSources.has(file)
+      ? requestedWidth
+      : Math.min(requestedWidth, metadata.width || requestedWidth);
     const stem = basename(file).replace(/\.[^.]+$/, "");
     const output = resolve(outputDirectory, `${stem}-${width}.webp`);
+    const enlarging = enlargementSources.has(file) && width > (metadata.width || width);
     const webpOptions = losslessAlphaSources.has(file)
       ? { lossless: true, effort: 6 }
-      : { quality: 80, alphaQuality: 92, effort: 6, smartSubsample: true };
-    await sharp(source)
+      : { quality: enlarging ? 90 : 80, alphaQuality: 92, effort: 6, smartSubsample: true };
+    let pipeline = sharp(source)
       .rotate()
-      .resize({ width, fit: "inside", withoutEnlargement: true })
-      .webp(webpOptions)
-      .toFile(output);
+      .resize({
+        width,
+        fit: "inside",
+        withoutEnlargement: !enlargementSources.has(file),
+        kernel: sharp.kernel.lanczos3,
+      });
+    if (enlarging) pipeline = pipeline.sharpen({ sigma: 0.8 });
+    await pipeline.webp(webpOptions).toFile(output);
     const generatedMetadata = await sharp(output).metadata();
     if (!pixelStats.isOpaque && !generatedMetadata.hasAlpha) {
       throw new Error(`Alpha channel was lost while converting ${file}`);

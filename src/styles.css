@@ -51,14 +51,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .eyebrow { margin-bottom: .75rem; color: var(--color-brand); font-size: var(--landing-ui-label-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-ui-label-line-height); letter-spacing: -.01em; }
 .section { padding-block: var(--space-section); background: var(--color-white); }
 .section-gray { background: var(--color-gray); }
-.case-section,
-.review-section,
-.treatment-section,
-.evidence-section,
-.doctors-section,
-.features-section,
-.visit-section,
-.site-footer { content-visibility: auto; contain-intrinsic-size: auto 64rem; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 3rem; margin-bottom: clamp(3rem, 7vw, 6rem); }
 .section-heading h2 { max-width: 16ch; margin-bottom: 0; font-size: var(--landing-heading-3-size); line-height: var(--landing-heading-3-line-height); }
 .section-heading > p { max-width: 32rem; margin-bottom: .4rem; color: var(--color-text-muted); }
@@ -207,7 +199,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .evidence-heading > p { margin: 0 0 .15rem; color: var(--color-brand); font-size: var(--landing-heading-3-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-heading-3-line-height); letter-spacing: -.025em; }
 .evidence-heading h2 { max-width: 17ch; margin-bottom: 0; font-size: var(--landing-heading-3-size); line-height: var(--landing-heading-3-line-height); }
 .evidence-flow { display: grid; grid-template-columns: minmax(16rem, .78fr) minmax(0, 1.55fr); gap: clamp(3rem, 8vw, 8rem); }
-.evidence-nav { position: sticky; top: 8rem; align-self: start; display: grid; gap: 1.35rem; margin: 0; padding: 0; list-style: none; }
+.evidence-nav { position: sticky; top: calc(50svh + (var(--header-height) / 2)); align-self: start; display: grid; gap: 1.35rem; margin: 0; padding: 0; translate: 0 -50%; list-style: none; }
 .evidence-nav li { color: #a1a7a5; font-size: var(--landing-body-1-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-body-1-line-height); transition: color .25s, transform .25s; }
 .evidence-nav li[aria-current="true"] { color: var(--color-text); transform: translateX(.5rem); }
 .evidence-nav span { display: inline-block; width: 2rem; color: var(--color-brand); font-size: var(--landing-ui-label-size); line-height: var(--landing-ui-label-line-height); font-variant-numeric: tabular-nums; vertical-align: .15rem; }
@@ -711,15 +703,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .showcase[data-pin-disabled] .showcase-static-final-line { white-space: normal; }
   .showcase[data-pin-disabled] .showcase-static-final > picture { width: 100%; max-width: none; margin-inline: 0; }
   .showcase[data-pin-disabled] .showcase-static-final img { width: 100%; height: auto !important; aspect-ratio: 1387 / 560; object-fit: contain; }
-  .case-section,
-  .review-section,
-  .treatment-section,
-  .evidence-section,
-  .doctors-section,
-  .features-section,
-  .visit-section,
-  .site-footer,
-  .showcase[data-pin-disabled] { content-visibility: visible; contain-intrinsic-size: none; }
   .visit-information { grid-template-columns: 1fr; gap: 2rem; }.visit-information h2 { grid-column: auto; }.visit-map { width: calc(100% + (var(--space-page) * 2)); max-width: none; aspect-ratio: 4 / 3; margin-inline: calc(var(--space-page) * -1); border-radius: 0; }
   .footer-main { grid-template-columns: 1fr 1fr; }.footer-brand, .footer-navigation { grid-column: 1 / -1; }.footer-bottom { align-items: flex-start; flex-direction: column; }
 }

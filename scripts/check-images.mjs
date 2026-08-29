@@ -11,7 +11,6 @@ const files = [
   "src/components/review-marquee.js",
 ];
 const source = (await Promise.all(files.map((file) => readFile(resolve(root, file), "utf8")))).join("\n");
-const styles = await readFile(resolve(root, "src/styles.css"), "utf8");
 const viewportState = await readFile(resolve(root, "src/utils/viewport-state.js"), "utf8");
 const main = await readFile(resolve(root, "src/main.js"), "utf8");
 const featureVisuals = await readFile(resolve(root, "src/components/feature-visuals.js"), "utf8");
@@ -27,7 +26,6 @@ const assertions = [
   [source.match(/\.webp/g)?.length >= 20, "responsive WebP sources are missing"],
   [source.match(/srcset=/g)?.length >= 20, "responsive srcset coverage is too low"],
   [source.match(/loading=["']lazy["']/g)?.length >= 20, "below-the-fold images must use native lazy loading"],
-  [styles.includes("content-visibility: auto"), "content-visibility auto is not enabled"],
   [viewportState.includes("pinningAllowed: !isMobile"), "mobile pinning must be disabled in the shared viewport state"],
   [!main.includes("Promise.all([...document.images]"), "decoding every image defeats native lazy loading"],
   [qualitySourceCount <= 8, "quality logo cloud must stay within the source image budget"],
@@ -44,6 +42,13 @@ for (const [valid, message] of assertions) {
   if (!valid) throw new Error(message);
 }
 
+const referencedWebpFiles = [...source.matchAll(/\.\/assets\/images\/webp\/([^\s"',]+\.webp)/g)]
+  .map((match) => match[1]);
+
+for (const file of new Set(referencedWebpFiles)) {
+  await access(resolve(root, "assets/images/webp", file));
+}
+
 for (const file of [
   "patient-poses-transparent-1254.webp",
   "clinic-day-night-wheel-1254.webp",
@@ -53,4 +58,4 @@ for (const file of [
   await access(resolve(root, "assets/images/webp", file));
 }
 
-console.log(`Image delivery contract passed: WebP, srcset, lazy loading, content visibility, mobile pin fallback, and ${qualitySourceCount} source images reused across ${qualityColumns * qualityRows} virtual logo tiles.`);
+console.log(`Image delivery contract passed: WebP, srcset, lazy loading, mobile pin fallback, and ${qualitySourceCount} source images reused across ${qualityColumns * qualityRows} virtual logo tiles.`);
