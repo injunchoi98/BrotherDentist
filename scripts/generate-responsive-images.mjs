@@ -23,7 +23,9 @@ const variants = [
   ["evidence-friendly.png", [285, 570]],
   ["treatment-implant-clean.png", [480, 960, 1122]],
   ["implant-restoration-lab-v1.png", [480, 960, 1536]],
+  ["implant-restoration-lab-v1-2x.png", [960, 1658, 3316]],
   ["implant-restoration-clean-background-v2.png", [480, 960, 1658]],
+  ["implant-restoration-product-master-2x-alpha.png", [960, 1658, 3316]],
   ["implant-restoration-scene-implant-alpha.png", [480, 960, 1658]],
   ["implant-restoration-scene-holder-alpha.png", [480, 960, 1658]],
   ["implant-restoration-complete-v3-alpha.png", [190, 379]],
@@ -53,6 +55,7 @@ const variants = [
 const losslessAlphaSources = new Set([
   "implant-product-complete-2x-alpha.png",
   "implant-holder-2x-alpha.png",
+  "implant-restoration-product-master-2x-alpha.png",
 ]);
 
 await rm(outputDirectory, { recursive: true, force: true });

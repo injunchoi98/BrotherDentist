@@ -118,12 +118,15 @@
 }
 
 .implant-precision-sticky {
-  --implant-product-left: 66%;
-  --implant-product-top: 6rem;
-  --implant-product-width: 13.1rem;
-  --implant-holder-left: 66%;
-  --implant-holder-top: 30rem;
-  --implant-holder-width: 12.35rem;
+  --restoration-stage-scale: 1;
+  --restoration-stage-x: 0px;
+  --restoration-stage-y: 0px;
+  --implant-light-left: 50%;
+  --implant-light-top: 50%;
+  --implant-light-width: 28.82rem;
+  --implant-shadow-left: 50%;
+  --implant-shadow-top: 70%;
+  --implant-shadow-width: 14.6rem;
   background: var(--color-white);
 }
 
@@ -157,7 +160,7 @@
 
 .implant-precision-reveal {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   inset: 0;
   visibility: hidden;
   overflow: hidden;
@@ -167,10 +170,14 @@
   will-change: clip-path, opacity, transform;
 }
 
-.implant-restoration-stage {
-  --restoration-stage-scale: 1;
-  --restoration-stage-x: 0px;
-  --restoration-stage-y: 0px;
+.implant-restoration-scene-content {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.implant-restoration-stage,
+.implant-product-stage {
   position: absolute;
   top: 0;
   left: 0;
@@ -184,17 +191,10 @@
   transform-origin: 0 0;
 }
 
-.implant-restoration-stage-content {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform: scaleX(-1);
-  transform-origin: center;
-}
-
-.implant-restoration-background,
-.implant-restoration-background img {
+.implant-restoration-scene,
+.implant-restoration-scene img,
+.implant-product,
+.implant-product img {
   position: absolute;
   inset: 0;
   display: block;
@@ -202,88 +202,83 @@
   height: 100%;
 }
 
-.implant-restoration-background {
-  z-index: 1;
-}
-
-.implant-restoration-background img {
+.implant-restoration-scene img {
   will-change: transform;
 }
 
-.implant-product-plane,
-.implant-holder-plane {
+.implant-product-light-plane,
+.implant-product-plane {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  will-change: clip-path, transform;
 }
 
-.implant-product-plane {
-  z-index: 3;
-  overflow: hidden;
-  clip-path: inset(100% 0 0);
+.implant-product-light-plane {
+  z-index: 1;
+  overflow: visible;
 }
 
-.implant-holder-plane {
-  z-index: 4;
-  overflow: hidden;
-  clip-path: inset(100% 0 0);
+.implant-product-glow,
+.implant-product-ambient {
+  position: absolute;
+  top: var(--implant-light-top);
+  left: var(--implant-light-left);
+  display: block;
+  width: var(--implant-light-width);
+  height: auto;
+  aspect-ratio: 13 / 6;
+  pointer-events: none;
+}
+
+.implant-product-glow {
+  z-index: 0;
+  background-image: url("https://static.toss.im/assets/toss-im/asset/gradient-background.png");
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-size: contain;
+}
+
+@supports (background-image: image-set(url("test.webp") type("image/webp"))) {
+  .implant-product-glow {
+    background-image: image-set(
+      url("https://static.toss.im/assets/toss-im/asset/gradient-background.webp") type("image/webp"),
+      url("https://static.toss.im/assets/toss-im/asset/gradient-background.png") type("image/png")
+    );
+  }
 }
 
 .implant-product-ambient {
-  position: absolute;
   z-index: 1;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
   color: var(--color-white);
-  border-color: var(--color-black);
-  opacity: .2;
-  pointer-events: none;
-  will-change: opacity;
 }
 
-.implant-product,
-.implant-holder {
+.implant-product-shadow {
   position: absolute;
+  z-index: 2;
+  top: var(--implant-shadow-top);
+  left: var(--implant-shadow-left);
   display: block;
+  width: var(--implant-shadow-width);
   height: auto;
+  color: color-mix(in srgb, var(--color-text) 16%, var(--color-white));
   pointer-events: none;
+}
+
+.implant-product-plane {
+  z-index: 2;
+  overflow: visible;
+  will-change: transform;
 }
 
 .implant-product {
-  z-index: 2;
-  top: var(--implant-product-top);
-  left: var(--implant-product-left);
-  width: var(--implant-product-width);
-}
-
-.implant-holder {
-  top: var(--implant-holder-top);
-  left: var(--implant-holder-left);
-  width: var(--implant-holder-width);
-}
-
-.implant-product img,
-.implant-holder img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.implant-product img {
-  filter:
-    drop-shadow(0 .75rem 1.1rem color-mix(in srgb, var(--color-black) 16%, transparent))
-    drop-shadow(0 .125rem .3rem color-mix(in srgb, var(--color-white) 18%, transparent));
+  pointer-events: none;
 }
 
 .implant-precision-scene-shade {
   position: absolute;
-  z-index: 5;
+  z-index: 2;
   inset: 0;
   display: block;
-  visibility: hidden;
   background: linear-gradient(
     90deg,
     color-mix(in srgb, var(--color-black) 62%, transparent) 0%,
@@ -291,9 +286,7 @@
     color-mix(in srgb, var(--color-black) 8%, transparent) 68%,
     color-mix(in srgb, var(--color-black) 12%, transparent) 100%
   );
-  opacity: 0;
   pointer-events: none;
-  will-change: clip-path, opacity, transform;
 }
 
 .implant-precision-copy {
