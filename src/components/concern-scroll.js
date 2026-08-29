@@ -57,8 +57,8 @@ export function initConcernScroll() {
     minimumHeightRem: getTextMinimumHeightRem,
     onEnable: () => {
       // Each concern occupies one equal progress interval. On mobile touch,
-      // settle at those interval boundaries after the shortened momentum ends
-      // so a release cannot leave two messages visually mixed mid-transition.
+      // preserve the browser's native momentum, then settle at those interval
+      // boundaries so two messages are not left mixed mid-transition.
       // The final 1.0 boundary is retained so the next gesture can leave the
       // sticky section instead of trapping the reader on the last concern.
       return createResponsiveStageScrollTrigger({

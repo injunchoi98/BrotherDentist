@@ -10,11 +10,9 @@ import { initFeatureVisuals } from "./components/feature-visuals.js";
 import { initReviewMarquee } from "./components/review-marquee.js";
 import { initSiteHeader } from "./components/site-header.js";
 import { initShowcaseScroll } from "./components/showcase-scroll.js";
-import { initMobileScrollNormalization } from "./utils/mobile-scroll.js";
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
-initMobileScrollNormalization();
 
 const runInitializer = (name, initializer) => {
   try {
