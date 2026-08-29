@@ -11,8 +11,11 @@ await mkdir(dist, { recursive: true });
 await cp(resolve(root, "assets"), resolve(dist, "assets"), { recursive: true });
 await cp(resolve(root, "src"), resolve(dist, "src"), { recursive: true });
 await build({
-  entryPoints: [resolve(root, "src/main.js")],
-  outfile: resolve(dist, "src/main.js"),
+  entryPoints: {
+    main: resolve(root, "src/main.js"),
+    implant: resolve(root, "src/implant.js")
+  },
+  outdir: resolve(dist, "src"),
   bundle: true,
   format: "esm",
   minify: true,
@@ -21,16 +24,21 @@ await build({
 });
 
 await build({
-  entryPoints: [resolve(root, "src/styles.css")],
-  outfile: resolve(dist, "src/styles.css"),
+  entryPoints: {
+    styles: resolve(root, "src/styles.css"),
+    implant: resolve(root, "src/implant.css")
+  },
+  outdir: resolve(dist, "src"),
   bundle: true,
   external: ["../assets/*"],
   minify: false,
   target: ["es2020"]
 });
 
-const source = await readFile(resolve(root, "index.html"), "utf8");
 const stamp = new Date().toISOString();
-await writeFile(resolve(dist, "index.html"), source.replace("{{BUILD_TIME}}", stamp));
+for (const page of ["index.html", "implant.html"]) {
+  const source = await readFile(resolve(root, page), "utf8");
+  await writeFile(resolve(dist, page), source.replace("{{BUILD_TIME}}", stamp));
+}
 
 console.log(`SSG build complete: ${dist}`);
