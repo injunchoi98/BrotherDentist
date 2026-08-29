@@ -22,6 +22,7 @@
 8. 최종 임플란트의 크라운과 픽스처 끝이 어떤 데스크톱 비율에서도 잘리지 않아야 한다.
 9. 최종 임플란트 주변에는 토스처럼 넓고 옅은 캔버스 기반의 공기감과 미세한 입자를 사용한다.
 10. 단단하고 어두운 타원형 CSS 그림자는 사용하지 않는다.
+11. 임플란트가 화면에 나타난 뒤에는 이동·전환·강조를 이유로 `scale`, `scaleX`, `scaleY`를 변경하지 않는다. 스크롤 진행 중 제품 크기가 달라지는 일은 어떤 구간에도 있어서는 안 된다.
 
 ## 현재 구현이 잘못된 이유
 
@@ -105,6 +106,9 @@ clip-path: inset(180px 160px round 80px);
 - 홀더가 필요하면 배경 프레임 내부의 별도 투명 레이어로 둔다.
 - 홀더는 배경 프레임과 함께 축소되고 위로 퇴장한다.
 - 홀더 이미지 안에 임플란트가 중복으로 포함되어 있으면 안 된다.
+- 최초 장면 조립 시 임플란트와 홀더는 같은 마스터 좌표계, 같은 고정 보정 배율, 같은 결합 anchor를 사용한다.
+- 임플란트와 홀더의 기본 크기를 줄여야 한다면 두 소스의 내용물을 같은 비율로 한 번만 축소하고 같은 벡터만큼 이동한다. 한쪽만 별도로 축소하거나 이동하지 않는다.
+- 이 기본 보정은 asset 제작 단계 또는 layout 초기화 시 한 번 적용하는 정적 보정이다. scrub timeline에서 보정값을 바꾸지 않는다.
 
 ### 임플란트
 
@@ -115,6 +119,11 @@ clip-path: inset(180px 160px round 80px);
 - 이미지의 원본 종횡비를 유지하고, viewport 안전 영역 안에 들어오도록 contain 계산을 사용한다.
 - 제품 이미지의 opacity는 장면 전환용으로 애니메이션하지 않는다.
 - 제품은 mask 또는 배경 프레임의 진입으로 처음 노출할 수 있지만, 노출된 뒤에는 `opacity: 1`을 유지한다.
+- 제품이 처음 표시된 프레임부터 마지막 프레임까지 동일한 computed scale과 동일한 `getBoundingClientRect()` 크기를 유지한다.
+- 제품 강조를 위해 `scale: 1.08` 같은 확대 tween을 추가하지 않는다. 강조는 배경, ambient canvas, 문구로 처리한다.
+- 투명 캔버스 전체 크기가 아니라 알파가 실제로 존재하는 제품 bounding box를 화질 기준으로 사용한다.
+- 최대 렌더링 크기의 최소 2배 픽셀 밀도를 가진 원본을 사용한다. 예를 들어 제품을 최대 400 × 600 CSS px로 표시하면 알파 제품 자체가 최소 800 × 1200 px이어야 한다.
+- 저해상도 알파 이미지를 큰 투명 캔버스에 얹거나 단순 업스케일해 고해상도 소스로 간주하지 않는다.
 
 ### 주변 광원과 입자
 
@@ -134,21 +143,25 @@ clip-path: inset(180px 160px round 80px);
 - CSS의 `transform: translate(...)`와 GSAP의 `xPercent`, `yPercent`를 중복으로 사용하지 않는다.
 - 초기 상태와 모든 타임라인 구간에서 같은 transform pipeline을 사용한다.
 - resize 시 제품 크기와 anchor를 다시 계산할 수 있지만, 한 프레임 안에서 소스나 부모를 교체하지 않는다.
+- 마스터 장면 좌표는 `1658 × 949`로 고정하고, 임플란트와 홀더의 결합 anchor는 같은 마스터 좌표 한 점으로 정의한다.
+- 임플란트와 홀더의 정적 보정은 동일한 `assemblyScale`, `assemblyTranslateX`, `assemblyTranslateY`를 공유한다.
+- `assemblyScale`은 layout 초기화 또는 `ScrollTrigger.refresh()` 때만 계산한다. 스크롤 progress, timeline label, 프레임 clip 상태로 변경하지 않는다.
+- 프레임이 퇴장할 때 홀더는 배경 프레임의 부모 이동을 따르지만, 임플란트의 viewport anchor와 크기는 그대로 유지한다.
 
 권장 계산은 다음과 같다.
 
 ```js
 const safeWidth = stickyWidth - inlineSafeStart - inlineSafeEnd;
 const safeHeight = stickyHeight - blockSafeStart - blockSafeEnd;
-const scale = Math.min(safeWidth / sourceWidth, safeHeight / sourceHeight);
+const layoutScale = Math.min(safeWidth / sourceWidth, safeHeight / sourceHeight);
 
-productWidth = sourceWidth * scale;
-productHeight = sourceHeight * scale;
+productWidth = sourceWidth * layoutScale;
+productHeight = sourceHeight * layoutScale;
 productX = stickyWidth * productAnchorX;
 productY = stickyHeight * productAnchorY;
 ```
 
-제품의 `productAnchorX`, `productAnchorY`는 장면 시작부터 끝까지 바꾸지 않는다.
+여기서 `layoutScale`은 스크롤 애니메이션 값이 아니다. viewport가 바뀌어 layout을 다시 계산할 때만 갱신하며, 한 번의 스크롤 시퀀스 동안에는 상수다. 제품의 `productAnchorX`, `productAnchorY`도 장면 시작부터 끝까지 바꾸지 않는다.
 
 ## 데스크톱 스크롤 시퀀스
 
@@ -204,6 +217,8 @@ productY = stickyHeight * productAnchorY;
 - 하나의 scrubbed GSAP timeline으로 순서를 관리한다.
 - 각 단계는 label로 명시한다: `hero-complete`, `section-cover`, `implant-scene`, `frame-shrink`, `frame-hold`, `frame-exit`, `final-copy`.
 - 제품 요소에 대한 `autoAlpha`, `opacity`, `visibility` tween을 만들지 않는다.
+- 제품 요소에 대한 `scale`, `scaleX`, `scaleY` tween을 만들지 않는다.
+- 제품의 `transform` tween에 scale 성분을 섞지 않는다. 필요한 이동도 원칙적으로 금지하며, 고정된 viewport anchor를 유지한다.
 - 배경 프레임의 clip과 이동은 동시에 진행하지 않는다.
 - `frame-exit` 완료 콜백에 의존하지 말고 timeline 위치로 `final-copy` 시작점을 고정한다.
 - 빠른 스크롤과 역방향 스크롤에서도 같은 장면이 정확히 복원되어야 한다.
@@ -225,6 +240,9 @@ productY = stickyHeight * productAnchorY;
 - 제품을 shrinking frame 안에 넣었다가 최종 단계에 DOM 또는 부모를 바꾸기
 - 서로 다른 원본 여백을 가진 제품 이미지를 같은 위치라고 가정하기
 - 알파 제품 이미지에 `object-fit: cover` 적용하기
+- 임플란트 등장 이후 timeline에서 제품 scale을 변경하기
+- 제품 강조를 zoom-in 또는 zoom-out으로 표현하기
+- 임플란트와 홀더에 서로 다른 기본 보정 scale 또는 서로 다른 결합 anchor 적용하기
 - 프레임 크기에 따라 제품 anchor가 움직이게 만들기
 - 프레임 축소와 프레임 퇴장을 동시에 실행하기
 - 배경이 남아 있는데 최종 문구를 먼저 표시하기
@@ -252,6 +270,7 @@ productY = stickyHeight * productAnchorY;
 모든 milestone에서 다음을 만족해야 한다.
 
 - 제품의 `x`, `y`, `width`, `height` 차이가 각각 1 CSS px 이내다.
+- 제품의 computed transform에서 scale 성분이 모든 milestone에서 동일하다.
 - 제품의 computed opacity는 항상 `1`이다.
 - 화면에 보이는 임플란트 제품 노드는 정확히 하나다.
 - 크라운 상단과 픽스처 하단이 viewport 안에 있다.
@@ -280,6 +299,8 @@ productY = stickyHeight * productAnchorY;
 
 - [ ] 단일 임플란트 이미지 노드만 사용한다.
 - [ ] 제품 교체용 opacity tween이 없다.
+- [ ] 제품에 `scale`, `scaleX`, `scaleY` tween이 없다.
+- [ ] 임플란트와 홀더가 동일한 정적 보정 scale과 동일한 결합 anchor를 사용한다.
 - [ ] 배경 프레임과 제품이 같은 sticky root의 형제다.
 - [ ] 프레임 축소 중 제품 bounding box가 변하지 않는다.
 - [ ] 프레임 퇴장 중 제품 bounding box가 변하지 않는다.
