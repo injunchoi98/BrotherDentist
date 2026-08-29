@@ -11,10 +11,9 @@ const variants = [
   ["clinic-hero-poster.jpg", [960, 1920]],
   ["patient-poses-transparent.png", [1254]],
   ["clinic-day-night-wheel.png", [1254]],
-  // This photograph is painted across a full-viewport reveal. Deliver 2x
-  // variants so the browser does not have to enlarge the 770px source at the
-  // common 480px and 770px CSS display widths.
-  ["clinic-exterior-actual.png", [960, 1540]],
+  // The generated master is painted across a 145vw reveal. Include large
+  // candidates so high-density desktop displays do not enlarge a small source.
+  ["clinic-exterior-generated-v2.png", [960, 1540, 2240, 3080, 4480]],
   ["clinic-showcase-night.png", [480, 960, 1387]],
   ["case-general.png", [480, 960, 1440]],
   ["case-implant.png", [480, 960, 1440]],
@@ -63,7 +62,7 @@ const losslessAlphaSources = new Set([
 ]);
 
 const enlargementSources = new Set([
-  "clinic-exterior-actual.png",
+  "clinic-exterior-generated-v2.png",
 ]);
 
 await rm(outputDirectory, { recursive: true, force: true });

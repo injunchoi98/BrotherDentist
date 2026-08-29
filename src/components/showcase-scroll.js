@@ -13,6 +13,7 @@ const TITLES = [
   { prefix: "전국에서 찾아오는", start: .57 },
   { prefix: "치과에 대한 생각을 바꾸는", start: .81 }
 ];
+const TITLE_REVEAL_DURATION = .05;
 const SCENE_RANGES = [[0, .37], [.335, .595], [.555, .825]];
 
 const REFERRAL_POSITIONS = [
@@ -95,7 +96,7 @@ const getViewportWidth = () => document.documentElement.clientWidth;
 const renderTitle = (element, progress) => {
   const index = Math.max(0, TITLES.findLastIndex(({ start }) => progress >= start));
   const stage = TITLES[index];
-  const reveal = stage.start === 0 ? 1 : clamp((progress - stage.start) / .05);
+  const reveal = stage.start === 0 ? 1 : clamp((progress - stage.start) / TITLE_REVEAL_DURATION);
   const characters = Array.from(stage.prefix);
   const revealed = Math.ceil(characters.length * reveal);
   const frame = Math.floor(progress * 520);
@@ -451,16 +452,16 @@ export function initShowcaseScroll() {
           .addLabel("brand", TITLES[3].start)
           .to(state, { progress: 1, duration: 1 }, 0);
 
-        // The labels are the semantic starts of the four showcase messages.
-        // Add progress 1 explicitly as an exit stop; without it, a directional
-        // snap after the final label could pull the reader back into the sticky
-        // section instead of allowing the following visit section to appear.
+        // Snap after each scrambled title has resolved, not at the transition's
+        // first frame. Progress 1 remains an exit stop so the next gesture can
+        // leave the sticky section for the visit section.
         const snapPoints = [
-          ...Object.values(animation.labels).map((time) => time / animation.duration()),
+          ...TITLES.map(({ start }) => start === 0 ? 0 : start + TITLE_REVEAL_DURATION),
           1
         ];
         disposeScrollTrigger = createResponsiveStageScrollTrigger({
           snapTo: snapPoints,
+          snapOnAllInputs: true,
           vars: {
             id: "showcase-scroll",
             trigger: section,

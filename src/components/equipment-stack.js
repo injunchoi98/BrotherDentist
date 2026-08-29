@@ -4,6 +4,9 @@ import { createPinHeightGuard } from "../utils/pin-height-guard.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const CARD_SEQUENCE_END = .9;
+const CARD_STEP_HYSTERESIS = .018;
+
 export function initEquipmentStack() {
   const root = document.querySelector("[data-equipment-stack]");
   if (!root) return;
@@ -11,9 +14,11 @@ export function initEquipmentStack() {
   const stage = root.querySelector(".equipment-stack-stage");
   const cards = [...root.querySelectorAll("[data-equipment-card]")];
   const status = root.querySelector("[data-equipment-status]");
+  const panel = root.closest("[data-evidence-panel]");
   let active = 0;
   let pointerId = null;
   let pointerStart = 0;
+  let scrollTrigger = null;
 
   const render = () => {
     cards.forEach((card, index) => {
@@ -31,10 +36,36 @@ export function initEquipmentStack() {
     status.textContent = String(active + 1);
   };
 
-  const move = (amount) => {
-    active = (active + amount + cards.length) % cards.length;
+  const setActive = (index) => {
+    active = Math.max(0, Math.min(cards.length - 1, index));
     render();
   };
+
+  const getCardAnchorProgress = (index) => (
+    ((index + .5) / cards.length) * CARD_SEQUENCE_END
+  );
+
+  const move = (amount) => {
+    const next = Math.max(0, Math.min(cards.length - 1, active + amount));
+    if (next === active) return;
+
+    // While pinned, scroll position is the single source of truth. Moving the
+    // viewport to the requested card prevents controls and scroll updates from
+    // overwriting each other on the following frame.
+    if (scrollTrigger?.enabled && !panel.hasAttribute("data-pin-disabled")) {
+      const target = scrollTrigger.start
+        + (getCardAnchorProgress(next) * (scrollTrigger.end - scrollTrigger.start));
+      scrollTo({ top: target, behavior: "smooth" });
+      return;
+    }
+
+    setActive(next);
+  };
+
+  const getScrollCardIndex = (progress) => Math.min(
+    cards.length - 1,
+    Math.floor((progress / CARD_SEQUENCE_END) * cards.length)
+  );
 
   const resetActiveCard = () => {
     const card = cards[active];
@@ -68,39 +99,61 @@ export function initEquipmentStack() {
     pointerId = null;
   };
 
+  const cancelDrag = (event) => {
+    if (event.pointerId !== pointerId) return;
+    resetActiveCard();
+    pointerId = null;
+  };
+
   stage.addEventListener("pointerup", finishDrag);
-  stage.addEventListener("pointercancel", finishDrag);
+  // A native vertical pan fires pointercancel. It must only cancel the card
+  // gesture; treating it like pointerup advanced the deck during scrolling and
+  // wrapped card 6 back to card 1.
+  stage.addEventListener("pointercancel", cancelDrag);
   root.querySelector("[data-equipment-prev]")?.addEventListener("click", () => move(-1));
   root.querySelector("[data-equipment-next]")?.addEventListener("click", () => move(1));
   root.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowLeft") move(-1);
-    if (event.key === "ArrowRight") move(1);
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      move(-1);
+    }
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      move(1);
+    }
   });
 
   render();
-  const panel = root.closest("[data-evidence-panel]");
   return createPinHeightGuard({
     section: panel,
     minimumHeightRem: ({ layout }) => layout === "mobile" ? 40 : 44,
     onEnable: () => {
-      const trigger = ScrollTrigger.create({
+      scrollTrigger = ScrollTrigger.create({
         id: "equipment-pin-progress",
         trigger: panel,
         start: "top top",
         end: "bottom bottom",
         invalidateOnRefresh: true,
         onUpdate: ({ progress: scrollProgress }) => {
-          const next = Math.min(cards.length - 1, Math.floor(scrollProgress * cards.length));
+          const next = getScrollCardIndex(scrollProgress);
           if (next === active || pointerId !== null) return;
-          active = next;
-          render();
+
+          // Trackpads can briefly report a tiny reverse delta at a card
+          // boundary. Keep the newer card until the reader has moved a clear
+          // distance back across that boundary, preventing 5 → 6 → 5 flicker.
+          const activeStart = (active / cards.length) * CARD_SEQUENCE_END;
+          if (next < active && scrollProgress > activeStart - CARD_STEP_HYSTERESIS) return;
+
+          setActive(next);
         }
       });
-      return () => trigger.kill();
+      return () => {
+        scrollTrigger?.kill();
+        scrollTrigger = null;
+      };
     },
     onDisable: () => {
-      active = 0;
-      render();
+      setActive(0);
     }
   });
 }

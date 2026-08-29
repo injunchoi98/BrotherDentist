@@ -63,6 +63,7 @@ export function initConcernScroll() {
       // sticky section instead of trapping the reader on the last concern.
       return createResponsiveStageScrollTrigger({
         snapTo: 1 / concerns.length,
+        snapOnAllInputs: true,
         vars: {
           id: "concern-pin-progress",
           trigger: section,

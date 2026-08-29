@@ -199,7 +199,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .evidence-heading > p { margin: 0 0 .15rem; color: var(--color-brand); font-size: var(--landing-heading-3-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-heading-3-line-height); letter-spacing: -.025em; }
 .evidence-heading h2 { max-width: 17ch; margin-bottom: 0; font-size: var(--landing-heading-3-size); line-height: var(--landing-heading-3-line-height); }
 .evidence-flow { display: grid; grid-template-columns: minmax(16rem, .78fr) minmax(0, 1.55fr); gap: clamp(3rem, 8vw, 8rem); }
-.evidence-nav { position: sticky; top: calc(50svh + (var(--header-height) / 2)); align-self: start; display: grid; gap: 1.35rem; margin: 0; padding: 0; translate: 0 -50%; list-style: none; }
+.evidence-nav { position: sticky; top: 50svh; align-self: start; display: grid; gap: 1.35rem; margin: 0; padding: 0; translate: 0 -50%; list-style: none; }
 .evidence-nav li { color: #a1a7a5; font-size: var(--landing-body-1-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-body-1-line-height); transition: color .25s, transform .25s; }
 .evidence-nav li[aria-current="true"] { color: var(--color-text); transform: translateX(.5rem); }
 .evidence-nav span { display: inline-block; width: 2rem; color: var(--color-brand); font-size: var(--landing-ui-label-size); line-height: var(--landing-ui-label-line-height); font-variant-numeric: tabular-nums; vertical-align: .15rem; }
@@ -438,7 +438,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .showcase-metric { color: var(--showcase-supporting-text); font-size: var(--landing-body-1-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-body-1-line-height); letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
 .showcase-metric-secondary { color: var(--showcase-supporting-text); font-size: var(--landing-body-2-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-body-2-line-height); letter-spacing: -.025em; font-variant-numeric: tabular-nums; }
 
-.showcase-title-lock { position: absolute; z-index: 30; top: 50%; left: 50%; display: grid; width: calc(100% - (var(--space-page) * 2)); place-items: center; text-align: center; translate: -50% -50%; }
+.showcase-title-lock { position: absolute; z-index: 30; top: 50%; left: 50%; display: grid; width: calc(100% - (var(--space-page) * 2)); place-items: center; text-align: center; translate: -50% -50%; container: showcase-title / inline-size; }
 .showcase-title-lock h3 { /* “치과”를 모든 장면의 동일한 두 번째 행과 X/Y 중앙선에 고정한다. */ display: flex; min-block-size: 2lh; align-items: center; justify-content: center; flex-direction: column; contain: layout paint; width: 100%; max-width: none; margin: 0; color: var(--color-white); font-size: var(--landing-heading-3-size); line-height: var(--landing-heading-3-line-height); letter-spacing: var(--landing-heading-3-letter-spacing); text-align: center; }
 .showcase-title-variable, .showcase-title-variable > span, .showcase-title-fixed { display: block; width: 100%; text-align: center; }
 .showcase-title-variable > span { white-space: normal; text-wrap: balance; word-break: keep-all; }
@@ -715,6 +715,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .equipment-card-media { height: 100%; min-height: 0; }
   .equipment-card-copy { align-self: center; padding: 2rem 1.5rem 3.5rem 1rem; }
   .equipment-stack-status { right: 1.5rem; bottom: 1.5rem; }
+}
+
+@container showcase-title (min-width: 58rem) {
+  .showcase-title-lock h3 { width: auto; min-block-size: 1lh; flex-direction: row; gap: .28em; white-space: nowrap; }
+  .showcase-title-variable, .showcase-title-variable > span, .showcase-title-fixed { display: inline-flex; width: auto; min-block-size: 1lh; align-items: center; white-space: nowrap; }
 }
 
 @media (max-width: 37.5rem) {
