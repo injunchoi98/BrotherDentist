@@ -1,5 +1,7 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { initSiteHeader } from "./components/site-header.js";
+import { initMobileScrollNormalization } from "./utils/mobile-scroll.js";
 import {
   calculatePinMinimumHeightRem,
   createPinHeightGuard,
@@ -8,6 +10,7 @@ import {
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
+initMobileScrollNormalization();
 
 const header = document.querySelector("[data-header]");
 const hero = document.querySelector("[data-implant-hero]");
@@ -401,90 +404,7 @@ const initPrecisionSequence = () => {
   desktopMedia.addEventListener("change", syncPrecisionLayout);
 };
 
-const initHeader = () => {
-  const menuButton = document.querySelector("[data-menu]");
-  const nav = document.querySelector("[data-nav]");
-  const treatmentMenu = nav?.querySelector("[data-treatment-menu]");
-  const treatmentToggle = nav?.querySelector("[data-treatment-toggle]");
-  const treatmentSubmenu = nav?.querySelector("[data-treatment-submenu]");
-  const pageMain = document.querySelector("main");
-  const skipLink = document.querySelector(".skip-link");
-
-  const setTreatmentOpen = (open) => {
-    if (!treatmentMenu || !treatmentToggle || !treatmentSubmenu) return;
-    treatmentMenu.toggleAttribute("data-open", open);
-    header?.toggleAttribute("data-treatment-open", open);
-    treatmentToggle.setAttribute("aria-expanded", String(open));
-    treatmentSubmenu.toggleAttribute("inert", !open);
-  };
-
-  const setMenuOpen = (open, restoreFocus = true, focusFirstItem = false) => {
-    if (!menuButton || !nav) return;
-    const wasOpen = nav.hasAttribute("data-open");
-    menuButton.setAttribute("aria-expanded", String(open));
-    menuButton.setAttribute("aria-label", open ? "메뉴 닫기" : "메뉴 열기");
-    nav.toggleAttribute("data-open", open);
-    header?.toggleAttribute("data-menu-open", open);
-    document.body.classList.toggle("menu-open", open);
-    if (!open) setTreatmentOpen(false);
-    if (pageMain) pageMain.inert = open;
-    if (skipLink) skipLink.inert = open;
-    if (open && focusFirstItem) requestAnimationFrame(() => nav.querySelector("a")?.focus());
-    else if (!open && restoreFocus && wasOpen) menuButton.focus();
-  };
-
-  setTreatmentOpen(false);
-  menuButton?.addEventListener("click", (event) => setMenuOpen(!nav?.hasAttribute("data-open"), true, event.detail === 0));
-  treatmentToggle?.addEventListener("click", () => setTreatmentOpen(!treatmentMenu?.hasAttribute("data-open")));
-  nav?.addEventListener("click", (event) => {
-    if (!event.target.closest("a")) return;
-    setTreatmentOpen(false);
-    if (nav.hasAttribute("data-open")) setMenuOpen(false, false);
-  });
-  addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      if (treatmentMenu?.hasAttribute("data-open")) {
-        setTreatmentOpen(false);
-        treatmentToggle?.focus();
-      } else if (nav?.hasAttribute("data-open")) {
-        setMenuOpen(false);
-      }
-      return;
-    }
-    if (event.key !== "Tab" || !nav?.hasAttribute("data-open") || !header) return;
-    const focusable = [...header.querySelectorAll("a[href], button:not([disabled])")]
-      .filter((element) => element.getClientRects().length > 0 && !element.inert);
-    const first = focusable[0];
-    const last = focusable.at(-1);
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last?.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first?.focus();
-    }
-  });
-  treatmentMenu?.addEventListener("focusout", () => requestAnimationFrame(() => {
-    if (!treatmentMenu.contains(document.activeElement)) setTreatmentOpen(false);
-  }));
-  document.addEventListener("pointerdown", (event) => {
-    if (treatmentMenu?.hasAttribute("data-open") && !event.target.closest("[data-treatment-menu]")) {
-      setTreatmentOpen(false);
-    }
-  });
-  matchMedia("(min-width: 64.0625rem)").addEventListener("change", () => {
-    setTreatmentOpen(false);
-    if (nav?.hasAttribute("data-open")) setMenuOpen(false, false);
-  });
-
-  const syncHeader = () => {
-    header?.toggleAttribute("data-on-light", scrollY > (hero?.offsetHeight || innerHeight) - 96);
-  };
-  syncHeader();
-  addEventListener("scroll", syncHeader, { passive: true });
-};
-
-initHeader();
+initSiteHeader({ hero });
 initHeroExpansion();
 initRestorationStage();
 initPrecisionSequence();

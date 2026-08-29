@@ -5,6 +5,7 @@ import {
   calculatePinMinimumHeightRem,
   createPinHeightGuard
 } from "../utils/pin-height-guard.js";
+import { createResponsiveStageScrollTrigger } from "../utils/mobile-scroll.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -55,16 +56,23 @@ export function initConcernScroll() {
     allowMobile: true,
     minimumHeightRem: getTextMinimumHeightRem,
     onEnable: () => {
-      const trigger = ScrollTrigger.create({
-        id: "concern-pin-progress",
-        trigger: section,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: .35,
-        invalidateOnRefresh: true,
-        onUpdate: ({ progress }) => render(Math.min(concerns.length - 1, Math.floor(progress * concerns.length)))
+      // Each concern occupies one equal progress interval. On mobile touch,
+      // settle at those interval boundaries after the shortened momentum ends
+      // so a release cannot leave two messages visually mixed mid-transition.
+      // The final 1.0 boundary is retained so the next gesture can leave the
+      // sticky section instead of trapping the reader on the last concern.
+      return createResponsiveStageScrollTrigger({
+        snapTo: 1 / concerns.length,
+        vars: {
+          id: "concern-pin-progress",
+          trigger: section,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: .35,
+          invalidateOnRefresh: true,
+          onUpdate: ({ progress }) => render(Math.min(concerns.length - 1, Math.floor(progress * concerns.length)))
+        }
       });
-      return () => trigger.kill();
     },
     onDisable: () => render(0, false)
   });

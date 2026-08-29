@@ -1,5 +1,6 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { createResponsiveStageScrollTrigger } from "../utils/mobile-scroll.js";
 import { createPinHeightGuard, getSmallViewportHeight } from "../utils/pin-height-guard.js";
 import { bindVisualViewportMetrics } from "../utils/visual-viewport.js";
 
@@ -440,6 +441,7 @@ export function initShowcaseScroll() {
       clearMobileMotion();
       const unbindVisualViewport = bindVisualViewportMetrics(panel);
       const state = { progress: 0 };
+      let disposeScrollTrigger = null;
       const context = gsap.context(() => {
         const animation = gsap.timeline({ paused: true, defaults: { ease: "none" }, onUpdate: () => render(state.progress) });
         animation
@@ -448,20 +450,33 @@ export function initShowcaseScroll() {
           .addLabel("nationwide", TITLES[2].start)
           .addLabel("brand", TITLES[3].start)
           .to(state, { progress: 1, duration: 1 }, 0);
-        ScrollTrigger.create({
-          id: "showcase-scroll",
-          trigger: section,
-          animation,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: .7,
-          invalidateOnRefresh: true,
-          onRefreshInit: measureMotionMetrics
+
+        // The labels are the semantic starts of the four showcase messages.
+        // Add progress 1 explicitly as an exit stop; without it, a directional
+        // snap after the final label could pull the reader back into the sticky
+        // section instead of allowing the following visit section to appear.
+        const snapPoints = [
+          ...Object.values(animation.labels).map((time) => time / animation.duration()),
+          1
+        ];
+        disposeScrollTrigger = createResponsiveStageScrollTrigger({
+          snapTo: snapPoints,
+          vars: {
+            id: "showcase-scroll",
+            trigger: section,
+            animation,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: .7,
+            invalidateOnRefresh: true,
+            onRefreshInit: measureMotionMetrics
+          }
         });
         render(0);
       }, section);
 
       return () => {
+        disposeScrollTrigger?.();
         context.revert();
         unbindVisualViewport();
       };
