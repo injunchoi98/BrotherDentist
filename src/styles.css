@@ -741,7 +741,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
    * photograph, copy and map transitions between guarded scenes; the guard
    * limits a fling to one boundary, while this height keeps ordinary drags
    * from completing an entire scene too quickly. */
-  .showcase { height: 760svh; min-height: 760svh; }
+  .showcase { height: 900svh; min-height: 900svh; }
   .showcase[data-pin-disabled] .showcase-scene { min-height: max(33rem, 88svh); }
   .showcase[data-pin-disabled] .showcase-static-title { max-width: none; white-space: nowrap; }
   .showcase[data-pin-disabled] .showcase-static-final h3 { max-width: min(15ch, 100%); white-space: normal; }
