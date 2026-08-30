@@ -119,7 +119,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .concern-dialogue { display: grid; width: min(100%, 42rem); justify-items: end; row-gap: .375rem; margin-inline: auto; text-align: left; }
 .concern-message { display: flex; width: 100%; align-items: flex-end; justify-content: flex-end; gap: .375rem; transform-origin: right center; }
 .concern-time { flex: none; margin-bottom: .125rem; color: var(--color-concern-meta); font-size: var(--landing-ui-label-size); font-style: normal; line-height: var(--landing-ui-label-line-height); font-variant-numeric: tabular-nums; }
-.concern-bubble { position: relative; isolation: isolate; width: fit-content; max-width: min(76%, 32rem); margin: 0; border-radius: .75rem; padding: .375rem .75rem; color: var(--color-concern-ink); background: var(--color-concern-bubble); font-size: var(--landing-ui-control-size); font-weight: var(--landing-font-weight-regular); line-height: var(--landing-ui-control-line-height); text-align: left; white-space: pre-line; }
+.concern-bubble { position: relative; isolation: isolate; width: fit-content; max-width: min(76%, 32rem); margin: 0; border-radius: .75rem; padding: .375rem .75rem; color: var(--color-concern-ink); background: var(--color-concern-bubble); font-size: var(--landing-body-2-size); font-weight: var(--landing-font-weight-regular); line-height: var(--landing-body-2-line-height); text-align: left; white-space: pre-line; }
 /* Photo 4's iPhone capture is 3x: the rounded body measures about 34 CSS px
  * high with a 12px corner, and the fin projects only about 2px beyond the
  * body's right edge. Most of this 12x10 path sits behind the rounded corner so

@@ -5,7 +5,7 @@ import {
   calculatePinMinimumHeightRem,
   createPinHeightGuard
 } from "../utils/pin-height-guard.js";
-import { createResponsiveStageScrollTrigger } from "../utils/mobile-scroll.js";
+import { createDiscreteStageScrollTrigger } from "../utils/discrete-stage-scroll.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -84,11 +84,11 @@ export function initConcernScroll() {
        * 않는다. 말풍선 하나가 한 단계이며, 마지막 말풍선 다음에 들어온
        * 별도의 스와이프만 "필요한 치료만 정직하게" 섹션으로 이동한다.
        *
-       * The three bubbles are three complete resting states. On mobile, one
-       * physical swipe must reveal at most one new bubble even when that swipe
-       * has enough velocity to cross the section. Intermediate progress between
-       * bubbles has no product meaning, so the mobile controller drives this
-       * timeline directly from one settled label to the next.
+       * The three bubbles are three complete resting states on every viewport.
+       * One physical wheel, swipe, or keyboard gesture must reveal at most one
+       * new bubble even when that gesture has enough velocity to cross the
+       * section. Intermediate progress between bubbles has no product meaning,
+       * so the controller drives this timeline directly between named labels.
        *
        * Do not reuse the showcase section's continuous boundary controller here.
        * Conversely, do not reuse this discrete controller for showcase: its
@@ -96,20 +96,24 @@ export function initConcernScroll() {
        */
       const timeline = gsap.timeline({
         paused: true,
-        defaults: { ease: "power2.out" }
+        // The stage controller eases the timeline's playhead with tweenTo().
+        // Keep inner reveals linear so forward and reverse do not compound two
+        // eases and recreate the former delayed hide on upward navigation.
+        defaults: { ease: "none" }
       });
+      const stageLabels = Object.freeze(["first", "second", "third"]);
 
       gsap.set([chatHeader, dialogue, messages[0]], { autoAlpha: 1 });
       gsap.set(messages.slice(1), { autoAlpha: 0, y: 18, scale: .96 });
 
       timeline
-        .addLabel("first", 0)
+        .addLabel(stageLabels[0], 0)
         // A reveal begins immediately after input. The former empty hold tweens
         // made a valid swipe look ignored before each bubble finally appeared.
         .to(messages[1], { autoAlpha: 1, y: 0, scale: 1, duration: .45 })
-        .addLabel("second")
+        .addLabel(stageLabels[1])
         .to(messages[2], { autoAlpha: 1, y: 0, scale: 1, duration: .45 })
-        .addLabel("third")
+        .addLabel(stageLabels[2])
         .to([chatHeader, ...messages], {
           autoAlpha: 0,
           y: -16,
@@ -120,29 +124,20 @@ export function initConcernScroll() {
           ease: "power3.in"
         });
 
-      // Only labels with visible chat content are panels. The collapsed end is
-      // an exit transition, not a fourth stop. Therefore reaching "third" and
-      // leaving for the brand section always require separate gestures.
-      const stagePoints = ["first", "second", "third"]
-        .map((label) => timeline.labels[label] / timeline.duration());
-      const disposeScrollTrigger = createResponsiveStageScrollTrigger({
-        mobileStepPoints: stagePoints,
-        observeDesktopWheel: true,
+      const disposeScrollTrigger = createDiscreteStageScrollTrigger({
+        section,
+        animation: timeline,
+        // These timeline labels are the single source of truth for complete
+        // scenes. The controller reads their times directly; do not recreate
+        // them as normalized progress values or ScrollTrigger snap points.
+        stageLabels,
         stepDuration: .32,
-        backEntryPoint: stagePoints[2],
         // `bottom bottom` ends while the next section is still one viewport
         // below. Carry the same final gesture to this section's document bottom
         // so the brand section replaces the chat without a blank resting frame.
         forwardExitTarget: () => window.scrollY + section.getBoundingClientRect().bottom,
-        vars: {
-          id: "concern-observer-panels",
-          trigger: section,
-          animation: timeline,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: true,
-          invalidateOnRefresh: true
-        }
+        start: "top top",
+        end: "bottom bottom"
       });
 
       return () => {
