@@ -651,7 +651,7 @@ export function createBoundaryLimitedScrollTrigger({
         type: "touch",
         allowClicks: true,
         lockAxis: true,
-        debounce: false,
+        debounce: true,
         dragMinimum: 4,
         tolerance: 2,
         ignore: interactiveIgnore,
