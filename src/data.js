@@ -1,7 +1,7 @@
 export const concerns = [
-  { heading: "치과 선택할 때", copy: "과잉 진료면 어쩌지", pose: 0 },
-  { heading: "치료를 앞두고", copy: "많이 아프진 않을까", pose: 1 },
-  { heading: "바쁜 일상 속에서", copy: "시간을 맞출 수 있을까", pose: 2 }
+  { heading: "치과 선택 고민", copy: "치과 선택할 때, 과잉 진료면 어쩌지", pose: 0 },
+  { heading: "치과 선택 고민", copy: "치료를 앞두고, 많이 아프진 않을까", pose: 1 },
+  { heading: "치과 선택 고민", copy: "평일엔 일해야 되는데, 진료시간 맞출 수 있을까", pose: 2 }
 ];
 
 export const cases = [
