@@ -171,8 +171,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .review-heading h2 { max-width: 18ch; }
 .review-heading > p { max-width: 44rem; margin: 1.5rem 0 0; font-size: var(--landing-body-2-size); line-height: var(--landing-body-2-line-height); }
 .review-window { min-height: 14.125rem; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent); mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent); }
-.review-track { display: flex; width: max-content; gap: 1rem; animation: marquee 36s linear infinite; will-change: transform; }
-.review-window:hover .review-track { animation-play-state: paused; }
+.review-track { --infinite-gap: 1rem; --infinite-half-gap: .5rem; display: flex; width: max-content; gap: var(--infinite-gap); }
+.review-track[data-infinite-ready] { animation: infinite-marquee var(--infinite-duration) linear infinite; animation-direction: var(--infinite-direction); will-change: transform; }
+.review-window:hover .review-track[data-pause-on-hover] { animation-play-state: paused; }
 .review-card { width: min(86vw, 27rem); flex: none; border: 1px solid #e5e8e7; border-radius: .85rem; padding: 1.25rem 1.25rem 1rem; background: var(--color-white); }
 .review-card-header { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); gap: .75rem; align-items: center; }
 .review-card-header > picture { width: 2.75rem; height: 2.75rem; }
@@ -181,7 +182,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .review-card-header strong { font-size: var(--landing-body-4-size); line-height: var(--landing-body-4-line-height); }
 .review-card-header small { overflow: hidden; color: #8a918f; font-size: var(--landing-ui-meta-size); line-height: var(--landing-ui-meta-line-height); text-overflow: ellipsis; white-space: nowrap; }
 .review-card > p { min-height: 7.5rem; margin: 1.25rem 0 .25rem; font-size: var(--landing-body-4-size); font-weight: var(--landing-font-weight-medium); line-height: var(--landing-body-4-line-height); }
-@keyframes marquee { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(calc(-50% - .5rem), 0, 0); } }
+@keyframes infinite-marquee { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(calc(-50% - var(--infinite-half-gap)), 0, 0); } }
 
 .treatment-layout { display: grid; grid-template-columns: minmax(15rem, 1fr) minmax(0, 3fr); gap: clamp(2rem, 5vw, 6rem); }
 .treatment-intro { align-self: center; display: flex; flex-direction: column; }
@@ -362,8 +363,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .quality-logo-cloud { position: absolute; inset: 0; overflow: hidden; contain: layout paint; pointer-events: none; user-select: none; -webkit-mask-image: radial-gradient(ellipse 60% 55% at 50% 53%, var(--color-black) 50%, color-mix(in srgb, var(--color-black) 90%, transparent) 50%, color-mix(in srgb, var(--color-black) 15%, transparent) 80%, transparent 100%); mask-image: radial-gradient(ellipse 60% 55% at 50% 53%, var(--color-black) 50%, color-mix(in srgb, var(--color-black) 90%, transparent) 50%, color-mix(in srgb, var(--color-black) 15%, transparent) 80%, transparent 100%); }
 .quality-logo-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .2s ease; }
 .quality-logo-cloud[data-quality-ready] .quality-logo-canvas { opacity: 1; }
-.quality-logo-fallback { position: absolute; top: 50%; left: 50%; display: grid; width: min(34rem, 126%); grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .7rem; transform: translate(-50%, -50%); transition: opacity .2s ease; }
+.quality-logo-fallback { position: absolute; top: 50%; left: 50%; width: min(34rem, 126%); transform: translate(-50%, -50%); transition: opacity .2s ease; }
 .quality-logo-cloud[data-quality-ready] .quality-logo-fallback { opacity: 0; }
+.quality-logo-source-set { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .7rem; }
+.quality-logo-rows { display: none; }
 .quality-logo-tile { display: flex; min-width: 0; height: 3.5rem; align-items: center; justify-content: center; gap: .25rem; border: 1px solid color-mix(in srgb, var(--color-line) 62%, transparent); border-radius: .75rem; padding: .55rem; color: var(--color-text); background: color-mix(in srgb, var(--color-white) 90%, transparent); font-size: var(--landing-ui-meta-size); line-height: var(--landing-ui-meta-line-height); text-align: center; }
 .quality-logo-tile img { display: block; width: auto; max-width: 72%; height: auto; max-height: 54%; object-fit: contain; }
 .quality-logo-emblem img { max-width: 48%; max-height: 52%; }
@@ -589,7 +592,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
   /* The stable pin remains svh-based, while the expanding artwork may paint
    * into the extra visual viewport exposed when Safari collapses its bars. */
   .brand-sticky, .showcase-sticky { overflow: visible; }
-  .review-window { -webkit-mask-image: none; mask-image: none; }
   .case-section { padding-block: 4rem; }
   .case-heading { margin-bottom: 2rem; }
   .coverflow { padding-bottom: 4.25rem; }
@@ -649,7 +651,19 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .comparison-chart-plot { height: 12.5rem; }
   .comparison-groups { gap: 1rem; padding-inline: .75rem; }
   .circuit-board { width: 124%; }
-  .quality-logo-tile { height: 3.25rem; padding: .35rem; }
+  /* Desktop keeps the interactive canvas cloud. Compact screens instead use
+   * four cheap compositor-only marquee rows, matching the supplied infinite
+   * card pattern without running a full-screen canvas animation on mobile. */
+  .quality-logo-cloud { -webkit-mask-image: linear-gradient(90deg, transparent, var(--color-black) 9%, var(--color-black) 91%, transparent); mask-image: linear-gradient(90deg, transparent, var(--color-black) 9%, var(--color-black) 91%, transparent); }
+  .quality-logo-canvas { display: none; }
+  .quality-logo-cloud[data-quality-ready] .quality-logo-fallback { opacity: 1; }
+  .quality-logo-fallback { inset: 0; display: block; width: 100%; transform: none; }
+  .quality-logo-source-set { display: none; }
+  .quality-logo-rows { position: absolute; inset: 0; display: grid; align-content: center; gap: .625rem; }
+  .quality-logo-row { width: 100%; overflow: hidden; }
+  .quality-logo-track { --infinite-gap: .625rem; --infinite-half-gap: .3125rem; display: flex; width: max-content; gap: var(--infinite-gap); }
+  .quality-logo-track[data-infinite-ready] { animation: infinite-marquee var(--infinite-duration) linear infinite; animation-direction: var(--infinite-direction); will-change: transform; }
+  .quality-logo-track .quality-logo-tile { width: 6rem; height: 3.25rem; flex: none; padding: .35rem; }
   .care-visual { padding: .75rem; }
   .care-workflow-header { grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; padding: .75rem; }
   .care-workflow-header em { min-width: 4.25rem; padding-inline: .5rem; }
@@ -742,6 +756,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   html { scroll-behavior: auto; }
   .hero-video { display: none; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .review-track[data-infinite-ready], .quality-logo-track[data-infinite-ready] { animation: none !important; transform: none !important; }
   .features-section *, .features-section *::before, .features-section *::after { animation: none !important; transition: none !important; }
   .concern-section { height: auto; min-height: 100svh; }.brand-reveal { height: auto; }.concern-sticky, .brand-sticky { position: relative; }
   .brand-sticky { min-height: 0; align-content: start; gap: 3rem; padding-top: calc(var(--header-height) + 4rem); }
