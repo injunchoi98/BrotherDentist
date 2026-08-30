@@ -56,13 +56,15 @@ export function initConcernScroll() {
     allowMobile: true,
     minimumHeightRem: getTextMinimumHeightRem,
     onEnable: () => {
-      // Each concern occupies one equal progress interval. Mobile Observer
-      // advances exactly one interval per gesture; desktop scrolling remains
-      // fully native with no settling snap. Progress 1 is an exit boundary.
+      // Each concern occupies one equal progress interval. Touch and desktop
+      // wheel/trackpad gestures advance one interval at a time, preventing a
+      // single high-velocity input from skipping the entire sticky story.
       return createResponsiveStageScrollTrigger({
         // Progress 1 repeats the final concern, so mobile exposes only the three
         // real stories and releases the following swipe out of the section.
         mobileStepPoints: concerns.map((_, index) => index / concerns.length),
+        observeDesktopWheel: true,
+        stepDuration: .1,
         vars: {
           id: "concern-pin-progress",
           trigger: section,

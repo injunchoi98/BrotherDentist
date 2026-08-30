@@ -584,7 +584,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .site-nav { padding-top: calc(var(--header-height-mobile) + 1.5rem); }
   .evidence-nav { position: static; }
   .section-heading { align-items: start; flex-direction: column; gap: 1.25rem; }.section-heading > p br { display: none; }
-  .concern-section[data-pin-disabled] { min-height: 0; }
+  /* Observer supplies the one-gesture guard, so compact screens need less
+   * physical spacer than desktop while retaining three readable concern beats. */
+  .concern-section { height: calc(300svh + var(--concern-scroll-extension)); min-height: calc(300svh + var(--concern-scroll-extension)); }
+  .concern-section[data-pin-disabled] { height: auto; min-height: 0; }
   .concern-section[data-pin-disabled] .concern-fallback-list { grid-template-columns: 1fr; gap: 4rem; width: 100%; padding: calc(var(--header-height-mobile) + 3rem) var(--space-page) 5rem; }
   .concern-fallback-item { gap: 1rem; }
   .concern-fallback-copy { gap: .75rem; }
@@ -700,6 +703,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .showcase-photo-wide { width: clamp(9rem, 31vw, 14rem); }
   .showcase-photo-portrait { width: clamp(6rem, 18vw, 8rem); }
   .showcase-korea-map { width: min(90vw, 30rem); }
+  /* The boundary limiter prevents one fling from skipping all four scenes, so
+   * the compact scroll plane can be shorter without sacrificing intermediate
+   * floating-copy progress inside a scene. */
+  .showcase { height: 600svh; min-height: 600svh; }
   .showcase[data-pin-disabled] .showcase-scene { min-height: max(33rem, 88svh); }
   .showcase[data-pin-disabled] .showcase-static-title { max-width: none; white-space: nowrap; }
   .showcase[data-pin-disabled] .showcase-static-final h3 { max-width: min(15ch, 100%); white-space: normal; }

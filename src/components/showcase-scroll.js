@@ -1,6 +1,6 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { createResponsiveStageScrollTrigger } from "../utils/mobile-scroll.js";
+import { createBoundaryLimitedScrollTrigger } from "../utils/mobile-scroll.js";
 import {
   calculatePinMinimumHeightRem,
   createPinHeightGuard,
@@ -470,16 +470,15 @@ export function initShowcaseScroll() {
           .addLabel("brand", TITLES[3].start)
           .to(state, { progress: 1, duration: 1 }, 0);
 
-        // Mobile stage stops come after each scrambled title has resolved, not
-        // at the transition's first frame. Desktop has no settling snap.
-        const stagePoints = [
+        // Scene starts remain overscroll boundaries, but positions inside each
+        // scene still matter: the floating words, photos and map keep following
+        // small wheel/touch deltas continuously instead of jumping by index.
+        const sceneBoundaries = [
           ...TITLES.map(({ start }) => start === 0 ? 0 : start + TITLE_REVEAL_DURATION),
           1
         ];
-        disposeScrollTrigger = createResponsiveStageScrollTrigger({
-          // Progress 1 is an exit boundary, not another mobile story. The fourth
-          // resolved title at .86 is the final controlled step.
-          mobileStepPoints: stagePoints.slice(0, -1),
+        disposeScrollTrigger = createBoundaryLimitedScrollTrigger({
+          boundaryPoints: sceneBoundaries,
           vars: {
             id: "showcase-scroll",
             trigger: section,
