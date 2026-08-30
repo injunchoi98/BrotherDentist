@@ -443,7 +443,6 @@ export function createBoundaryLimitedScrollTrigger({
   let touchIntentObserver = null;
   let touchObserver = null;
   let wheelObserver = null;
-  let settleTween = null;
   let exitTween = null;
   let boundaryLocked = false;
   let heldScroll = null;
@@ -452,7 +451,7 @@ export function createBoundaryLimitedScrollTrigger({
   let gestureBoundaryScroll = null;
   let gestureDirection = 0;
   let gestureExiting = false;
-  let gestureSettled = false;
+  let nativeBoundaryGuard = null;
 
   const points = prepareStepPoints([0, ...(boundaryPoints || []), 1]);
 
@@ -482,10 +481,12 @@ export function createBoundaryLimitedScrollTrigger({
   }
 
   const destroyInstances = () => {
-    settleTween?.kill();
-    settleTween = null;
     exitTween?.kill();
     exitTween = null;
+    if (nativeBoundaryGuard) {
+      document.removeEventListener("scroll", nativeBoundaryGuard);
+      nativeBoundaryGuard = null;
+    }
     releaseBoundary();
     touchIntentObserver?.kill();
     touchIntentObserver = null;
@@ -521,31 +522,6 @@ export function createBoundaryLimitedScrollTrigger({
       return direction > 0
         ? points.find((point) => point > progress + epsilon)
         : points.findLast((point) => point < progress - epsilon);
-    };
-
-    const tweenScrollTo = (position, {
-      duration = .28,
-      ease = "power2.out",
-      lockOnComplete = false,
-      onComplete = null
-    } = {}) => {
-      settleTween?.kill();
-      const state = { position: trigger.scroll() };
-      settleTween = gsap.to(state, {
-        position,
-        duration,
-        ease,
-        overwrite: true,
-        onUpdate: () => {
-          trigger.scroll(state.position);
-          ScrollTrigger.update();
-        },
-        onComplete: () => {
-          settleTween = null;
-          if (lockOnComplete) lockBoundary(position);
-          onComplete?.();
-        }
-      });
     };
 
     const exitContinuousStory = (direction) => {
@@ -586,67 +562,52 @@ export function createBoundaryLimitedScrollTrigger({
       return true;
     };
 
-    const applyTouchDelta = (delta) => {
-      if (!trigger || !delta || boundaryLocked || gestureExiting) return;
-      const direction = delta > 0 ? 1 : -1;
-      if (!gestureDirection && !beginGestureDirection(direction)) return;
-
-      // The direction of the first meaningful movement owns this physical
-      // gesture. Reversing the finger may return toward its starting point, but
-      // cannot open a second boundary on the other side during the same press.
-      const minimum = Math.min(gestureStartScroll, gestureBoundaryScroll);
-      const maximum = Math.max(gestureStartScroll, gestureBoundaryScroll);
-      const proposed = gsap.utils.clamp(
-        minimum,
-        maximum,
-        trigger.scroll() + (delta * 1.15)
-      );
-      trigger.scroll(proposed);
-      ScrollTrigger.update();
-
-      if (Math.abs(proposed - gestureBoundaryScroll) <= .5) {
-        lockBoundary(gestureBoundaryScroll);
-      }
-    };
-
-    const settleTouchGesture = (observer) => {
-      // Mobile browsers do not all finish an intercepted gesture through the
-      // same event path. `onRelease` is primary; `onStop` below is a guarded
-      // fallback for a kinetic gesture whose release callback is swallowed.
-      // The latch guarantees that both callbacks can never settle twice.
-      if (gestureSettled) return;
-      if (!gestureDirection || gestureBoundaryScroll === null || gestureExiting) return;
-      if (boundaryLocked) {
-        gestureSettled = true;
-        return;
-      }
-      gestureSettled = true;
+    nativeBoundaryGuard = () => {
+      if (
+        !trigger
+        || boundaryLocked
+        || gestureExiting
+        || !gestureDirection
+        || gestureBoundaryScroll === null
+      ) return;
 
       const current = trigger.scroll();
-      const interval = Math.max(1, Math.abs(gestureBoundaryScroll - gestureStartScroll));
-      const travelled = Math.abs(current - gestureStartScroll);
-      const velocity = Math.abs(observer.velocityY || 0);
+      const crossedBoundary = gestureDirection > 0
+        ? current >= gestureBoundaryScroll
+        : current <= gestureBoundaryScroll;
+      if (!crossedBoundary) return;
 
-      // Native kinetic scrolling is intentionally blocked so a fling cannot
-      // cross several scenes. Recreate only enough projected momentum to choose
-      // the resting side of THIS interval, then animate through its meaningful
-      // intermediate visuals. A weak drag returns; a committed/fast drag reaches
-      // the adjacent boundary, never anything beyond it.
-      const projectedTravel = travelled + Math.min(interval, velocity * .12);
-      const reachesBoundary = projectedTravel >= interval * .34;
-      const target = reachesBoundary ? gestureBoundaryScroll : gestureStartScroll;
-      const distance = Math.abs(target - current);
-      tweenScrollTo(target, {
-        duration: gsap.utils.clamp(.18, .42, .18 + (distance / Math.max(1, innerHeight)) * .16),
-        lockOnComplete: reachesBoundary
-      });
+      /*
+       * Mobile showcase rule:
+       * - Inside the current scene interval, do nothing. The browser owns the
+       *   scroll and ScrollTrigger's scrub follows that native position.
+       * - Only when this physical gesture (including its kinetic tail) crosses
+       *   the adjacent scene boundary do we write scrollY once and hold there.
+       * - The next touchstart releases the hold, so one gesture cannot consume
+       *   several scene boundaries or reach the next page section.
+       *
+       * Do not restore the old `trigger.scroll(current + delta)` loop here.
+       * That required preventDefault on every touchmove and replaced native
+       * mobile scrolling with a frame-by-frame JavaScript approximation.
+      */
+      lockBoundary(gestureBoundaryScroll);
+    };
+
+    const trackTouchDirection = (delta) => {
+      if (!trigger || !delta || boundaryLocked || gestureExiting) return;
+      if (!gestureDirection) {
+        beginGestureDirection(delta > 0 ? 1 : -1);
+      }
+      // Native scrolling may already have advanced between the raw touchmove
+      // and Observer's rAF callback. Check immediately as well as on scroll.
+      nativeBoundaryGuard?.();
     };
 
     if (mobileTouchEffects) {
       const {
-        // Numeric scrub adds a second catch-up animation after our controlled
-        // gesture tween and was the main reason showcase elements felt late.
-        // Direct scrub keeps every meaningful intermediate frame responsive.
+        // Numeric scrub deliberately lags behind the browser's real position.
+        // Mobile now keeps native scrolling, so direct scrub must render the
+        // meaningful intermediate frame under the finger without catch-up.
         scrub: _scrub,
         snap: _snap,
         ...mobileTriggerVars
@@ -656,42 +617,32 @@ export function createBoundaryLimitedScrollTrigger({
       touchObserver = ScrollTrigger.observe({
         target: window,
         type: "touch",
-        preventDefault: true,
         allowClicks: true,
         lockAxis: true,
         dragMinimum: 4,
         tolerance: 2,
         ignore: interactiveIgnore,
-        onPress: (self) => {
-          settleTween?.kill();
-          settleTween = null;
+        onPress: () => {
           releaseBoundary();
           gestureStartScroll = trigger.scroll();
           gestureBoundaryScroll = null;
           gestureDirection = 0;
           gestureExiting = false;
-          gestureSettled = false;
-          // iOS requires touchstart cancellation to prevent an uncontrolled
-          // kinetic tail from racing past the boundary after touchend.
-          if (self.event.cancelable) self.event.preventDefault();
         },
-        // Finger movement is opposite to document movement.
-        onChangeY: (self) => applyTouchDelta(-self.deltaY),
-        onRelease: settleTouchGesture,
-        onStopDelay: .08,
-        onStop: (self) => {
-          // Do not snap while the user is still holding a slow drag. This path
-          // exists only to finish a released gesture when onRelease was missed.
-          if (!self.isPressed) settleTouchGesture(self);
-        }
+        // Observe direction only. Native scroll performs the actual movement.
+        onChangeY: (self) => trackTouchDirection(-self.deltaY)
       });
       touchObserver.disable();
+      document.addEventListener("scroll", nativeBoundaryGuard, { passive: true });
 
       const enterContinuousStory = (self, progress, activeEvent) => {
         const entryScroll = progressToScroll(progress, self);
         self.scroll(entryScroll);
-        lockBoundary(entryScroll);
         touchObserver.enable(activeEvent);
+        // Enabling with the touch that crossed into the section invokes
+        // onPress. Lock *after* enable so that onPress cannot release the entry
+        // boundary and let the same gesture's native momentum enter scene 1.
+        lockBoundary(entryScroll);
         // The gesture that crossed into the story is spent on entry. The next
         // fresh press releases this gate and begins continuous scene scrubbing.
         gestureStartScroll = entryScroll;
