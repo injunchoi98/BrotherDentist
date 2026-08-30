@@ -452,9 +452,9 @@ export function initShowcaseScroll() {
           .addLabel("brand", TITLES[3].start)
           .to(state, { progress: 1, duration: 1 }, 0);
 
-        // Snap after each scrambled title has resolved, not at the transition's
-        // first frame. Progress 1 remains an exit stop so the next gesture can
-        // leave the sticky section for the visit section.
+        // Stage stops come after each scrambled title has resolved, not at the
+        // transition's first frame. Desktop snap and mobile Observer share these
+        // progress values, while progress 1 remains an exit-only boundary.
         const snapPoints = [
           ...TITLES.map(({ start }) => start === 0 ? 0 : start + TITLE_REVEAL_DURATION),
           1
@@ -462,6 +462,9 @@ export function initShowcaseScroll() {
         disposeScrollTrigger = createResponsiveStageScrollTrigger({
           snapTo: snapPoints,
           snapOnAllInputs: true,
+          // Progress 1 remains a desktop snap/exit boundary, but is not another
+          // mobile story. The fourth resolved title at .86 is the final step.
+          mobileStepPoints: snapPoints.slice(0, -1),
           vars: {
             id: "showcase-scroll",
             trigger: section,

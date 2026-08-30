@@ -56,14 +56,17 @@ export function initConcernScroll() {
     allowMobile: true,
     minimumHeightRem: getTextMinimumHeightRem,
     onEnable: () => {
-      // Each concern occupies one equal progress interval. On mobile touch,
-      // preserve the browser's native momentum, then settle at those interval
-      // boundaries so two messages are not left mixed mid-transition.
-      // The final 1.0 boundary is retained so the next gesture can leave the
-      // sticky section instead of trapping the reader on the last concern.
+      // Each concern occupies one equal progress interval. Mobile Observer
+      // advances exactly one interval per gesture; desktop snap settles wheel,
+      // trackpad, keyboard, and scrollbar input at the same boundaries. The
+      // final 1.0 point is an exit boundary rather than a fourth concern.
       return createResponsiveStageScrollTrigger({
         snapTo: 1 / concerns.length,
         snapOnAllInputs: true,
+        // Progress 1 is the timeline/desktop-snap exit boundary and repeats the
+        // final concern. Mobile Observer therefore exposes only the three real
+        // stories, then releases the next forward swipe out of the section.
+        mobileStepPoints: concerns.map((_, index) => index / concerns.length),
         vars: {
           id: "concern-pin-progress",
           trigger: section,
