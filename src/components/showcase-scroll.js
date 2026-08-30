@@ -493,7 +493,6 @@ export function initShowcaseScroll() {
         ];
         disposeScrollTrigger = createBoundaryLimitedScrollTrigger({
           boundaryPoints: sceneBoundaries,
-          forwardExitTarget: () => window.scrollY + section.getBoundingClientRect().bottom,
           vars: {
             id: "showcase-scroll",
             trigger: section,

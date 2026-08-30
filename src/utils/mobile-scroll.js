@@ -430,20 +430,20 @@ export function createResponsiveStageScrollTrigger({
  *   boundary. Its remaining momentum is discarded at that boundary.
  * - Reaching the final scene and leaving the whole section require two separate
  *   gestures. The gesture that reaches the final scene can never also exit.
+ * - Once a gesture starts on the first/final scene and points out of the story,
+ *   it exits natively without another artificial edge guard or scroll tween.
  *
  * This is deliberately not the discrete concern controller above. Sharing the
  * two behaviors would either skip showcase motion or make concern bubbles crawl.
  */
 export function createBoundaryLimitedScrollTrigger({
   vars,
-  boundaryPoints,
-  forwardExitTarget = null
+  boundaryPoints
 }) {
   let trigger = null;
   let touchIntentObserver = null;
   let touchObserver = null;
   let wheelObserver = null;
-  let exitTween = null;
   let boundaryLocked = false;
   let heldScroll = null;
   let heldHash = "";
@@ -465,11 +465,11 @@ export function createBoundaryLimitedScrollTrigger({
     if (Math.abs(trigger.scroll() - heldScroll) > .5) trigger.scroll(heldScroll);
   }
 
-  function lockBoundary(position) {
+  function lockBoundary(position, controller = trigger) {
     heldScroll = position;
     heldHash = location.hash;
     boundaryLocked = true;
-    trigger.scroll(position);
+    controller.scroll(position);
     document.removeEventListener("scroll", restoreBoundary);
     document.addEventListener("scroll", restoreBoundary, { passive: false });
   }
@@ -481,8 +481,6 @@ export function createBoundaryLimitedScrollTrigger({
   }
 
   const destroyInstances = () => {
-    exitTween?.kill();
-    exitTween = null;
     if (nativeBoundaryGuard) {
       document.removeEventListener("scroll", nativeBoundaryGuard);
       nativeBoundaryGuard = null;
@@ -496,6 +494,7 @@ export function createBoundaryLimitedScrollTrigger({
     wheelObserver = null;
     trigger?.kill();
     trigger = null;
+    gestureExiting = false;
   };
 
   const create = () => {
@@ -524,30 +523,23 @@ export function createBoundaryLimitedScrollTrigger({
         : points.findLast((point) => point < progress - epsilon);
     };
 
-    const exitContinuousStory = (direction) => {
-      if (gestureExiting || exitTween?.isActive()) return;
+    const exitContinuousStory = () => {
+      if (gestureExiting) return;
       gestureExiting = true;
       releaseBoundary();
-      touchObserver?.disable();
-      const fallback = direction > 0 ? trigger.end + 2 : trigger.start - 2;
-      const target = direction > 0
-        ? getRequestedTarget(forwardExitTarget, fallback)
-        : fallback;
-      const state = { position: trigger.scroll() };
-      exitTween = gsap.to(state, {
-        position: target,
-        duration: .38,
-        ease: "power2.out",
-        overwrite: true,
-        onUpdate: () => {
-          trigger.scroll(state.position);
-          ScrollTrigger.update();
-        },
-        onComplete: () => {
-          exitTween = null;
-          gestureExiting = false;
-        }
-      });
+      gestureBoundaryScroll = null;
+
+      /*
+       * The outer edges are exits, not additional story beats. A gesture that
+       * STARTS on scene 1 and travels upward, or starts on the final scene and
+       * travels downward, must remain browser-native. Do not tween to the
+       * trigger start/end here: that synthetic movement competed with weak
+       * touches and could leave the sticky section apparently trapped.
+       *
+       * Keep Observer enabled until onLeave/onLeaveBack. If this gesture is too
+       * small to exit, the next physical press resets gestureExiting and
+       * restores adjacent-boundary guarding inside the section.
+       */
     };
 
     const beginGestureDirection = (direction) => {
@@ -555,7 +547,7 @@ export function createBoundaryLimitedScrollTrigger({
       const progress = scrollToProgress(gestureStartScroll);
       const point = getAdjacentPoint(progress, direction);
       if (point === undefined) {
-        exitContinuousStory(direction);
+        exitContinuousStory();
         return false;
       }
       gestureBoundaryScroll = progressToScroll(point);
@@ -580,7 +572,7 @@ export function createBoundaryLimitedScrollTrigger({
       /*
        * Mobile showcase rule:
        * - Inside the current scene interval, do nothing. The browser owns the
-       *   scroll and ScrollTrigger's scrub follows that native position.
+       *   scroll and the guarded visual progress follows that native position.
        * - Only when this physical gesture (including its kinetic tail) crosses
        *   the adjacent scene boundary do we write scrollY once and hold there.
        * - The next touchstart releases the hold, so one gesture cannot consume
@@ -605,13 +597,53 @@ export function createBoundaryLimitedScrollTrigger({
 
     if (mobileTouchEffects) {
       const {
+        animation,
         // Numeric scrub deliberately lags behind the browser's real position.
-        // Mobile now keeps native scrolling, so direct scrub must render the
-        // meaningful intermediate frame under the finger without catch-up.
+        // Mobile instead drives the animation from guarded visual progress in
+        // onUpdate, while native scrolling remains the physical source.
         scrub: _scrub,
         snap: _snap,
+        onUpdate: originalOnUpdate,
         ...mobileTriggerVars
       } = triggerVars;
+
+      if (!animation) {
+        trigger = ScrollTrigger.create(vars);
+        return;
+      }
+
+      animation.pause();
+
+      const getExactBoundaryProgress = (position, self) => {
+        const measuredProgress = scrollToProgress(position, self);
+        const knownPoint = points.find(
+          (point) => Math.abs(point - measuredProgress) <= .0015
+        );
+        return knownPoint ?? measuredProgress;
+      };
+
+      const getGuardedVisualProgress = (self) => {
+        const nativeProgress = clampProgress(self.progress);
+
+        // Native momentum can paint one overshoot frame before scrollY is
+        // restored to the adjacent boundary. Keep the animation at the held
+        // boundary throughout that correction so progress-linked copy never
+        // advances and then visibly reverses.
+        if (boundaryLocked && heldScroll !== null) {
+          return getExactBoundaryProgress(heldScroll, self);
+        }
+
+        if (
+          gestureExiting
+          || !gestureDirection
+          || gestureBoundaryScroll === null
+        ) return nativeProgress;
+
+        const boundaryProgress = getExactBoundaryProgress(gestureBoundaryScroll, self);
+        return gestureDirection > 0
+          ? Math.min(nativeProgress, boundaryProgress)
+          : Math.max(nativeProgress, boundaryProgress);
+      };
 
       touchIntentObserver = ScrollTrigger.observe({ target: window, type: "touch" });
       touchObserver = ScrollTrigger.observe({
@@ -619,6 +651,7 @@ export function createBoundaryLimitedScrollTrigger({
         type: "touch",
         allowClicks: true,
         lockAxis: true,
+        debounce: false,
         dragMinimum: 4,
         tolerance: 2,
         ignore: interactiveIgnore,
@@ -642,17 +675,25 @@ export function createBoundaryLimitedScrollTrigger({
         // Enabling with the touch that crossed into the section invokes
         // onPress. Lock *after* enable so that onPress cannot release the entry
         // boundary and let the same gesture's native momentum enter scene 1.
-        lockBoundary(entryScroll);
+        // ScrollTrigger may call onEnter synchronously during create(), before
+        // the outer `trigger` variable receives the returned instance. Use the
+        // callback's controller so initial/hash entry can still establish its
+        // first boundary without dereferencing null.
+        lockBoundary(entryScroll, self);
         // The gesture that crossed into the story is spent on entry. The next
         // fresh press releases this gate and begins continuous scene scrubbing.
         gestureStartScroll = entryScroll;
         gestureBoundaryScroll = null;
         gestureDirection = 0;
+        animation.progress(progress).pause();
       };
 
       trigger = ScrollTrigger.create({
         ...mobileTriggerVars,
-        scrub: true,
+        onUpdate: (self) => {
+          animation.progress(getGuardedVisualProgress(self)).pause();
+          originalOnUpdate?.(self);
+        },
         onEnter: (self) => {
           originalOnEnter?.(self);
           const activeEvent = touchIntentObserver?.isPressed
@@ -669,13 +710,13 @@ export function createBoundaryLimitedScrollTrigger({
         },
         onLeave: (self) => {
           originalOnLeave?.(self);
-          if (!exitTween?.isActive()) {
-            touchObserver.disable();
-            releaseBoundary();
-          }
+          gestureExiting = false;
+          touchObserver.disable();
+          releaseBoundary();
         },
         onLeaveBack: (self) => {
           originalOnLeaveBack?.(self);
+          gestureExiting = false;
           touchObserver.disable();
           releaseBoundary();
         }
@@ -683,6 +724,7 @@ export function createBoundaryLimitedScrollTrigger({
 
       if (trigger.isActive) {
         lockBoundary(trigger.scroll());
+        animation.progress(getGuardedVisualProgress(trigger)).pause();
         touchObserver.enable();
       }
     } else {

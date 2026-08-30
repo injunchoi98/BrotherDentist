@@ -736,10 +736,12 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .showcase-photo-wide { width: clamp(9rem, 31vw, 14rem); }
   .showcase-photo-portrait { width: clamp(6rem, 18vw, 8rem); }
   .showcase-korea-map { width: min(90vw, 30rem); }
-  /* The boundary limiter prevents one fling from skipping all four scenes, so
-   * the compact scroll plane can be shorter without sacrificing intermediate
-   * floating-copy progress inside a scene. */
-  .showcase { height: 600svh; min-height: 600svh; }
+  /* Mobile kinetic scrolling covers substantially more distance per gesture
+   * than a desktop wheel step. Keep enough physical range for the meaningful
+   * photograph, copy and map transitions between guarded scenes; the guard
+   * limits a fling to one boundary, while this height keeps ordinary drags
+   * from completing an entire scene too quickly. */
+  .showcase { height: 760svh; min-height: 760svh; }
   .showcase[data-pin-disabled] .showcase-scene { min-height: max(33rem, 88svh); }
   .showcase[data-pin-disabled] .showcase-static-title { max-width: none; white-space: nowrap; }
   .showcase[data-pin-disabled] .showcase-static-final h3 { max-width: min(15ch, 100%); white-space: normal; }
