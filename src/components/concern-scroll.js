@@ -77,10 +77,23 @@ export function initConcernScroll() {
     allowMobile: true,
     minimumHeightRem: getTextMinimumHeightRem,
     onEnable: () => {
-      // The concern story is intentionally discrete: one wheel stroke or one
-      // finger swipe reveals exactly one chat panel. The shared helper follows
-      // GSAP's official Observer pattern by freezing the saved scroll position
-      // while a panel transition is running and discarding residual momentum.
+      /*
+       * SECTION 2 — DISCRETE CHAT CONTRACT
+       *
+       * 사용자 의도: 강한 스와이프 한 번으로 이 섹션 전체를 넘기지
+       * 않는다. 말풍선 하나가 한 단계이며, 마지막 말풍선 다음에 들어온
+       * 별도의 스와이프만 "필요한 치료만 정직하게" 섹션으로 이동한다.
+       *
+       * The three bubbles are three complete resting states. On mobile, one
+       * physical swipe must reveal at most one new bubble even when that swipe
+       * has enough velocity to cross the section. Intermediate progress between
+       * bubbles has no product meaning, so the mobile controller drives this
+       * timeline directly from one settled label to the next.
+       *
+       * Do not reuse the showcase section's continuous boundary controller here.
+       * Conversely, do not reuse this discrete controller for showcase: its
+       * photos, words and map carry meaning while they move between titles.
+       */
       const timeline = gsap.timeline({
         paused: true,
         defaults: { ease: "power2.out" }
@@ -91,26 +104,25 @@ export function initConcernScroll() {
 
       timeline
         .addLabel("first", 0)
-        .to({}, { duration: .7 })
-        .to(messages[1], { autoAlpha: 1, y: 0, scale: 1, duration: .7 })
+        // A reveal begins immediately after input. The former empty hold tweens
+        // made a valid swipe look ignored before each bubble finally appeared.
+        .to(messages[1], { autoAlpha: 1, y: 0, scale: 1, duration: .45 })
         .addLabel("second")
-        .to({}, { duration: .45 })
-        .to(messages[2], { autoAlpha: 1, y: 0, scale: 1, duration: .7 })
+        .to(messages[2], { autoAlpha: 1, y: 0, scale: 1, duration: .45 })
         .addLabel("third")
-        .to({}, { duration: .7 })
         .to([chatHeader, ...messages], {
           autoAlpha: 0,
           y: -16,
           scale: .78,
           transformOrigin: "right center",
-          duration: .75,
+          duration: .6,
           stagger: { each: .035, from: "end" },
           ease: "power3.in"
         });
 
-      // Only states with visible chat content are Observer panels. The fully
-      // collapsed state at the end of the timeline is an exit transition, not
-      // a fourth panel; stopping there would expose an empty blue viewport.
+      // Only labels with visible chat content are panels. The collapsed end is
+      // an exit transition, not a fourth stop. Therefore reaching "third" and
+      // leaving for the brand section always require separate gestures.
       const stagePoints = ["first", "second", "third"]
         .map((label) => timeline.labels[label] / timeline.duration());
       const disposeScrollTrigger = createResponsiveStageScrollTrigger({

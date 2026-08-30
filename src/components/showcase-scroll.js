@@ -470,15 +470,30 @@ export function initShowcaseScroll() {
           .addLabel("brand", TITLES[3].start)
           .to(state, { progress: 1, duration: 1 }, 0);
 
-        // Scene starts remain overscroll boundaries, but positions inside each
-        // scene still matter: the floating words, photos and map keep following
-        // small wheel/touch deltas continuously instead of jumping by index.
+        /*
+         * SECTION 5 — CONTINUOUS SHOWCASE CONTRACT
+         *
+         * 사용자 의도: 2번 말풍선처럼 단계 점프시키지 않는다. 이곳은
+         * 장면 사이가 의미 있으므로 드래그 중간 프레임을 계속 보여준다.
+         * 다만 한 번의 강한 스와이프는 다음 의미 지점까지만 허용하며,
+         * 최종 장면 도착과 섹션 이탈은 반드시 서로 다른 스와이프다.
+         *
+         * Unlike the discrete concern bubbles, every position between these
+         * scene starts is meaningful: floating photographs converge, text rows
+         * travel through focus and map routes draw progressively. Touch travel
+         * must therefore scrub this timeline continuously rather than jump to a
+         * title. A strong physical gesture is merely capped at the immediately
+         * adjacent boundary. If that gesture reaches the final brand scene, its
+         * remaining momentum is discarded; only a later, separate gesture may
+         * leave the showcase for the following page section.
+         */
         const sceneBoundaries = [
           ...TITLES.map(({ start }) => start === 0 ? 0 : start + TITLE_REVEAL_DURATION),
           1
         ];
         disposeScrollTrigger = createBoundaryLimitedScrollTrigger({
           boundaryPoints: sceneBoundaries,
+          forwardExitTarget: () => window.scrollY + section.getBoundingClientRect().bottom,
           vars: {
             id: "showcase-scroll",
             trigger: section,
