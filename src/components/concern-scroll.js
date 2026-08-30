@@ -1,5 +1,6 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ChevronLeft, Menu, Search } from "reicon";
 import {
   calculatePinMinimumHeightRem,
   createPinHeightGuard
@@ -7,14 +8,34 @@ import {
 
 gsap.registerPlugin(ScrollTrigger);
 
+const concernIcons = {
+  "arrow-left": ChevronLeft,
+  search: Search,
+  menu: Menu
+};
+
+const renderConcernIcons = (section) => {
+  section.querySelectorAll("[data-concern-icon]").forEach((slot) => {
+    const createIcon = concernIcons[slot.dataset.concernIcon];
+    if (!createIcon) return;
+    slot.replaceChildren(createIcon({
+      size: 24,
+      color: "currentColor",
+      className: "concern-chat-icon",
+      attrs: { "aria-hidden": "true", focusable: "false" }
+    }));
+  });
+};
+
 export function initConcernScroll() {
   const section = document.querySelector("[data-concern]");
   if (!section) return;
   const chatHeader = section.querySelector("[data-concern-chat-header]");
   const dialogue = section.querySelector("[data-concern-dialogue]");
   const messages = gsap.utils.toArray("[data-concern-message]", section);
-  const resolution = section.querySelector("[data-concern-resolution]");
   const header = document.querySelector("[data-header]");
+
+  renderConcernIcons(section);
 
   const getTextMinimumHeightRem = () => {
     const copyStyles = getComputedStyle(section.querySelector(".concern-copy"));
@@ -48,7 +69,6 @@ export function initConcernScroll() {
       autoAlpha: 1,
       clearProps: "transform"
     });
-    gsap.set(resolution, { autoAlpha: 1, clearProps: "transform" });
   };
 
   return createPinHeightGuard({
@@ -73,7 +93,6 @@ export function initConcernScroll() {
 
       gsap.set([chatHeader, dialogue, messages[0]], { autoAlpha: 1 });
       gsap.set(messages.slice(1), { autoAlpha: 0, y: 18, scale: .96 });
-      gsap.set(resolution, { autoAlpha: 0, scale: .72, y: 12 });
 
       timeline
         .to({}, { duration: .7 })
@@ -90,14 +109,7 @@ export function initConcernScroll() {
           stagger: { each: .035, from: "end" },
           ease: "power3.in"
         })
-        .to(resolution, {
-          autoAlpha: 1,
-          y: 0,
-          scale: 1,
-          duration: .6,
-          ease: "back.out(1.7)"
-        }, "-=.05")
-        .to({}, { duration: .4 });
+        .to({}, { duration: .15 });
 
       return () => {
         timeline.scrollTrigger?.kill();

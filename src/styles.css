@@ -12,7 +12,7 @@
   --color-concern-bubble: #fde400;
   --color-concern-ink: #191919;
   --color-concern-meta: #444d54;
-  --color-concern-control: #eef2f5;
+  --color-concern-control: #f2f2f2;
   --color-text: #101615;
   --color-text-muted: #59615f;
   --color-line: #d9dddc;
@@ -106,28 +106,32 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .concern-section[data-pin-disabled] .concern-sticky { position: absolute; inset: 0 0 auto; height: var(--pin-fallback-min-height); min-height: 0; visibility: hidden; pointer-events: none; }
 .concern-fallback-list { display: none; }
 .concern-section[data-pin-disabled] .concern-fallback-list { display: grid; width: min(calc(100% - (var(--space-page) * 2)), 46rem); min-height: max(100svh, var(--pin-fallback-min-height)); place-items: center; margin-inline: auto; padding-block: calc(var(--header-height) + 2rem) 3rem; }
-.concern-fallback-copy { position: relative; z-index: 2; display: grid; width: 100%; justify-items: center; gap: clamp(1rem, 2svh, 1.5rem); text-align: center; }
-.concern-copy { display: grid; width: min(100%, 46rem); gap: clamp(1rem, 2svh, 1.5rem); padding-top: 1rem; text-align: center; }
+.concern-fallback-copy { container: concern-copy / inline-size; position: relative; z-index: 2; display: grid; width: 100%; justify-items: center; gap: clamp(1rem, 2svh, 1.5rem); text-align: center; }
+.concern-copy { container: concern-copy / inline-size; display: grid; width: min(100%, 46rem); gap: clamp(1rem, 2svh, 1.5rem); padding-top: 1rem; text-align: center; }
 .concern-chat-header { position: relative; display: flex; width: min(100%, 42rem); min-height: 3.5rem; align-items: center; justify-content: space-between; margin-inline: auto; }
-.concern-chat-back, .concern-chat-actions { display: flex; height: 3rem; align-items: center; justify-content: center; border-radius: 999px; color: var(--color-concern-ink); background: var(--color-concern-control); }
-.concern-chat-back { width: 4.25rem; gap: .125rem; padding-right: .25rem; }
-.concern-chat-back svg { width: 1.5rem; height: 1.5rem; }
-.concern-chat-back b { font-size: var(--landing-ui-control-size); font-weight: var(--landing-font-weight-medium); line-height: var(--landing-ui-control-line-height); }
-.concern-chat-actions { width: 6.75rem; gap: .625rem; }
-.concern-chat-actions svg { width: 1.25rem; height: 1.25rem; }
-.concern-chat-header svg { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
-.display-title { position: absolute; top: 50%; left: 50%; width: max-content; max-width: calc(100% - 12rem); margin: 0; font-size: var(--landing-heading-4-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-heading-4-line-height); white-space: nowrap; transform: translate(-50%, -50%); }
+.concern-chat-back, .concern-chat-actions { display: flex; height: 2.75rem; align-items: center; justify-content: center; border-radius: 999px; color: #242424; background: var(--color-concern-control); box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 .25rem .75rem rgba(0,0,0,.08); }
+.concern-chat-back { width: 4rem; gap: .125rem; padding-right: .125rem; }
+.concern-chat-back b { font-size: var(--landing-heading-4-size); font-weight: var(--landing-font-weight-medium); line-height: var(--landing-heading-4-line-height); }
+.concern-chat-actions { width: 5.75rem; gap: .75rem; }
+.concern-chat-back i, .concern-chat-actions i { display: grid; width: 1.5rem; height: 1.5rem; flex: none; place-items: center; }
+.concern-chat-icon { display: block; width: 1.5rem; height: 1.5rem; }
+.display-title { position: absolute; top: 50%; left: 50%; width: max-content; max-width: calc(100% - 11rem); margin: 0; overflow: hidden; font-size: var(--landing-heading-4-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-heading-4-line-height); text-overflow: ellipsis; white-space: nowrap; transform: translate(-50%, -50%); }
 .concern-dialogue { display: grid; width: min(100%, 42rem); justify-items: end; row-gap: .375rem; margin-inline: auto; text-align: left; }
 .concern-message { display: flex; width: 100%; align-items: flex-end; justify-content: flex-end; gap: .375rem; transform-origin: right center; }
 .concern-time { flex: none; margin-bottom: .125rem; color: var(--color-concern-meta); font-size: var(--landing-ui-label-size); font-style: normal; line-height: var(--landing-ui-label-line-height); font-variant-numeric: tabular-nums; }
 .concern-bubble { position: relative; isolation: isolate; width: fit-content; max-width: min(76%, 32rem); margin: 0; border-radius: 1rem; padding: .8125rem 1rem .875rem; color: var(--color-concern-ink); background: var(--color-concern-bubble); font-size: var(--landing-body-1-size); font-weight: var(--landing-font-weight-regular); line-height: var(--landing-body-1-line-height); text-align: left; white-space: pre-line; }
-/* Kakao-style outgoing tail: the yellow base continues from the bubble, then
- * a canvas-colored circle cuts the lower edge into the reference's soft hook. */
-.concern-bubble::before { content: ""; position: absolute; z-index: -1; top: .0625rem; right: -.5625rem; width: 1rem; height: 1rem; border-radius: 0 .75rem 0 0; background: var(--color-concern-bubble); transform: skewX(-25deg); transform-origin: left top; }
-.concern-bubble::after { content: ""; position: absolute; z-index: -1; top: .5625rem; right: -.875rem; width: 1.125rem; height: 1.125rem; border-radius: 50%; background: var(--color-concern-canvas); }
+/* Photo 4 uses one small curved fin, not overlapping circles. The fixed path
+ * is sampled to an 18×16 CSS-pixel box and joins the bubble at its top edge. */
+.concern-bubble::before { display: none; }
+.concern-bubble::after { content: ""; position: absolute; z-index: -1; top: 0; right: -.6875rem; width: 1.125rem; height: 1rem; background: var(--color-concern-bubble); clip-path: path("M 0 0 H 18 C 13 2 10 7 9 16 C 7 9 4 3 0 0 Z"); }
 .concern-bubble:empty { display: none; }
-.concern-resolution { position: absolute; top: 50%; left: 50%; width: 100%; margin: 0; padding-inline: var(--space-page); font-size: var(--landing-heading-2-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-heading-2-line-height); text-align: center; translate: -50% -50%; transform-origin: center; }
-.concern-fallback-copy .concern-resolution { position: static; margin-top: 1rem; padding-inline: 0; translate: none; }
+
+/* Hide both decorative side controls only when their own title container can
+ * no longer preserve the complete one-line title with safe gaps on each side. */
+@container concern-copy (max-width: 19rem) {
+  .concern-chat-back, .concern-chat-actions { visibility: hidden; }
+  .display-title { max-width: 100%; }
+}
 .brand-reveal { position: relative; height: 320svh; overflow: clip; background: var(--color-white); }
 .brand-sticky { position: sticky; top: 0; min-height: 100svh; display: grid; place-items: center; overflow: hidden; }
 .brand-title { position: relative; z-index: 1; display: grid; width: 100%; gap: clamp(.8rem, 2svh, 1.5rem); margin: 0; padding-inline: var(--space-page); font-size: var(--landing-heading-2-size); line-height: var(--landing-heading-2-line-height); text-align: center; }
@@ -623,7 +627,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .concern-section[data-pin-disabled] .concern-fallback-list { width: 100%; padding: calc(var(--header-height-mobile) + 2rem) var(--space-page) 3rem; }
   .concern-fallback-copy { gap: 1rem; }
   .concern-copy { gap: 1rem; }
-  .display-title { max-width: calc(100% - 12rem); }
   .concern-dialogue { width: min(100%, 31rem); margin-top: 0; }
   .concern-message { gap: .3125rem; }
   .concern-bubble { max-width: 76%; padding: .75rem .875rem .8125rem; }

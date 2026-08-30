@@ -10,7 +10,8 @@
     "dev": "npm run generate:images && vite --host 127.0.0.1 --port 4173 --strictPort"
   },
   "dependencies": {
-    "gsap": "^3.13.0"
+    "gsap": "^3.13.0",
+    "reicon": "^1.2.1"
   },
   "devDependencies": {
     "esbuild": "^0.25.9",
