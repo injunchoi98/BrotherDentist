@@ -34,30 +34,60 @@ export function createResponsiveStageScrollTrigger({
   vars,
   mobileStepPoints = null,
   observeDesktopWheel = false,
-  stepDuration = .18
+  stepDuration = .32,
+  backEntryPoint = null,
+  forwardExitTarget = null
 }) {
   let trigger = null;
-  let intentObserver = null;
-  let stepObserver = null;
-  let wheelObserver = null;
+  let touchIntentObserver = null;
+  let panelObserver = null;
   let stepTween = null;
-  let queuedDirection = 0;
+  let gestureRelease = null;
   let gestureConsumed = false;
-  let wheelGestureConsumed = false;
-  let wheelGesturePeak = 0;
-  let lastWheelStepAt = 0;
+  let savedScroll = 0;
+  let restoringScroll = false;
+  let frozenHash = "";
 
   const destroyInstances = () => {
     stepTween?.kill();
     stepTween = null;
-    intentObserver?.kill();
-    intentObserver = null;
-    stepObserver?.kill();
-    stepObserver = null;
-    wheelObserver?.kill();
-    wheelObserver = null;
+    gestureRelease?.kill();
+    gestureRelease = null;
+    document.removeEventListener("scroll", restoreSavedScroll);
+    restoringScroll = false;
+    touchIntentObserver?.kill();
+    touchIntentObserver = null;
+    panelObserver?.kill();
+    panelObserver = null;
     trigger?.kill();
     trigger = null;
+  };
+
+  // GSAP's official Observer panel demo freezes the window at the saved
+  // position while the panel transition runs. This extra scroll listener is
+  // important on Mac trackpads and mobile Safari because native momentum may
+  // continue changing scrollY after the wheel/touch event was prevented.
+  function restoreSavedScroll() {
+    if (!restoringScroll || !trigger) return;
+    // Anchor navigation is an explicit request to leave the panel story. Do
+    // not let the momentum guard fight the browser's new hash destination.
+    if (location.hash !== frozenHash) {
+      panelObserver?.disable();
+      return;
+    }
+    if (Math.abs(trigger.scroll() - savedScroll) > .5) trigger.scroll(savedScroll);
+  }
+
+  const startRestoringScroll = () => {
+    if (restoringScroll) return;
+    restoringScroll = true;
+    frozenHash = location.hash;
+    document.addEventListener("scroll", restoreSavedScroll, { passive: false });
+  };
+
+  const stopRestoringScroll = () => {
+    restoringScroll = false;
+    document.removeEventListener("scroll", restoreSavedScroll);
   };
 
   const create = () => {
@@ -80,12 +110,14 @@ export function createResponsiveStageScrollTrigger({
     } = vars;
 
     if (stepPoints.length) {
-      // This passive observer remembers the touch event that was already in
-      // progress when native scrolling first carries the page into the sticky
-      // range. Passing that event to enable() lets the controlling observer
-      // take over the same gesture instead of waiting for a second touch.
+      gestureRelease = gsap.delayedCall(.25, () => {
+        gestureConsumed = false;
+      }).pause();
+      // This passive Observer remembers a touch that began before the sticky
+      // range. Passing that same event to enable() lets the panel Observer take
+      // over the entry gesture instead of waiting for a second finger press.
       if (mobileStageEffects) {
-        intentObserver = ScrollTrigger.observe({
+        touchIntentObserver = ScrollTrigger.observe({
           target: window,
           type: "touch"
         });
@@ -110,27 +142,31 @@ export function createResponsiveStageScrollTrigger({
           duration,
           ease: "power2.out",
           overwrite: true,
-          onUpdate: () => controller.scroll(scrollState.position),
+          onUpdate: () => {
+            // Update the frozen position before writing scrollY so the
+            // momentum-restoration listener accepts this GSAP-owned movement.
+            savedScroll = scrollState.position;
+            controller.scroll(scrollState.position);
+          },
           onComplete: () => {
             stepTween = null;
             onComplete?.();
-            if (!queuedDirection) return;
-            const direction = queuedDirection;
-            queuedDirection = 0;
-            moveOneStep(direction);
           }
         });
       };
 
+      const getForwardExitScroll = () => {
+        const requestedTarget = typeof forwardExitTarget === "function"
+          ? forwardExitTarget(trigger)
+          : forwardExitTarget;
+        return Number.isFinite(requestedTarget) ? requestedTarget : trigger.end + 2;
+      };
+
       const moveOneStep = (direction) => {
         if (!trigger) return;
-        // A genuinely separate second swipe/wheel gesture can arrive while the
-        // short settling tween is finishing. Preserve that intent instead of
-        // dropping it, but keep only one queued direction to avoid catch-up.
-        if (stepTween?.isActive()) {
-          queuedDirection = direction;
-          return;
-        }
+        // Match the official panel pattern: while a transition is running,
+        // consume extra momentum instead of queueing it as another panel move.
+        if (stepTween?.isActive()) return;
         const scrollPosition = trigger.scroll();
         if (direction > 0 && scrollPosition < trigger.start) {
           tweenToScroll(progressToScroll(stepPoints[0]));
@@ -151,135 +187,129 @@ export function createResponsiveStageScrollTrigger({
           return;
         }
 
-        // The first and last content stages are real exit gates, not duplicate
-        // steps. Move just beyond the ScrollTrigger range and relinquish any
-        // touch control so the following gesture uses native page scrolling.
-        // Desktop wheel mode has no touch observer to disable.
-        stepObserver?.disable();
-        tweenToScroll(
-          direction > 0 ? trigger.end + 2 : trigger.start - 2,
-          stepDuration,
-          trigger
-        );
+        if (direction > 0) {
+          // The timeline's final state may be an exit transition rather than a
+          // panel that deserves its own stop. The same gesture that follows the
+          // last visible panel therefore finishes that transition and carries
+          // the viewport to the caller's next-section target. This prevents an
+          // empty sticky viewport from becoming an accidental extra panel.
+          tweenToScroll(getForwardExitScroll(), stepDuration, trigger, () => {
+            panelObserver?.disable();
+            stopRestoringScroll();
+          });
+          return;
+        }
+
+        // Reverse exit has no hidden transition: leave just above the range so
+        // ScrollTrigger cannot immediately re-enter on the same tick.
+        panelObserver?.disable();
+        stopRestoringScroll();
+        trigger.scroll(trigger.start - 2);
       };
 
       const consumeGesture = (direction) => {
-        // Observer may report several threshold crossings during one long or
-        // fast swipe. The press-to-release latch guarantees at most one stage.
-        if (gestureConsumed) return;
+        // Trackpads and touch gestures emit many callbacks. One physical input
+        // is allowed to select exactly one panel; the rest of its momentum is
+        // prevented and restored to the GSAP-owned scroll position.
+        if (gestureConsumed || stepTween?.isActive()) return;
         gestureConsumed = true;
         moveOneStep(direction);
       };
 
-      if (mobileStageEffects) {
-        stepObserver = ScrollTrigger.observe({
-          target: window,
-          type: "touch",
-          preventDefault: true,
-          allowClicks: true,
-          lockAxis: true,
-          dragMinimum: 8,
-          tolerance: 24,
-          ignore: "a, button, input, textarea, select, [data-nav]",
-          onPress: (self) => {
+      panelObserver = ScrollTrigger.observe({
+        target: window,
+        type: mobileStageEffects ? "wheel,touch" : "wheel",
+        preventDefault: true,
+        allowClicks: true,
+        lockAxis: true,
+        dragMinimum: 8,
+        tolerance: 10,
+        // Invert wheel only so wheel-down and finger-up both mean "next".
+        wheelSpeed: -1,
+        onStopDelay: .25,
+        ignore: "a, button, input, textarea, select, [data-nav]",
+        onEnable: () => startRestoringScroll(),
+        onDisable: () => stopRestoringScroll(),
+        onPress: (self) => {
+          // A new press is a new gesture. If the previous panel is still
+          // settling, consume this press rather than queueing a later move.
+          gestureConsumed = Boolean(stepTween?.isActive());
+          gestureRelease?.pause();
+          // Observer intentionally does not cancel touchstart by default. iOS
+          // needs this explicit cancellation to prevent native momentum from
+          // being created underneath the panel interaction.
+          if (ScrollTrigger.isTouch && self.event.cancelable) self.event.preventDefault();
+        },
+        onUp: () => consumeGesture(1),
+        onDown: () => consumeGesture(-1),
+        onChange: () => {
+          // If momentum keeps producing deltas, keep extending the gesture's
+          // quiet window. This avoids both the old 40ms multi-skip bug and the
+          // official demo's fixed one-second input cooldown.
+          if (gestureConsumed) gestureRelease?.restart(true);
+        },
+        onStop: () => {
+          // GSAP's default 250ms quiet window represents the end of a wheel
+          // stream. It is long enough to absorb a trackpad momentum tail but
+          // has no arbitrary one-second cooldown between deliberate gestures.
+          if (!panelObserver?.isPressed) {
             gestureConsumed = false;
-            // A new physical press is a new intent even if the preceding short
-            // tween has not quite finished; moveOneStep queues it safely.
-            if (ScrollTrigger.isTouch && self.event.cancelable) self.event.preventDefault();
-          },
-          // A finger moving upward advances the page; moving downward returns.
-          onUp: () => consumeGesture(1),
-          onDown: () => consumeGesture(-1)
-        });
-        stepObserver.disable();
-      }
-
-      if (desktopWheelEffects) {
-        const wheelDeltaPixels = (event) => event.deltaY * (
-          event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1
-        );
-        const wheelIntersectsRange = (event) => {
-          if (!trigger || event.ctrlKey) return false;
-          const current = trigger.scroll();
-          const projected = current + wheelDeltaPixels(event);
-          return event.deltaY > 0
-            ? current < trigger.end && projected >= trigger.start
-            : current > trigger.start && projected <= trigger.end;
-        };
-
-        // Keep this Observer enabled so a large desktop wheel/trackpad gesture
-        // can be caught before native scrolling jumps across the whole section.
-        // ignoreCheck runs before preventDefault inside GSAP Observer, so wheel
-        // behavior remains completely native everywhere else on the page.
-        wheelObserver = ScrollTrigger.observe({
-          target: window,
-          type: "wheel",
-          preventDefault: true,
-          debounce: false,
-          onStopDelay: .04,
-          ignore: "a, button, input, textarea, select, [data-nav]",
-          ignoreCheck: (event) => !wheelIntersectsRange(event),
-          onWheel: (self) => {
-            const now = performance.now();
-            const magnitude = Math.abs(self.event?.deltaY ?? self.deltaY);
-            // A new trackpad stroke may begin before the preceding momentum tail
-            // reaches onStop. After 180ms, only a renewed near-peak impulse is
-            // accepted; a smaller decaying tail remains part of the old gesture.
-            const renewedImpulse = wheelGestureConsumed
-              && now - lastWheelStepAt >= 180
-              && magnitude >= Math.max(24, wheelGesturePeak * .85);
-            if (wheelGestureConsumed && !renewedImpulse) {
-              wheelGesturePeak = Math.max(wheelGesturePeak, magnitude);
-              return;
-            }
-            wheelGestureConsumed = true;
-            wheelGesturePeak = magnitude;
-            lastWheelStepAt = now;
-            moveOneStep(self.deltaY > 0 ? 1 : -1);
-          },
-          // Momentum emits wheel events every frame. Forty quiet milliseconds
-          // marks a new deliberate motion without imposing a perceptible lock.
-          onStop: () => {
-            wheelGestureConsumed = false;
-            wheelGesturePeak = 0;
+            gestureRelease?.pause();
           }
-        });
-      }
+        }
+      });
+      panelObserver.disable();
 
       const enterStepRange = (self, entryPoint) => {
-        const activeTouchEvent = intentObserver?.isPressed ? intentObserver.event : undefined;
-        stepObserver?.enable(activeTouchEvent);
-        // Treat the gesture that crossed into the section as the entry action.
-        // This stops its native momentum at the first visible story instead of
-        // also advancing a second story during the same press.
-        gestureConsumed = Boolean(activeTouchEvent);
-        tweenToScroll(progressToScroll(entryPoint, self), .18, self);
+        const activeTouchEvent = touchIntentObserver?.isPressed
+          ? touchIntentObserver.event
+          : undefined;
+        const entryScroll = progressToScroll(entryPoint, self);
+        savedScroll = entryScroll;
+        self.scroll(entryScroll);
+        panelObserver?.enable(activeTouchEvent);
+        // Entering the section already consumes the gesture. Its remaining
+        // momentum is discarded so it cannot reveal a second panel as well.
+        gestureConsumed = true;
+        gestureRelease?.restart(true);
       };
 
       trigger = ScrollTrigger.create({
         ...triggerVars,
         onEnter: (self) => {
           originalOnEnter?.(self);
-          if (mobileStageEffects) enterStepRange(self, stepPoints[0]);
+          enterStepRange(self, stepPoints[0]);
         },
         onEnterBack: (self) => {
           originalOnEnterBack?.(self);
-          if (mobileStageEffects) enterStepRange(self, stepPoints.at(-1));
+          // A transition-only final state may be blank (the concerns collapse
+          // before the following brand section). Callers can nominate the last
+          // actual content panel for reverse entry instead of showing a blank.
+          enterStepRange(
+            self,
+            backEntryPoint === null ? stepPoints.at(-1) : backEntryPoint
+          );
         },
         onLeave: (self) => {
           originalOnLeave?.(self);
-          stepObserver?.disable();
+          // A GSAP-owned forward exit deliberately continues past `end` until
+          // the following section reaches the viewport. Keep momentum blocked
+          // until that short tween completes; normal native exits still release
+          // the Observer immediately.
+          if (!stepTween?.isActive()) panelObserver?.disable();
         },
         onLeaveBack: (self) => {
           originalOnLeaveBack?.(self);
-          stepObserver?.disable();
+          panelObserver?.disable();
         }
       });
 
       // A page restored or opened inside the trigger does not necessarily fire
       // an entry callback during creation, so synchronize the observer once.
-      if (mobileStageEffects && trigger.isActive) {
-        stepObserver?.enable();
+      if (trigger.isActive) {
+        savedScroll = trigger.scroll();
+        gestureConsumed = false;
+        panelObserver?.enable();
       }
     } else {
       // Desktop and reduced-motion configurations use the browser's resting
@@ -307,9 +337,13 @@ export function createBoundaryLimitedScrollTrigger({ vars, boundaryPoints }) {
   let touchObserver = null;
   let wheelObserver = null;
   let boundaryLocked = false;
+  let heldScroll = null;
+  let restoringBoundary = false;
+  let heldHash = "";
 
   const points = prepareStepPoints([0, ...(boundaryPoints || []), 1]);
   const destroyInstances = () => {
+    releaseBoundary();
     touchIntentObserver?.kill();
     touchIntentObserver = null;
     touchObserver?.kill();
@@ -319,6 +353,37 @@ export function createBoundaryLimitedScrollTrigger({ vars, boundaryPoints }) {
     trigger?.kill();
     trigger = null;
   };
+
+  // A prevented wheel/touch event does not always cancel momentum that the
+  // browser already scheduled. While a boundary is consumed, continuously
+  // restore the exact clamped position, mirroring GSAP's official Observer
+  // panel demo workaround for Mac trackpads and mobile native momentum.
+  function restoreBoundary() {
+    if (!boundaryLocked || !trigger || heldScroll === null) return;
+    if (location.hash !== heldHash) {
+      releaseBoundary();
+      touchObserver?.disable();
+      return;
+    }
+    if (Math.abs(trigger.scroll() - heldScroll) > .5) trigger.scroll(heldScroll);
+  }
+
+  function lockBoundary(position) {
+    heldScroll = position;
+    heldHash = location.hash;
+    boundaryLocked = true;
+    trigger.scroll(position);
+    if (restoringBoundary) return;
+    restoringBoundary = true;
+    document.addEventListener("scroll", restoreBoundary, { passive: false });
+  }
+
+  function releaseBoundary() {
+    boundaryLocked = false;
+    heldScroll = null;
+    restoringBoundary = false;
+    document.removeEventListener("scroll", restoreBoundary);
+  }
 
   const create = () => {
     destroyInstances();
@@ -336,34 +401,59 @@ export function createBoundaryLimitedScrollTrigger({ vars, boundaryPoints }) {
       controller.start + ((controller.end - controller.start) * progress)
     );
     const getNextBoundary = (scrollPosition, direction) => {
-      if (direction > 0 && scrollPosition < trigger.start) return trigger.start + 1;
+      if (direction > 0 && scrollPosition < trigger.start) {
+        return { position: trigger.start + 1, exitsRange: false };
+      }
       if (direction < 0 && scrollPosition > trigger.end) {
         const lastContentPoint = points.findLast((point) => point < 1) ?? 0;
-        return progressToScroll(lastContentPoint);
+        return { position: progressToScroll(lastContentPoint), exitsRange: false };
       }
       const progress = clampProgress(trigger.progress);
       const epsilon = .001;
       const point = direction > 0
         ? points.find((candidate) => candidate > progress + epsilon)
         : points.findLast((candidate) => candidate < progress - epsilon);
-      if (point === undefined) return direction > 0 ? trigger.end + 2 : trigger.start - 2;
-      return progressToScroll(point);
+      if (point === undefined) {
+        return {
+          position: direction > 0 ? trigger.end + 2 : trigger.start - 2,
+          exitsRange: true
+        };
+      }
+      return { position: progressToScroll(point), exitsRange: false };
     };
     const applyLimitedDelta = (delta) => {
-      if (!trigger || !delta || boundaryLocked) return;
+      if (!trigger || !delta) return;
+      if (boundaryLocked) {
+        restoreBoundary();
+        return;
+      }
       const current = trigger.scroll();
       const direction = delta > 0 ? 1 : -1;
-      const boundary = getNextBoundary(current, direction);
+      const { position: boundary, exitsRange } = getNextBoundary(current, direction);
       const proposed = current + delta;
       const crossesBoundary = direction > 0 ? proposed >= boundary : proposed <= boundary;
-      trigger.scroll(crossesBoundary ? boundary : proposed);
-      if (crossesBoundary) boundaryLocked = true;
+      if (!crossesBoundary) {
+        trigger.scroll(proposed);
+        return;
+      }
+      if (exitsRange) {
+        // Reaching an exit is allowed only on the *next* physical gesture.
+        // Once outside, relinquish touch control so the rest of the page stays
+        // native; wheel control is already scoped by wheelIntersectsRange().
+        trigger.scroll(boundary);
+        touchObserver?.disable();
+        return;
+      }
+      lockBoundary(boundary);
     };
     const wheelDeltaPixels = (event) => event.deltaY * (
       event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1
     );
     const wheelIntersectsRange = (event) => {
       if (!trigger || event.ctrlKey) return false;
+      // Continue cancelling every packet in the same momentum stream even if
+      // the clamped boundary is exactly trigger.end/trigger.start.
+      if (boundaryLocked) return true;
       const current = trigger.scroll();
       const projected = current + wheelDeltaPixels(event);
       return event.deltaY > 0
@@ -375,30 +465,38 @@ export function createBoundaryLimitedScrollTrigger({ vars, boundaryPoints }) {
       ...triggerVars,
       onEnter: (self) => {
         originalOnEnter?.(self);
-        if (!mobileTouchEffects) return;
-        const activeEvent = touchIntentObserver?.isPressed ? touchIntentObserver.event : undefined;
-        boundaryLocked = Boolean(activeEvent);
+        if (reducedMotion) return;
+        const activeEvent = mobileTouchEffects && touchIntentObserver?.isPressed
+          ? touchIntentObserver.event
+          : undefined;
         touchObserver?.enable(activeEvent);
-        if (activeEvent) self.scroll(self.start + 1);
+        if (activeEvent?.cancelable) activeEvent.preventDefault();
+        // Entry itself is a meaningful boundary on every input device. Clamp
+        // even when an async native scroll update has already painted slightly
+        // inside the section, otherwise the first scene can be skipped before
+        // Observer receives the crossing wheel/touch packet.
+        if (!boundaryLocked) lockBoundary(self.start + 1);
       },
       onEnterBack: (self) => {
         originalOnEnterBack?.(self);
-        if (!mobileTouchEffects) return;
-        const activeEvent = touchIntentObserver?.isPressed ? touchIntentObserver.event : undefined;
-        boundaryLocked = Boolean(activeEvent);
+        if (reducedMotion) return;
+        const activeEvent = mobileTouchEffects && touchIntentObserver?.isPressed
+          ? touchIntentObserver.event
+          : undefined;
         touchObserver?.enable(activeEvent);
-        if (activeEvent) {
+        if (activeEvent?.cancelable) activeEvent.preventDefault();
+        if (!boundaryLocked) {
           const lastContentPoint = points.findLast((point) => point < 1) ?? 0;
-          self.scroll(progressToScroll(lastContentPoint, self));
+          lockBoundary(progressToScroll(lastContentPoint, self));
         }
       },
       onLeave: (self) => {
         originalOnLeave?.(self);
-        touchObserver?.disable();
+        if (!boundaryLocked) touchObserver?.disable();
       },
       onLeaveBack: (self) => {
         originalOnLeaveBack?.(self);
-        touchObserver?.disable();
+        if (!boundaryLocked) touchObserver?.disable();
       }
     });
 
@@ -409,12 +507,14 @@ export function createBoundaryLimitedScrollTrigger({ vars, boundaryPoints }) {
       type: "wheel",
       preventDefault: true,
       debounce: false,
-      onStopDelay: .04,
+      // GSAP's documented default is 250ms. A 40ms gap splits one trackpad
+      // fling into several gestures, allowing it to cross every scene.
+      onStopDelay: .25,
       ignore: "a, button, input, textarea, select, [data-nav]",
       ignoreCheck: (event) => !wheelIntersectsRange(event),
       onWheel: (self) => applyLimitedDelta(self.deltaY),
       onStop: () => {
-        boundaryLocked = false;
+        releaseBoundary();
       }
     });
 
@@ -429,14 +529,17 @@ export function createBoundaryLimitedScrollTrigger({ vars, boundaryPoints }) {
         dragMinimum: 4,
         tolerance: 2,
         ignore: "a, button, input, textarea, select, [data-nav]",
-        onPress: () => {
-          boundaryLocked = false;
+        onPress: (self) => {
+          // Only a fresh press releases a boundary consumed by the preceding
+          // swipe. This is what makes "one physical gesture, one boundary"
+          // reliable even though touch momentum outlives touchend on iOS.
+          releaseBoundary();
+          if (ScrollTrigger.isTouch && self.event.cancelable) self.event.preventDefault();
         },
         // Touch delta follows the finger; page scrolling moves oppositely.
         onChangeY: (self) => applyLimitedDelta(-self.deltaY),
-        onRelease: () => {
-          boundaryLocked = false;
-        }
+        // Do not unlock onRelease: releasing the finger starts the browser's
+        // kinetic tail. The next onPress is the next deliberate gesture.
       });
       touchObserver.disable();
       if (trigger.isActive) touchObserver?.enable();

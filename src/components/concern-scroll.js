@@ -5,6 +5,7 @@ import {
   calculatePinMinimumHeightRem,
   createPinHeightGuard
 } from "../utils/pin-height-guard.js";
+import { createResponsiveStageScrollTrigger } from "../utils/mobile-scroll.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -76,29 +77,26 @@ export function initConcernScroll() {
     allowMobile: true,
     minimumHeightRem: getTextMinimumHeightRem,
     onEnable: () => {
-      // This section deliberately uses native continuous scroll only. There is
-      // no Observer, scroll lock, queued gesture, or snap point: ScrollTrigger
-      // simply maps the browser's real position onto this reversible timeline.
+      // The concern story is intentionally discrete: one wheel stroke or one
+      // finger swipe reveals exactly one chat panel. The shared helper follows
+      // GSAP's official Observer pattern by freezing the saved scroll position
+      // while a panel transition is running and discarding residual momentum.
       const timeline = gsap.timeline({
-        defaults: { ease: "power2.out" },
-        scrollTrigger: {
-          id: "concern-pin-progress",
-          trigger: section,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: true,
-          invalidateOnRefresh: true
-        }
+        paused: true,
+        defaults: { ease: "power2.out" }
       });
 
       gsap.set([chatHeader, dialogue, messages[0]], { autoAlpha: 1 });
       gsap.set(messages.slice(1), { autoAlpha: 0, y: 18, scale: .96 });
 
       timeline
+        .addLabel("first", 0)
         .to({}, { duration: .7 })
         .to(messages[1], { autoAlpha: 1, y: 0, scale: 1, duration: .7 })
+        .addLabel("second")
         .to({}, { duration: .45 })
         .to(messages[2], { autoAlpha: 1, y: 0, scale: 1, duration: .7 })
+        .addLabel("third")
         .to({}, { duration: .7 })
         .to([chatHeader, ...messages], {
           autoAlpha: 0,
@@ -108,11 +106,35 @@ export function initConcernScroll() {
           duration: .75,
           stagger: { each: .035, from: "end" },
           ease: "power3.in"
-        })
-        .to({}, { duration: .15 });
+        });
+
+      // Only states with visible chat content are Observer panels. The fully
+      // collapsed state at the end of the timeline is an exit transition, not
+      // a fourth panel; stopping there would expose an empty blue viewport.
+      const stagePoints = ["first", "second", "third"]
+        .map((label) => timeline.labels[label] / timeline.duration());
+      const disposeScrollTrigger = createResponsiveStageScrollTrigger({
+        mobileStepPoints: stagePoints,
+        observeDesktopWheel: true,
+        stepDuration: .32,
+        backEntryPoint: stagePoints[2],
+        // `bottom bottom` ends while the next section is still one viewport
+        // below. Carry the same final gesture to this section's document bottom
+        // so the brand section replaces the chat without a blank resting frame.
+        forwardExitTarget: () => window.scrollY + section.getBoundingClientRect().bottom,
+        vars: {
+          id: "concern-observer-panels",
+          trigger: section,
+          animation: timeline,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
+          invalidateOnRefresh: true
+        }
+      });
 
       return () => {
-        timeline.scrollTrigger?.kill();
+        disposeScrollTrigger?.();
         timeline.kill();
       };
     },

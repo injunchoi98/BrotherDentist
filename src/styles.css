@@ -8,8 +8,8 @@
   --landing-font-family: "Noto Sans KR", var(--seed-font-family-sans);
   --color-brand: #2763ea;
   /* Exact dominant colors sampled from the supplied HandOff chat reference. */
-  --color-concern-canvas: #abc1d1;
-  --color-concern-bubble: #fde400;
+  --color-concern-canvas: #abc2d1;
+  --color-concern-bubble: #fde40b;
   --color-concern-ink: #191919;
   --color-concern-meta: #444d54;
   --color-concern-control: #f2f2f2;
@@ -119,11 +119,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .concern-dialogue { display: grid; width: min(100%, 42rem); justify-items: end; row-gap: .375rem; margin-inline: auto; text-align: left; }
 .concern-message { display: flex; width: 100%; align-items: flex-end; justify-content: flex-end; gap: .375rem; transform-origin: right center; }
 .concern-time { flex: none; margin-bottom: .125rem; color: var(--color-concern-meta); font-size: var(--landing-ui-label-size); font-style: normal; line-height: var(--landing-ui-label-line-height); font-variant-numeric: tabular-nums; }
-.concern-bubble { position: relative; isolation: isolate; width: fit-content; max-width: min(76%, 32rem); margin: 0; border-radius: 1rem; padding: .8125rem 1rem .875rem; color: var(--color-concern-ink); background: var(--color-concern-bubble); font-size: var(--landing-body-1-size); font-weight: var(--landing-font-weight-regular); line-height: var(--landing-body-1-line-height); text-align: left; white-space: pre-line; }
-/* Photo 4 uses one small curved fin, not overlapping circles. The fixed path
- * is sampled to an 18×16 CSS-pixel box and joins the bubble at its top edge. */
+.concern-bubble { position: relative; isolation: isolate; width: fit-content; max-width: min(76%, 32rem); margin: 0; border-radius: .75rem; padding: .375rem .75rem; color: var(--color-concern-ink); background: var(--color-concern-bubble); font-size: var(--landing-ui-control-size); font-weight: var(--landing-font-weight-regular); line-height: var(--landing-ui-control-line-height); text-align: left; white-space: pre-line; }
+/* Photo 4's iPhone capture is 3x: the rounded body measures about 34 CSS px
+ * high with a 12px corner, and the fin projects only about 2px beyond the
+ * body's right edge. Most of this 12x10 path sits behind the rounded corner so
+ * the visible result is a short curved Kakao-style tip, not a large triangle. */
 .concern-bubble::before { display: none; }
-.concern-bubble::after { content: ""; position: absolute; z-index: -1; top: 0; right: -.6875rem; width: 1.125rem; height: 1rem; background: var(--color-concern-bubble); clip-path: path("M 0 0 H 18 C 13 2 10 7 9 16 C 7 9 4 3 0 0 Z"); }
+.concern-bubble::after { content: ""; position: absolute; z-index: -1; top: .0625rem; right: -.125rem; width: .75rem; height: .625rem; background: var(--color-concern-bubble); clip-path: path("M 0 0 H 12 C 9 1 7 4 6 10 C 5 6 3 2 0 0 Z"); }
 .concern-bubble:empty { display: none; }
 
 /* Hide both decorative side controls only when their own title container can
@@ -620,8 +622,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .site-nav { padding-top: calc(var(--header-height-mobile) + 1.5rem); }
   .evidence-nav { position: static; }
   .section-heading { align-items: start; flex-direction: column; gap: 1.25rem; }.section-heading > p br { display: none; }
-  /* Native continuous scrolling needs no gesture queue or lock. The compact
-   * spacer still provides enough travel for two additions and the final exit. */
+  /* The compact spacer provides four stable Observer positions: the initial
+   * bubble, two additions, and the collapsed handoff into the brand section. */
   .concern-section { height: calc(300svh + var(--concern-scroll-extension)); min-height: calc(300svh + var(--concern-scroll-extension)); }
   .concern-section[data-pin-disabled] { height: auto; min-height: 0; }
   .concern-section[data-pin-disabled] .concern-fallback-list { width: 100%; padding: calc(var(--header-height-mobile) + 2rem) var(--space-page) 3rem; }
@@ -629,7 +631,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .concern-copy { gap: 1rem; }
   .concern-dialogue { width: min(100%, 31rem); margin-top: 0; }
   .concern-message { gap: .3125rem; }
-  .concern-bubble { max-width: 76%; padding: .75rem .875rem .8125rem; }
+  .concern-bubble { max-width: 76%; }
   .brand-title { max-width: none; }
   /* The stable pin remains svh-based, while the expanding artwork may paint
    * into the extra visual viewport exposed when Safari collapses its bars. */
