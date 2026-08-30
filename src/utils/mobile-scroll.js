@@ -454,6 +454,9 @@ export function createBoundaryLimitedScrollTrigger({
   let nativeBoundaryGuard = null;
 
   const points = prepareStepPoints([0, ...(boundaryPoints || []), 1]);
+  const boundaryEpsilon = .0015;
+  const firstSceneEnd = points[1] ?? 1;
+  const lastSceneStart = points.at(-2) ?? 0;
 
   function restoreBoundary() {
     if (!boundaryLocked || heldScroll === null || !trigger) return;
@@ -517,10 +520,30 @@ export function createBoundaryLimitedScrollTrigger({
       (position - controller.start) / Math.max(1, controller.end - controller.start)
     );
     const getAdjacentPoint = (progress, direction) => {
-      const epsilon = .0015;
       return direction > 0
-        ? points.find((point) => point > progress + epsilon)
-        : points.findLast((point) => point < progress - epsilon);
+        ? points.find((point) => point > progress + boundaryEpsilon)
+        : points.findLast((point) => point < progress - boundaryEpsilon);
+    };
+
+    const isOuterSceneExit = (progress, direction) => {
+      /*
+       * 사용자 의도: 첫 장면과 마지막 장면은 섹션의 출구 전체다.
+       * 정확히 progress 0/1에 서 있을 때만 출구로 보지 않는다.
+       *
+       * - 첫 장면 안에서 위로 향하면 앞 섹션으로 자연스럽게 나간다.
+       * - 마지막 장면 안에서 아래로 향하면 다음 섹션으로 자연스럽게 나간다.
+       * - 중간 장면 및 바깥 장면의 안쪽 방향에만 한 경계 가드를 둔다.
+       *
+       * Previously, a small inward move made 0 or 1 look like an adjacent
+       * boundary. The outward gesture was then spent returning to that exact
+       * point, where restoreBoundary fought native momentum and visibly
+       * rattled. Scene-range exit detection must run before adjacent-boundary
+       * selection so an outward edge gesture never installs that lock.
+       */
+      if (direction < 0) {
+        return progress < firstSceneEnd - boundaryEpsilon;
+      }
+      return progress >= lastSceneStart - boundaryEpsilon;
     };
 
     const exitContinuousStory = () => {
@@ -545,6 +568,10 @@ export function createBoundaryLimitedScrollTrigger({
     const beginGestureDirection = (direction) => {
       gestureDirection = direction;
       const progress = scrollToProgress(gestureStartScroll);
+      if (isOuterSceneExit(progress, direction)) {
+        exitContinuousStory();
+        return false;
+      }
       const point = getAdjacentPoint(progress, direction);
       if (point === undefined) {
         exitContinuousStory();
