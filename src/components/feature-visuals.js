@@ -3,12 +3,15 @@ import { initInfiniteMarquee } from "../utils/infinite-marquee.js";
 const QUALITY_TILE_STEP = 46;
 const QUALITY_TILE_ROW_STEP = QUALITY_TILE_STEP * Math.sin(Math.PI / 3);
 const QUALITY_TILE_RADIUS = QUALITY_TILE_STEP / 2;
+const QUALITY_SPRITE_TILE_SIZE = 44;
+const QUALITY_SPRITE_PIXEL_SIZE = QUALITY_SPRITE_TILE_SIZE * 2;
 const QUALITY_COLUMNS = 15;
-const QUALITY_ROWS = 19;
+// An even row count lets the staggered hex grid wrap vertically without
+// changing parity, so the desktop field can rotate forever without a seam.
+const QUALITY_ROWS = 20;
 const QUALITY_WORLD_WIDTH = QUALITY_COLUMNS * QUALITY_TILE_STEP;
 const QUALITY_WORLD_HEIGHT = QUALITY_ROWS * QUALITY_TILE_ROW_STEP;
 const QUALITY_AUTO_FRAME_INTERVAL = 1000 / 60;
-const QUALITY_AUTO_CYCLE_DURATION = 9000;
 const QUALITY_MOBILE_ROWS = [
   { offset: 0, direction: "left", speed: "normal" },
   { offset: 2, direction: "right", speed: "fast" },
@@ -39,12 +42,20 @@ function initQualityMobileMarquee(cloud) {
       ...sourceTiles.slice(offset),
       ...sourceTiles.slice(0, offset)
     ];
-    orderedTiles.forEach((tile) => {
-      const clone = tile.cloneNode(true);
-      clone.querySelector("[data-quality-logo-source]")
-        ?.removeAttribute("data-quality-logo-source");
-      track.append(clone);
-    });
+    // A single seven-logo set is only about 26rem wide. On compact layouts
+    // near the 48rem breakpoint that is shorter than the visible row, so one
+    // set plus one duplicate can reveal the track's end while it moves. Seed
+    // each half with two identical cycles (about 54rem) before the marquee
+    // utility duplicates it. Every supported mobile width is then covered by
+    // a complete off-screen copy and the loop remains visually continuous.
+    for (let cycle = 0; cycle < 2; cycle += 1) {
+      orderedTiles.forEach((tile) => {
+        const clone = tile.cloneNode(true);
+        clone.querySelector("[data-quality-logo-source]")
+          ?.removeAttribute("data-quality-logo-source");
+        track.append(clone);
+      });
+    }
 
     row.append(track);
     rows.append(row);
@@ -122,7 +133,7 @@ function drawContainedImage(context, image, x, y, width, height) {
 
 function buildLogoSprite(images) {
   const pixelRatio = 2;
-  const tileSize = 44;
+  const tileSize = QUALITY_SPRITE_TILE_SIZE;
   const sprite = document.createElement("canvas");
   sprite.width = tileSize * pixelRatio * images.length;
   sprite.height = tileSize * pixelRatio;
@@ -179,6 +190,12 @@ function initQualityLogoCloud(cloud, reducedMotion) {
     focusY: 0,
     targetFocusX: 0,
     targetFocusY: 0,
+    worldOffsetX: 0,
+    worldOffsetY: 0,
+    velocityX: 0,
+    velocityY: 0,
+    targetVelocityX: 0,
+    targetVelocityY: 0,
     width: 0,
     height: 0,
     pixelRatio: 1,
@@ -190,15 +207,21 @@ function initQualityLogoCloud(cloud, reducedMotion) {
   let lastRenderedAt = 0;
   let viewportObserver = null;
   let visible = !("IntersectionObserver" in window);
+  let pointerInside = false;
   const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
   // Match the CSS compact breakpoint exactly so a 48rem viewport never paints
   // the hidden desktop canvas behind the visible four-row marquee.
   const mobileLayout = matchMedia("(max-width: 48rem)");
-  const getMode = () => reducedMotion.matches || mobileLayout.matches
-    ? "static"
-    : finePointer.matches
-      ? "pointer"
-      : "auto";
+  const getMode = () => {
+    if (reducedMotion.matches || mobileLayout.matches) return "static";
+    if (finePointer.matches) return pointerInside ? "globe" : "rest";
+    return "auto";
+  };
+
+  const wrapCentered = (value, size) => {
+    const wrapped = ((value + (size / 2)) % size + size) % size;
+    return wrapped - (size / 2);
+  };
 
   const resize = () => {
     const bounds = canvas.getBoundingClientRect();
@@ -223,8 +246,19 @@ function initQualityLogoCloud(cloud, reducedMotion) {
     context.clearRect(0, 0, state.width, state.height);
 
     positions.forEach((position, index) => {
-      const offsetX = position.x - (QUALITY_WORLD_WIDTH / 2) - state.focusX;
-      const offsetY = position.y - (QUALITY_WORLD_HEIGHT / 2) - state.focusY;
+      // Wrap the even-row hex field around an invisible cylinder in both axes.
+      // Tiles crossing an outer edge re-enter well outside the clipped card,
+      // which makes a held hover feel like a continuously rotating globe.
+      const worldX = wrapCentered(
+        position.x - (QUALITY_WORLD_WIDTH / 2) - state.worldOffsetX,
+        QUALITY_WORLD_WIDTH
+      );
+      const worldY = wrapCentered(
+        position.y - (QUALITY_WORLD_HEIGHT / 2) - state.worldOffsetY,
+        QUALITY_WORLD_HEIGHT
+      );
+      const offsetX = worldX - state.focusX;
+      const offsetY = worldY - state.focusY;
 
       const radialStrength = Math.exp(-((offsetX * offsetX) + (offsetY * offsetY)) / 33800);
       const scale = .18 + (1.17 * radialStrength);
@@ -233,17 +267,17 @@ function initQualityLogoCloud(cloud, reducedMotion) {
       const focusY = state.focusY;
       const x = state.centerX + focusX + (offsetX * perspective);
       const y = state.centerY + focusY + (offsetY * perspective);
-      const size = 44 * scale;
+      const size = QUALITY_SPRITE_TILE_SIZE * scale;
       const halfSize = size / 2;
       if (x + halfSize < 0 || x - halfSize > state.width || y + halfSize < 0 || y - halfSize > state.height) return;
 
       context.globalAlpha = .68 + (.32 * radialStrength);
       context.drawImage(
         sprite,
-        distribution[index] * 88,
+        distribution[index] * QUALITY_SPRITE_PIXEL_SIZE,
         0,
-        88,
-        88,
+        QUALITY_SPRITE_PIXEL_SIZE,
+        QUALITY_SPRITE_PIXEL_SIZE,
         x - halfSize,
         y - halfSize,
         size,
@@ -268,21 +302,45 @@ function initQualityLogoCloud(cloud, reducedMotion) {
       return;
     }
 
+    const elapsedSeconds = lastRenderedAt
+      ? Math.min((time - lastRenderedAt) / 1000, .05)
+      : 0;
+    lastRenderedAt = time;
+
     if (mode === "auto") {
-      const phase = ((time % QUALITY_AUTO_CYCLE_DURATION) / QUALITY_AUTO_CYCLE_DURATION) * Math.PI * 2;
-      state.targetFocusX = Math.cos(phase) * Math.min(state.width * .22, 88);
-      state.targetFocusY = Math.sin(phase) * Math.min(state.height * .16, 52);
+      // Touch layouts above the four-row breakpoint have no hover state, so
+      // keep a quiet default rotation while the card is visible.
+      state.targetVelocityX = 14;
+      state.targetVelocityY = 5;
+    } else if (mode !== "globe") {
+      state.targetVelocityX = 0;
+      state.targetVelocityY = 0;
     }
 
-    lastRenderedAt = time;
-    const easing = mode === "auto" ? .14 : .2;
-    state.focusX += (state.targetFocusX - state.focusX) * easing;
-    state.focusY += (state.targetFocusY - state.focusY) * easing;
+    const velocityEasing = mode === "globe" || mode === "auto" ? .1 : .075;
+    state.velocityX += (state.targetVelocityX - state.velocityX) * velocityEasing;
+    state.velocityY += (state.targetVelocityY - state.velocityY) * velocityEasing;
+    state.worldOffsetX = wrapCentered(
+      state.worldOffsetX + (state.velocityX * elapsedSeconds),
+      QUALITY_WORLD_WIDTH
+    );
+    state.worldOffsetY = wrapCentered(
+      state.worldOffsetY + (state.velocityY * elapsedSeconds),
+      QUALITY_WORLD_HEIGHT
+    );
+    state.focusX += (state.targetFocusX - state.focusX) * .16;
+    state.focusY += (state.targetFocusY - state.focusY) * .16;
     render();
 
     const unsettled = Math.abs(state.targetFocusX - state.focusX) > .12
-      || Math.abs(state.targetFocusY - state.focusY) > .12;
-    if (mode === "auto" || unsettled) animationFrame = requestAnimationFrame(tick);
+      || Math.abs(state.targetFocusY - state.focusY) > .12
+      || Math.abs(state.targetVelocityX - state.velocityX) > .12
+      || Math.abs(state.targetVelocityY - state.velocityY) > .12
+      || Math.abs(state.velocityX) > .12
+      || Math.abs(state.velocityY) > .12;
+    if (mode === "globe" || mode === "auto" || unsettled) {
+      animationFrame = requestAnimationFrame(tick);
+    }
   };
 
   const startAnimation = () => {
@@ -298,30 +356,50 @@ function initQualityLogoCloud(cloud, reducedMotion) {
   };
 
   const resetFocus = () => {
+    pointerInside = false;
     state.targetFocusX = 0;
     state.targetFocusY = 0;
+    state.targetVelocityX = 0;
+    state.targetVelocityY = 0;
+    cloud.dataset.qualityMode = getMode();
     startAnimation();
   };
 
   const updatePointerFocus = (event) => {
-    if (getMode() !== "pointer") return;
+    if (!finePointer.matches) return;
     const bounds = cloud.getBoundingClientRect();
     if (!bounds.width || !bounds.height) return;
+    pointerInside = true;
     const normalizedX = (((event.clientX - bounds.left) / bounds.width) - .5) * 2;
     const normalizedY = (((event.clientY - bounds.top) / bounds.height) - .5) * 2;
-    state.targetFocusX = Math.max(-1, Math.min(1, normalizedX)) * Math.min(state.width * .24, 96);
-    state.targetFocusY = Math.max(-1, Math.min(1, normalizedY)) * Math.min(state.height * .2, 64);
+    const directionX = Math.max(-1, Math.min(1, normalizedX));
+    const directionY = Math.max(-1, Math.min(1, normalizedY));
+
+    // The cursor chooses a direction and speed, not a finite destination.
+    // Holding it in one place therefore keeps rotating the wrapped logo field.
+    state.targetVelocityX = -directionX * 52;
+    state.targetVelocityY = -directionY * 38;
+    state.targetFocusX = directionX * Math.min(state.width * .24, 96);
+    state.targetFocusY = directionY * Math.min(state.height * .2, 64);
+    cloud.dataset.qualityMode = getMode();
     startAnimation();
   };
 
   const handleModeChange = () => {
     cloud.dataset.qualityMode = getMode();
     stopAnimation();
+    pointerInside = false;
     state.targetFocusX = 0;
     state.targetFocusY = 0;
+    state.targetVelocityX = 0;
+    state.targetVelocityY = 0;
     if (reducedMotion.matches) {
       state.focusX = 0;
       state.focusY = 0;
+      state.worldOffsetX = 0;
+      state.worldOffsetY = 0;
+      state.velocityX = 0;
+      state.velocityY = 0;
       render();
       return;
     }

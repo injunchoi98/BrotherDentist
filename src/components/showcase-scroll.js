@@ -1,7 +1,11 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { createResponsiveStageScrollTrigger } from "../utils/mobile-scroll.js";
-import { createPinHeightGuard, getSmallViewportHeight } from "../utils/pin-height-guard.js";
+import {
+  calculatePinMinimumHeightRem,
+  createPinHeightGuard,
+  getSmallViewportHeight
+} from "../utils/pin-height-guard.js";
 import { bindVisualViewportMetrics } from "../utils/visual-viewport.js";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -285,6 +289,8 @@ export function initShowcaseScroll() {
   const title = section.querySelector("[data-showcase-variable]");
   const titleLock = section.querySelector(".showcase-title-lock");
   const image = section.querySelector("[data-showcase-image]");
+  const finalCopy = section.querySelector(".showcase-image-copy strong");
+  const header = document.querySelector("[data-header]");
   const map = section.querySelector(".showcase-korea-map");
   const scenes = Array.from(section.querySelectorAll("[data-showcase-scene]"));
   const referralItems = Array.from(section.querySelectorAll("[data-referral-item]"));
@@ -428,16 +434,28 @@ export function initShowcaseScroll() {
     title.textContent = TITLES[0].prefix;
   };
 
+  const getTextMinimumHeightRem = () => {
+    const lockedTitle = titleLock.querySelector("h3");
+    const contentHeightPixels = Math.max(
+      lockedTitle?.getBoundingClientRect().height || 0,
+      finalCopy?.getBoundingClientRect().height || 0
+    );
+
+    // The photographs, map and final image are atmospheric and may crop. The
+    // guard protects only the fixed header, the taller essential message and
+    // modest breathing room—matching the concern and brand text-led pins.
+    return calculatePinMinimumHeightRem({
+      headerHeightPixels: header?.getBoundingClientRect().height || 0,
+      contentHeightPixels,
+      topSafetyRem: 2,
+      bottomSafetyRem: 2
+    });
+  };
+
   const disposeGuard = createPinHeightGuard({
     section,
-    // The locked headings are the essential content on compact screens;
-    // surrounding photos and map geometry may crop inside the sticky panel.
     allowMobile: true,
-    minimumHeightRem: ({ layout }) => {
-      if (layout === "mobile") return 20;
-      if (layout === "medium") return 45;
-      return 42;
-    },
+    minimumHeightRem: getTextMinimumHeightRem,
     onEnable: () => {
       clearMobileMotion();
       const unbindVisualViewport = bindVisualViewportMetrics(panel);
@@ -452,19 +470,16 @@ export function initShowcaseScroll() {
           .addLabel("brand", TITLES[3].start)
           .to(state, { progress: 1, duration: 1 }, 0);
 
-        // Stage stops come after each scrambled title has resolved, not at the
-        // transition's first frame. Desktop snap and mobile Observer share these
-        // progress values, while progress 1 remains an exit-only boundary.
-        const snapPoints = [
+        // Mobile stage stops come after each scrambled title has resolved, not
+        // at the transition's first frame. Desktop has no settling snap.
+        const stagePoints = [
           ...TITLES.map(({ start }) => start === 0 ? 0 : start + TITLE_REVEAL_DURATION),
           1
         ];
         disposeScrollTrigger = createResponsiveStageScrollTrigger({
-          snapTo: snapPoints,
-          snapOnAllInputs: true,
-          // Progress 1 remains a desktop snap/exit boundary, but is not another
-          // mobile story. The fourth resolved title at .86 is the final step.
-          mobileStepPoints: snapPoints.slice(0, -1),
+          // Progress 1 is an exit boundary, not another mobile story. The fourth
+          // resolved title at .86 is the final controlled step.
+          mobileStepPoints: stagePoints.slice(0, -1),
           vars: {
             id: "showcase-scroll",
             trigger: section,

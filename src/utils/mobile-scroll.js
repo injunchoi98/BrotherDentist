@@ -9,8 +9,8 @@ const reducedMotionInput = matchMedia("(prefers-reduced-motion: reduce)");
 // Outside a step-controlled story, touch scrolling stays entirely native. This
 // module never calls normalizeScroll(), so iOS and Android retain their normal
 // browser momentum. Inside an opted-in story, Observer converts one deliberate
-// touch gesture into one stage change; desktop inputs may still use snap as a
-// separate resting-position correction.
+// touch gesture into one stage change. No ScrollTrigger snap is attached on
+// either mobile or desktop.
 const shouldUseMobileStageEffects = () => (
   mobileTouchInput.matches && !reducedMotionInput.matches
 );
@@ -32,8 +32,6 @@ const prepareStepPoints = (points) => [
 
 export function createResponsiveStageScrollTrigger({
   vars,
-  snapTo,
-  snapOnAllInputs = false,
   mobileStepPoints = null
 }) {
   let trigger = null;
@@ -60,31 +58,6 @@ export function createResponsiveStageScrollTrigger({
     const stepPoints = mobileStageEffects && Array.isArray(mobileStepPoints)
       ? prepareStepPoints(mobileStepPoints)
       : [];
-    const mobileStepControlEnabled = stepPoints.length > 0;
-
-    // Observer already owns the complete mobile interaction: it converts the
-    // gesture to an index and tweens to that exact progress. Running snap on the
-    // same input would be redundant and can pull the page back when Observer is
-    // trying to leave the first or last boundary. Snap therefore remains only
-    // for configurations whose input is not currently controlled by Observer
-    // (notably desktop wheel, trackpad, keyboard, and scrollbar scrolling).
-    const snapEnabled = !reducedMotionInput.matches
-      && !mobileStepControlEnabled
-      && (mobileStageEffects || snapOnAllInputs);
-    const snap = snapEnabled
-      ? {
-          // Wait until the browser's native momentum has settled, then choose
-          // the next stage from the actual resting position. Snap inertia stays
-          // disabled so GSAP does not extrapolate the release velocity a second
-          // time and accidentally skip another stage.
-          snapTo,
-          directional: mobileStageEffects,
-          inertia: false,
-          delay: .08,
-          duration: { min: .12, max: .24 },
-          ease: "power1.out"
-        }
-      : undefined;
 
     const {
       onEnter: originalOnEnter,
@@ -198,7 +171,6 @@ export function createResponsiveStageScrollTrigger({
 
       trigger = ScrollTrigger.create({
         ...triggerVars,
-        ...(snap ? { snap } : {}),
         onEnter: (self) => {
           originalOnEnter?.(self);
           enterStepRange(self, stepPoints[0]);
@@ -223,12 +195,9 @@ export function createResponsiveStageScrollTrigger({
         stepObserver.enable();
       }
     } else {
-      // Without mobile step locking this remains the lightweight snap wrapper
-      // used for desktop, keyboard, and reduced-motion-safe configurations.
-      trigger = ScrollTrigger.create({
-        ...vars,
-        ...(snap ? { snap } : {})
-      });
+      // Desktop and reduced-motion configurations use the browser's resting
+      // position as-is. Snap is intentionally disabled throughout the site.
+      trigger = ScrollTrigger.create(vars);
     }
   };
 

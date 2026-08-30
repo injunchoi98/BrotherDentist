@@ -94,7 +94,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .hero h1 { font-size: var(--landing-heading-1-size); line-height: var(--landing-heading-1-line-height); }
 .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
-.concern-section { position: relative; height: 400svh; min-height: 400svh; background: var(--color-white); }
+.concern-section { --concern-scroll-extension: 6.25rem; position: relative; height: calc(400svh + var(--concern-scroll-extension)); min-height: calc(400svh + var(--concern-scroll-extension)); background: var(--color-white); }
 .concern-sticky { --concern-bubble-y: 42svh; --concern-bubble-offset: 6rem; position: sticky; top: 0; height: 100svh; min-height: 100svh; overflow: hidden; }
 .concern-stage { position: absolute; z-index: 2; top: max(calc(var(--header-height) + 1rem), calc(var(--concern-bubble-y) - var(--concern-bubble-offset))); right: var(--space-page); left: var(--space-page); display: grid; justify-items: center; }
 .concern-section[data-pin-disabled] { height: auto; min-height: var(--pin-fallback-min-height); }
@@ -392,16 +392,19 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .care-node { position: absolute; top: var(--node-y); left: var(--node-x); display: grid; width: 146px; height: 72px; grid-template-columns: 36px 1fr; gap: 10px; align-items: center; border: 1px solid #e4e4e7; border-radius: 12px; padding: 12px; background: #fff; transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease; }
 .care-node > i { display: grid; width: 36px; height: 36px; place-items: center; color: #71717a; background: transparent; font-style: normal; }.care-node > i svg { width: 20px; height: 20px; fill: currentColor; stroke: none; }.care-node > span { display: grid; min-width: 0; }.care-node strong { overflow: hidden; font-size: var(--landing-ui-label-size); line-height: var(--landing-ui-label-line-height); text-overflow: ellipsis; white-space: nowrap; }.care-node small { color: #71717a; font-size: var(--landing-ui-meta-size); line-height: var(--landing-ui-meta-line-height); }.care-node > em { position: absolute; top: -10px; right: 12px; border: 1px solid #e4e4e7; border-radius: 999px; padding: 2px 6px; color: #71717a; background: #fff; font-size: var(--landing-ui-meta-size); line-height: var(--landing-ui-meta-line-height); font-style: normal; }
 .care-node::after { content: attr(data-tooltip); position: absolute; left: 50%; z-index: 5; width: max-content; max-width: 180px; border: 1px solid #e4e4e7; border-radius: 8px; padding: 6px 8px; color: #52525b; background: #fff; box-shadow: 0 8px 24px rgba(24,24,27,.08); font-size: var(--landing-ui-meta-size); line-height: var(--landing-ui-meta-line-height); opacity: 0; pointer-events: none; transform: translate(-50%, 4px); transition: opacity .18s ease, transform .18s ease; }.care-node-top::after { top: calc(100% + 8px); }.care-node-bottom::after { bottom: calc(100% + 8px); }.care-node:hover::after { opacity: 1; transform: translate(-50%, 0); }
-.care-node[data-status="running"] { border-color: color-mix(in srgb, var(--feature-status-running) 48%, var(--color-line)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--feature-status-running) 8%, transparent); transform: translateY(-2px); }.care-node[data-status="running"] > i { color: var(--feature-status-running); background: transparent; }.care-node[data-status="running"] > em { border-color: color-mix(in srgb, var(--feature-status-running) 28%, var(--color-line)); color: var(--feature-status-running); }.care-node[data-status="done"] { border-color: color-mix(in srgb, var(--feature-status-complete) 42%, var(--color-line)); }.care-node[data-status="done"] > i { color: var(--feature-status-complete); background: transparent; }.care-node[data-status="done"] > em { border-color: color-mix(in srgb, var(--feature-status-complete) 26%, var(--color-line)); color: var(--feature-status-complete); }
+.care-node[data-status="running"] { border-color: color-mix(in srgb, var(--color-brand) 58%, var(--color-line)); background: color-mix(in srgb, var(--color-brand) 4%, var(--color-white)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-brand) 12%, transparent), 0 0 1rem color-mix(in srgb, var(--color-brand) 20%, transparent), 0 .5rem 1.25rem color-mix(in srgb, var(--color-brand) 10%, transparent); transform: translateY(-2px); }.care-node[data-status="running"] > i { color: var(--color-brand); background: transparent; }.care-node[data-status="running"] > em { border-color: color-mix(in srgb, var(--color-brand) 36%, var(--color-line)); color: var(--color-brand); background: color-mix(in srgb, var(--color-brand) 6%, var(--color-white)); }.care-node[data-status="done"] { border-color: color-mix(in srgb, var(--feature-status-complete) 42%, var(--color-line)); }.care-node[data-status="done"] > i { color: var(--feature-status-complete); background: transparent; }.care-node[data-status="done"] > em { border-color: color-mix(in srgb, var(--feature-status-complete) 26%, var(--color-line)); color: var(--feature-status-complete); }
 .care-travel-pulse { position: absolute; z-index: 4; top: -5px; left: -5px; display: none; width: 10px; height: 10px; border-radius: 50%; background: #18181b; box-shadow: 0 0 0 5px rgba(24,24,27,.1); offset-rotate: 0deg; }.care-travel-pulse[data-active] { display: block; animation: care-travel .7s cubic-bezier(.5,0,.5,1) both; }
 
-.feature-card[data-visual-active] .hours-celestial-wheel { animation: celestial-orbit 16s cubic-bezier(.65,0,.35,1) infinite; }
-.feature-card-hours[data-visual-active] .feature-copy h3 { animation: hours-title-color 16s cubic-bezier(.65,0,.35,1) infinite; }
-.feature-card-hours[data-visual-active] .feature-copy p { animation: hours-body-color 16s cubic-bezier(.65,0,.35,1) infinite; }
+/* The day/night cycle belongs to the card's visible state rather than hover.
+ * That gives touch devices the same story and lets desktop hover enter/leave
+ * without restarting the timeline. IntersectionObserver pauses it offscreen. */
+.feature-card-hours[data-visual-active] .hours-celestial-wheel { animation: celestial-orbit 16s linear infinite; }
+.feature-card-hours[data-visual-active] .feature-copy h3 { animation: hours-title-color 16s linear infinite; }
+.feature-card-hours[data-visual-active] .feature-copy p { animation: hours-body-color 16s linear infinite; }
 
-@keyframes celestial-orbit { 0%, 18% { transform: translate(-50%, -50%) rotate(0deg); } 48%, 68% { transform: translate(-50%, -50%) rotate(-180deg); } 100% { transform: translate(-50%, -50%) rotate(-360deg); } }
-@keyframes hours-title-color { 0%, 28%, 90.01%, 100% { color: var(--color-text); } 28.01%, 90% { color: var(--color-white); } }
-@keyframes hours-body-color { 0%, 28%, 90.01%, 100% { color: var(--color-text-muted); } 28.01%, 90% { color: color-mix(in srgb, var(--color-white) 76%, transparent); } }
+@keyframes celestial-orbit { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(-360deg); } }
+@keyframes hours-title-color { 0%, 12%, 88%, 100% { color: var(--color-text); } 38%, 62% { color: var(--color-white); } }
+@keyframes hours-body-color { 0%, 12%, 88%, 100% { color: var(--color-text-muted); } 38%, 62% { color: color-mix(in srgb, var(--color-white) 76%, transparent); } }
 @keyframes workflow-dash { to { stroke-dashoffset: -24; } }
 @keyframes care-travel { from { offset-distance: 0%; } to { offset-distance: 100%; } }
 .showcase {
@@ -552,17 +555,22 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .feature-bento { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
   .feature-card-hours, .feature-card-lab, .feature-card-cost, .feature-card-sterile, .feature-card-quality, .feature-card-care { grid-column: auto; }
   .feature-card, .feature-card-hours, .feature-card-cost, .feature-card-lab, .feature-card-sterile, .feature-card-quality, .feature-card-care { height: 30rem; min-height: 30rem; aspect-ratio: auto; }
+  .feature-card-care { height: 30rem; min-height: 30rem; }
   .care-visual { padding: .5rem; }
   .care-workflow-header { gap: .5rem; padding: .75rem; }
   .care-workflow-header em { min-width: 4.125rem; padding-inline: .45rem; }
-  .care-workflow-stage { height: 19rem !important; }
-  .care-workflow-canvas { position: relative; display: grid; width: 100%; height: 100%; grid-template-columns: 1fr; grid-template-rows: repeat(4, minmax(0, 1fr)); gap: .375rem; padding: .375rem; transform: none; }
+  .care-workflow-stage { height: 17rem !important; }
+  /* At tablet widths the feature card itself is still narrow because the
+   * bento keeps three columns. A 2x2 workflow matches the compact layout and
+   * avoids turning this single card into a disproportionately tall four-row UI. */
+  .care-workflow-canvas { position: relative; display: grid; width: 100%; height: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: .5rem; padding: .5rem; transform: none; }
   .care-workflow-canvas > svg { display: none; }
   .care-travel-pulse, .care-travel-pulse[data-active] { display: none; }
-  .care-node { position: relative; top: auto; left: auto; width: auto; height: auto; min-height: 0; grid-template-columns: 1.5rem minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: .1rem .4rem; padding: .45rem .5rem; }
-  .care-node > i { width: 1.5rem; height: 1.5rem; grid-row: 1 / 3; }
+  .care-node { position: relative; top: auto; left: auto; width: auto; height: auto; min-height: 0; grid-template-columns: 1.5rem minmax(0, 1fr) auto; grid-template-rows: auto auto; align-content: start; gap: .3rem .4rem; padding: .5rem; }
+  .care-node > i { width: 1.5rem; height: 1.5rem; grid-column: 1; grid-row: 1; }
   .care-node > i svg { width: 1rem; height: 1rem; }
-  .care-node > em { position: static; grid-column: 3; grid-row: 1 / 3; align-self: center; padding: 1px 5px; }
+  .care-node > span { grid-column: 1 / -1; grid-row: 2; }
+  .care-node > em { position: static; grid-column: 3; grid-row: 1; align-self: center; justify-self: end; padding: 1px 5px; }
   .care-node::after { display: none; }
   .visit-information { grid-template-columns: 1fr 1fr; }.visit-information h2 { grid-column: 1 / -1; }
   .footer-main { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 2rem; }
@@ -642,6 +650,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .features-section { --feature-copy-padding: 1.5rem 1rem 1rem; }
   .feature-bento { grid-template-columns: 1fr; }
   .feature-card, .feature-card-hours, .feature-card-cost, .feature-card-lab, .feature-card-sterile, .feature-card-quality, .feature-card-care { height: 28.125rem; min-height: 28.125rem; aspect-ratio: auto; }
+  .feature-card-care { height: 32rem; min-height: 32rem; }
   .feature-copy { min-height: 0; }
   .hours-celestial-wheel { top: 30%; left: 125%; width: 340%; }
   .hours-building { right: -1px; width: calc(100% + 2px); height: 72%; }
@@ -659,24 +668,33 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .quality-logo-cloud[data-quality-ready] .quality-logo-fallback { opacity: 1; }
   .quality-logo-fallback { inset: 0; display: block; width: 100%; transform: none; }
   .quality-logo-source-set { display: none; }
-  .quality-logo-rows { position: absolute; inset: 0; display: grid; align-content: center; gap: .625rem; }
-  .quality-logo-row { width: 100%; overflow: hidden; }
-  .quality-logo-track { --infinite-gap: .625rem; --infinite-half-gap: .3125rem; display: flex; width: max-content; gap: var(--infinite-gap); }
+  /* Preserve the original breathing room above row one. The enlarged four-row
+   * plane starts 2.5rem into the visual and deliberately runs past its bottom;
+   * the card clips the final row instead of squeezing all four rows into view. */
+  .quality-logo-rows { --quality-mobile-tile-size: clamp(4.5rem, 12vw, 5rem); position: absolute; inset: 0; display: grid; box-sizing: border-box; grid-auto-rows: var(--quality-mobile-tile-size); align-content: start; gap: .75rem; padding-top: 2.5rem; }
+  .quality-logo-row { width: 100%; height: var(--quality-mobile-tile-size); overflow: hidden; }
+  .quality-logo-track { --infinite-gap: .75rem; --infinite-half-gap: .375rem; display: flex; width: max-content; gap: var(--infinite-gap); }
   .quality-logo-track[data-infinite-ready] { animation: infinite-marquee var(--infinite-duration) linear infinite; animation-direction: var(--infinite-direction); will-change: transform; }
-  .quality-logo-track .quality-logo-tile { width: 6rem; height: 3.25rem; flex: none; padding: .35rem; }
+  /* Scale with the compact card instead of freezing at 52px. At the wide end
+   * the four-row plane intentionally exceeds the visual height and is clipped
+   * like Ramp's integrations field, leaving partial tiles at the edges. */
+  .quality-logo-track .quality-logo-tile { width: var(--quality-mobile-tile-size); height: var(--quality-mobile-tile-size); flex: none; padding: .45rem; }
   .care-visual { padding: .75rem; }
   .care-workflow-header { grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; padding: .75rem; }
   .care-workflow-header em { min-width: 4.25rem; padding-inline: .5rem; }
   .care-workflow-body { padding: 0; }
-  .care-workflow-stage { height: 15rem !important; }
+  .care-workflow-stage { height: 17rem !important; }
   .care-workflow-canvas { position: relative; display: grid; width: 100%; height: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: .5rem; padding: .5rem; transform: none; }
   .care-workflow-canvas > svg { display: none; }
   .care-travel-pulse, .care-travel-pulse[data-active] { display: none; }
-  .care-node { position: relative; top: auto; left: auto; width: auto; height: auto; min-height: 0; grid-template-columns: 2rem minmax(0, 1fr); grid-template-rows: 1fr auto; gap: .2rem .5rem; padding: .625rem; }
-  .care-node > i { width: 2rem; height: 2rem; grid-row: 1 / 3; }
+  /* Keep the compact node's control row close to its top edge. Centering the
+   * two-row block made the icon/status row look heavily top-padded in the tall
+   * 2x2 cells, even though the declared padding itself was only .625rem. */
+  .care-node { position: relative; top: auto; left: auto; width: auto; height: auto; min-height: 0; grid-template-columns: 2rem minmax(0, 1fr) auto; grid-template-rows: auto auto; align-content: start; gap: .35rem .5rem; padding: .625rem; }
+  .care-node > i { width: 2rem; height: 2rem; grid-column: 1; grid-row: 1; }
   .care-node > i svg { width: 1rem; height: 1rem; }
-  .care-node > span { grid-column: 2; grid-row: 1; align-self: end; }
-  .care-node > em { position: static; grid-column: 2; grid-row: 2; justify-self: start; align-self: start; padding: 1px 5px; }
+  .care-node > span { grid-column: 1 / -1; grid-row: 2; align-self: start; }
+  .care-node > em { position: static; grid-column: 3; grid-row: 1; justify-self: end; align-self: center; padding: 1px 5px; }
   .care-node::after { display: none; }
   .showcase-photo { width: clamp(7rem, 23vw, 11rem); }
   .showcase-photo-wide { width: clamp(9rem, 31vw, 14rem); }
