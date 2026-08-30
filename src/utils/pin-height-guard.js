@@ -36,8 +36,11 @@ export function createPinHeightGuard({
 
   let enabled = null;
   let disposeActivePin = null;
+  let latestViewportState = null;
+  let disposed = false;
 
   const sync = (viewportState) => {
+    latestViewportState = viewportState;
     const requiredRem = minimumHeightRem(viewportState);
     const requiredPixels = requiredRem * getRootFontSize();
     // Mobile pinning is a section-level decision. Text-led scenes can opt in,
@@ -64,8 +67,15 @@ export function createPinHeightGuard({
   };
 
   const unsubscribe = subscribeViewportState(sync);
+  // A webfont can change the measured title and bubble heights without
+  // changing the viewport. Re-run the threshold after fonts settle so the pin
+  // never keeps a stale fallback-font measurement.
+  document.fonts?.ready.then(() => {
+    if (!disposed && latestViewportState) sync(latestViewportState);
+  });
 
   return () => {
+    disposed = true;
     unsubscribe();
     disposeActivePin?.();
   };

@@ -7,7 +7,11 @@
 :root {
   --landing-font-family: "Noto Sans KR", var(--seed-font-family-sans);
   --color-brand: #2763ea;
-  --color-concern-bubble: #1447e6;
+  /* Exact dominant colors sampled from the supplied HandOff chat reference. */
+  --color-concern-canvas: #abc1d1;
+  --color-concern-bubble: #fde404;
+  --color-concern-ink: #191919;
+  --color-concern-meta: #444d54;
   --color-text: #101615;
   --color-text-muted: #59615f;
   --color-line: #d9dddc;
@@ -94,30 +98,25 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .hero h1 { font-size: var(--landing-heading-1-size); line-height: var(--landing-heading-1-line-height); }
 .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
-.concern-section { --concern-scroll-extension: 6.25rem; position: relative; height: calc(400svh + var(--concern-scroll-extension)); min-height: calc(400svh + var(--concern-scroll-extension)); background: var(--color-white); }
-.concern-sticky { --concern-bubble-y: 42svh; --concern-bubble-offset: 6rem; position: sticky; top: 0; height: 100svh; min-height: 100svh; overflow: hidden; }
-.concern-stage { position: absolute; z-index: 2; top: max(calc(var(--header-height) + 1rem), calc(var(--concern-bubble-y) - var(--concern-bubble-offset))); right: var(--space-page); left: var(--space-page); display: grid; justify-items: center; }
+.concern-section { --concern-scroll-extension: 6.25rem; position: relative; height: calc(400svh + var(--concern-scroll-extension)); min-height: calc(400svh + var(--concern-scroll-extension)); background: var(--color-concern-canvas); }
+.concern-sticky { position: sticky; top: 0; height: 100svh; min-height: 100svh; overflow: hidden; background: var(--color-concern-canvas); }
+.concern-stage { position: absolute; z-index: 2; inset: var(--header-height) var(--space-page) 0; display: grid; place-items: center; }
 .concern-section[data-pin-disabled] { height: auto; min-height: var(--pin-fallback-min-height); }
 .concern-section[data-pin-disabled] .concern-sticky { position: absolute; inset: 0 0 auto; height: var(--pin-fallback-min-height); min-height: 0; visibility: hidden; pointer-events: none; }
 .concern-fallback-list { display: none; }
-.concern-section[data-pin-disabled] .concern-fallback-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.5rem, 4vw, 3rem); width: min(calc(100% - (var(--space-page) * 2)), 76rem); margin-inline: auto; padding-block: calc(var(--header-height) + 3rem) 4rem; }
-.concern-fallback-item { display: grid; min-width: 0; align-content: start; justify-items: center; gap: 1.5rem; }
-.concern-fallback-copy { position: relative; z-index: 2; display: grid; justify-items: center; gap: 1rem; text-align: center; }
+.concern-section[data-pin-disabled] .concern-fallback-list { display: grid; width: min(calc(100% - (var(--space-page) * 2)), 46rem); min-height: max(100svh, var(--pin-fallback-min-height)); place-items: center; margin-inline: auto; padding-block: calc(var(--header-height) + 2rem) 3rem; }
+.concern-fallback-copy { position: relative; z-index: 2; display: grid; width: 100%; justify-items: center; gap: clamp(1rem, 2svh, 1.5rem); text-align: center; }
 .concern-fallback-copy h3 { margin: 0; font-size: var(--landing-heading-3-size); line-height: var(--landing-heading-3-line-height); }
-.concern-fallback-copy .concern-bubble { min-width: 0; }
-.concern-copy { display: grid; width: min(100%, 46rem); gap: clamp(1.25rem, 3svh, 2rem); text-align: center; }
+.concern-copy { display: grid; width: min(100%, 46rem); gap: clamp(1rem, 2svh, 1.5rem); text-align: center; }
 .display-title { width: 100%; max-width: 23ch; margin: 0 auto; font-size: var(--landing-heading-3-size); line-height: var(--landing-heading-3-line-height); white-space: pre-line; }
-.concern-dialogue { display: grid; width: min(92%, 34rem); justify-items: center; margin-inline: auto; text-align: center; }
-.concern-bubble { position: relative; width: fit-content; min-width: 17rem; max-width: 100%; margin: 0; border-radius: 1.5rem; padding: 1.15rem 1.5rem 1.25rem; color: var(--color-white); background: var(--color-concern-bubble); font-size: var(--landing-body-1-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-body-1-line-height); white-space: pre-line; }
-.concern-bubble::after { content: ""; position: absolute; right: 1.5rem; bottom: -.875rem; width: 1.125rem; height: 1.125rem; background: var(--color-concern-bubble); clip-path: polygon(0 0, 100% 0, 100% 100%); }
+.concern-dialogue { display: grid; width: min(100%, 42rem); justify-items: end; row-gap: .375rem; margin-inline: auto; text-align: left; }
+.concern-message { display: flex; width: 100%; align-items: flex-end; justify-content: flex-end; gap: .375rem; transform-origin: right center; }
+.concern-time { flex: none; margin-bottom: .125rem; color: var(--color-concern-meta); font-size: var(--landing-ui-meta-size); font-style: normal; line-height: var(--landing-ui-meta-line-height); font-variant-numeric: tabular-nums; }
+.concern-bubble { position: relative; width: fit-content; max-width: min(76%, 32rem); margin: 0; border-radius: 1rem; padding: .75rem .875rem .8125rem; color: var(--color-concern-ink); background: var(--color-concern-bubble); font-size: var(--landing-body-2-size); font-weight: var(--landing-font-weight-regular); line-height: var(--landing-body-2-line-height); text-align: left; white-space: pre-line; }
+.concern-bubble::after { content: ""; position: absolute; top: .1875rem; right: -.5rem; width: .75rem; height: .75rem; background: var(--color-concern-bubble); clip-path: polygon(0 0, 100% 0, 0 100%); }
 .concern-bubble:empty { display: none; }
-.patient-illustration, .concern-fallback-illustration { aspect-ratio: 1; background-image: image-set(url("../assets/images/webp/patient-poses-transparent-1254.webp") type("image/webp") 1x, url("../assets/images/patient-poses-transparent.png") type("image/png") 1x); background-repeat: no-repeat; background-size: 200% 200%; filter: contrast(1.08); }
-.patient-illustration { width: min(44vw, 55svh, 32rem); margin-top: 1.25rem; transition: opacity .2s ease, transform .35s ease; }
-.concern-fallback-illustration { width: min(100%, 23rem); }
-.patient-illustration[data-pose="0"], .concern-fallback-illustration[data-pose="0"] { background-position: 0 0; }
-.patient-illustration[data-pose="1"], .concern-fallback-illustration[data-pose="1"] { background-position: 100% 0; }
-.patient-illustration[data-pose="2"], .concern-fallback-illustration[data-pose="2"] { background-position: 0 100%; }
-.patient-illustration[data-pose="3"], .concern-fallback-illustration[data-pose="3"] { background-position: 100% 100%; }
+.concern-resolution { position: absolute; width: 100%; margin: 0; padding-inline: var(--space-page); font-size: var(--landing-heading-2-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-heading-2-line-height); text-align: center; transform-origin: center; }
+.concern-fallback-copy .concern-resolution { position: static; margin-top: 1rem; padding-inline: 0; }
 .brand-reveal { position: relative; height: 320svh; overflow: clip; background: var(--color-white); }
 .brand-sticky { position: sticky; top: 0; min-height: 100svh; display: grid; place-items: center; overflow: hidden; }
 .brand-title { position: relative; z-index: 1; display: grid; width: 100%; gap: clamp(.8rem, 2svh, 1.5rem); margin: 0; padding-inline: var(--space-page); font-size: var(--landing-heading-2-size); line-height: var(--landing-heading-2-line-height); text-align: center; }
@@ -606,21 +605,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .site-nav { padding-top: calc(var(--header-height-mobile) + 1.5rem); }
   .evidence-nav { position: static; }
   .section-heading { align-items: start; flex-direction: column; gap: 1.25rem; }.section-heading > p br { display: none; }
-  /* Observer supplies the one-gesture guard, so compact screens need less
-   * physical spacer than desktop while retaining three readable concern beats. */
+  /* Native continuous scrolling needs no gesture queue or lock. The compact
+   * spacer still provides enough travel for two additions and the final exit. */
   .concern-section { height: calc(300svh + var(--concern-scroll-extension)); min-height: calc(300svh + var(--concern-scroll-extension)); }
   .concern-section[data-pin-disabled] { height: auto; min-height: 0; }
-  .concern-section[data-pin-disabled] .concern-fallback-list { grid-template-columns: 1fr; gap: 4rem; width: 100%; padding: calc(var(--header-height-mobile) + 3rem) var(--space-page) 5rem; }
-  .concern-fallback-item { gap: 1rem; }
-  .concern-fallback-copy { gap: .75rem; }
-  .concern-fallback-copy .concern-bubble { min-width: min(14rem, 100%); }
-  .concern-fallback-illustration { width: min(100%, 24rem); }
-  .concern-sticky { --concern-bubble-offset: 5.5rem; }
+  .concern-section[data-pin-disabled] .concern-fallback-list { width: 100%; padding: calc(var(--header-height-mobile) + 2rem) var(--space-page) 3rem; }
+  .concern-fallback-copy { gap: 1rem; }
   .concern-copy { gap: 1rem; }
   .display-title { max-width: 23ch; }
-  .concern-dialogue { width: min(96%, 31rem); margin-top: 0; }
-  .concern-bubble { min-width: 14rem; padding: 1rem 1.2rem 1.1rem; }
-  .patient-illustration { width: min(90vw, 58svh, 28rem); margin-top: .75rem; }
+  .concern-dialogue { width: min(100%, 31rem); margin-top: 0; }
+  .concern-message { gap: .3125rem; }
+  .concern-bubble { max-width: 76%; padding: .625rem .75rem .6875rem; }
   .brand-title { max-width: none; }
   /* The stable pin remains svh-based, while the expanding artwork may paint
    * into the extra visual viewport exposed when Safari collapses its bars. */
