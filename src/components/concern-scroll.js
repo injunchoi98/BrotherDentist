@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 export function initConcernScroll() {
   const section = document.querySelector("[data-concern]");
   if (!section) return;
-  const heading = section.querySelector("[data-concern-heading]");
+  const chatHeader = section.querySelector("[data-concern-chat-header]");
   const dialogue = section.querySelector("[data-concern-dialogue]");
   const messages = gsap.utils.toArray("[data-concern-message]", section);
   const resolution = section.querySelector("[data-concern-resolution]");
@@ -27,7 +27,7 @@ export function initConcernScroll() {
       (height, message) => height + message.offsetHeight,
       0
     );
-    const contentHeightPixels = heading.offsetHeight
+    const contentHeightPixels = chatHeader.offsetHeight
       + copyGap
       + messageHeight
       + (messageGap * Math.max(0, messages.length - 1));
@@ -44,7 +44,7 @@ export function initConcernScroll() {
   };
 
   const showStaticStory = () => {
-    gsap.set([heading, dialogue, ...messages], {
+    gsap.set([chatHeader, dialogue, ...messages], {
       autoAlpha: 1,
       clearProps: "transform"
     });
@@ -71,7 +71,7 @@ export function initConcernScroll() {
         }
       });
 
-      gsap.set([heading, dialogue, messages[0]], { autoAlpha: 1 });
+      gsap.set([chatHeader, dialogue, messages[0]], { autoAlpha: 1 });
       gsap.set(messages.slice(1), { autoAlpha: 0, y: 18, scale: .96 });
       gsap.set(resolution, { autoAlpha: 0, scale: .72, y: 12 });
 
@@ -81,7 +81,7 @@ export function initConcernScroll() {
         .to({}, { duration: .45 })
         .to(messages[2], { autoAlpha: 1, y: 0, scale: 1, duration: .7 })
         .to({}, { duration: .7 })
-        .to([heading, ...messages], {
+        .to([chatHeader, ...messages], {
           autoAlpha: 0,
           y: -16,
           scale: .78,
