@@ -385,15 +385,33 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .care-workflow-header em { display: flex; min-width: 4.75rem; align-items: center; justify-content: center; gap: .35rem; border: 1px solid color-mix(in srgb, var(--feature-status-running) 26%, var(--color-line)); border-radius: 999px; padding: .3rem .625rem; color: var(--feature-status-running); background: color-mix(in srgb, var(--feature-status-running) 7%, var(--color-white)); font-size: var(--landing-ui-meta-size); line-height: var(--landing-ui-meta-line-height); font-style: normal; font-weight: var(--landing-font-weight-bold); }.care-workflow-header em i { width: .4rem; height: .4rem; border-radius: 50%; background: var(--feature-status-running); }
 .care-workflow-header em[data-state="complete"] { border-color: color-mix(in srgb, var(--feature-status-complete) 24%, var(--color-line)); color: var(--feature-status-complete); background: color-mix(in srgb, var(--feature-status-complete) 7%, var(--color-white)); }.care-workflow-header em[data-state="complete"] i { background: var(--feature-status-complete); }
 .care-workflow-header em[data-state="idle"] { border-color: #e4e4e7; color: #71717a; background: #fafafa; }.care-workflow-header em[data-state="idle"] i { background: #a1a1aa; }
-.care-workflow-body { padding: 0; }
-.care-workflow-stage { position: relative; width: 100%; height: 226px; overflow: hidden; border: 0; border-radius: 0; background-color: #fff; background-image: radial-gradient(#d4d4d8 1px, transparent 1px); background-size: 18px 18px; }
+.care-workflow-body { padding: 1.25rem; }
+/* Match the reference canvas literally: zinc-50 at 80% over white resolves to
+ * #fbfbfb, with 1px zinc-ink dots at 7% opacity on an 18px grid. */
+.care-workflow-stage { position: relative; width: 100%; height: 226px; overflow: hidden; border: 1px solid #f4f4f5; border-radius: .75rem; background-color: #fbfbfb; background-image: radial-gradient(rgba(24,24,27,.07) 1px, transparent 1px); background-size: 18px 18px; }
 .care-workflow-canvas { position: absolute; top: 0; left: 0; width: 736px; height: 226px; transform: scale(var(--care-scale, 1)); transform-origin: top left; }
-.care-workflow-canvas > svg { position: absolute; inset: 0; width: 736px; height: 226px; }.care-link { fill: none; stroke: #d4d4d8; stroke-width: 1.5; stroke-dasharray: 5 7; }.care-link[data-state="active"] { stroke: #18181b; stroke-width: 2; animation: workflow-dash .55s linear infinite; }.care-link[data-state="done"] { stroke: #18181b; }
-.care-node { position: absolute; top: var(--node-y); left: var(--node-x); display: grid; width: 146px; height: 72px; grid-template-columns: 36px 1fr; gap: 10px; align-items: center; border: 1px solid #e4e4e7; border-radius: 12px; padding: 12px; background: #fff; transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease; }
-.care-node > i { display: grid; width: 36px; height: 36px; place-items: center; color: #71717a; background: transparent; font-style: normal; }.care-node > i svg { width: 20px; height: 20px; fill: currentColor; stroke: none; }.care-node > span { display: grid; min-width: 0; }.care-node strong { overflow: hidden; font-size: var(--landing-ui-label-size); line-height: var(--landing-ui-label-line-height); text-overflow: ellipsis; white-space: nowrap; }.care-node small { color: #71717a; font-size: var(--landing-ui-meta-size); line-height: var(--landing-ui-meta-line-height); }.care-node > em { position: absolute; top: -10px; right: 12px; border: 1px solid #e4e4e7; border-radius: 999px; padding: 2px 6px; color: #71717a; background: #fff; font-size: var(--landing-ui-meta-size); line-height: var(--landing-ui-meta-line-height); font-style: normal; }
+.care-workflow-canvas > svg { position: absolute; inset: 0; width: 736px; height: 226px; }
+/* The reference uses two coincident paths: a quiet solid rail below a moving
+ * dashed route. Idle/done routes keep drifting at 1.4s; only the active route
+ * accelerates to .55s. */
+.care-link-base, .care-link { fill: none; stroke-width: 1.5; }
+.care-link-base { stroke: #e4e4e7; }
+.care-link { stroke: #a1a1aa; stroke-linecap: round; stroke-dasharray: 5 7; opacity: .6; animation: workflow-dash 1.4s linear infinite; }
+.care-link[data-state="active"] { stroke: #18181b; opacity: 1; animation-duration: .55s; }
+.care-link[data-state="done"] { stroke: #18181b; opacity: 1; }
+.care-node { position: absolute; top: var(--node-y); left: var(--node-x); display: grid; width: 146px; height: 72px; grid-template-columns: 36px 1fr; gap: 10px; align-items: center; border: 1px solid #e4e4e7; border-radius: 12px; padding: 12px; background: #fff; transition: border-color .3s ease, box-shadow .3s ease, background-color .3s ease; }
+.care-node::before { content: ""; position: absolute; inset: -6px; border: 2px solid transparent; border-radius: 16px; opacity: 0; pointer-events: none; }
+.care-node > i { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 8px; color: #71717a; background: #f4f4f5; font-style: normal; transition: color .3s ease, background-color .3s ease; }.care-node > i svg { width: 20px; height: 20px; fill: currentColor; stroke: none; }.care-node > span { display: grid; min-width: 0; }.care-node strong { overflow: hidden; font-size: var(--landing-ui-label-size); line-height: var(--landing-ui-label-line-height); text-overflow: ellipsis; white-space: nowrap; }.care-node small { color: #71717a; font-size: var(--landing-ui-meta-size); line-height: var(--landing-ui-meta-line-height); }.care-node > em { position: absolute; top: -10px; right: 12px; display: flex; align-items: center; gap: 4px; border: 1px solid #e4e4e7; border-radius: 999px; padding: 2px 6px; color: #71717a; background: #fff; font-size: var(--landing-ui-meta-size); line-height: var(--landing-ui-meta-line-height); font-style: normal; font-weight: var(--landing-font-weight-bold); }
 .care-node::after { content: attr(data-tooltip); position: absolute; left: 50%; z-index: 5; width: max-content; max-width: 180px; border: 1px solid #e4e4e7; border-radius: 8px; padding: 6px 8px; color: #52525b; background: #fff; box-shadow: 0 8px 24px rgba(24,24,27,.08); font-size: var(--landing-ui-meta-size); line-height: var(--landing-ui-meta-line-height); opacity: 0; pointer-events: none; transform: translate(-50%, 4px); transition: opacity .18s ease, transform .18s ease; }.care-node-top::after { top: calc(100% + 8px); }.care-node-bottom::after { bottom: calc(100% + 8px); }.care-node:hover::after { opacity: 1; transform: translate(-50%, 0); }
-.care-node[data-status="running"] { border-color: color-mix(in srgb, var(--color-brand) 58%, var(--color-line)); background: color-mix(in srgb, var(--color-brand) 4%, var(--color-white)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-brand) 12%, transparent), 0 0 1rem color-mix(in srgb, var(--color-brand) 20%, transparent), 0 .5rem 1.25rem color-mix(in srgb, var(--color-brand) 10%, transparent); transform: translateY(-2px); }.care-node[data-status="running"] > i { color: var(--color-brand); background: transparent; }.care-node[data-status="running"] > em { border-color: color-mix(in srgb, var(--color-brand) 36%, var(--color-line)); color: var(--color-brand); background: color-mix(in srgb, var(--color-brand) 6%, var(--color-white)); }.care-node[data-status="done"] { border-color: color-mix(in srgb, var(--feature-status-complete) 42%, var(--color-line)); }.care-node[data-status="done"] > i { color: var(--feature-status-complete); background: transparent; }.care-node[data-status="done"] > em { border-color: color-mix(in srgb, var(--feature-status-complete) 26%, var(--color-line)); color: var(--feature-status-complete); }
-.care-travel-pulse { position: absolute; z-index: 4; top: -5px; left: -5px; display: none; width: 10px; height: 10px; border-radius: 50%; background: #18181b; box-shadow: 0 0 0 5px rgba(24,24,27,.1); offset-rotate: 0deg; }.care-travel-pulse[data-active] { display: block; animation: care-travel .7s cubic-bezier(.5,0,.5,1) both; }
+.care-node[data-status="running"] { border-color: #18181b; background: #fff; box-shadow: 0 0 26px -4px #18181b73; }
+.care-node[data-status="running"]::before { border-color: #18181b; animation: care-node-halo .9s ease-out both; }
+.care-node[data-status="running"] > i { color: #18181b; background: #18181b1f; }
+.care-node[data-status="running"] > em { border-color: #18181b66; color: #18181b; background: #fff; animation: care-chip-pop .48s cubic-bezier(.2,1.55,.35,1) both; }
+.care-node[data-status="running"] > em::before { content: ""; width: 14px; height: 14px; flex: 0 0 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: care-spinner .8s linear infinite; }
+.care-node[data-status="done"] { border-color: #10b98180; }.care-node[data-status="done"] > i { color: #18181b; background: #18181b1f; }.care-node[data-status="done"] > em { border-color: #e4e4e7; color: #3f3f46; }
+/* Match the Motion reference: the 10px point starts on the path itself, fades
+ * in for 180ms and travels for the full 700ms with the same easing and glow. */
+.care-travel-pulse { position: absolute; z-index: 4; top: 0; left: 0; display: none; width: 10px; height: 10px; border-radius: 50%; opacity: 0; background: #18181b; box-shadow: 0 0 14px 3px #18181b59; offset-rotate: 0deg; }.care-travel-pulse[data-active] { display: block; animation: care-travel .7s cubic-bezier(.5,0,.5,1) both; }
 
 /* The day/night cycle belongs to the card's visible state rather than hover.
  * That gives touch devices the same story and lets desktop hover enter/leave
@@ -406,7 +424,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @keyframes hours-title-color { 0%, 12%, 88%, 100% { color: var(--color-text); } 38%, 62% { color: var(--color-white); } }
 @keyframes hours-body-color { 0%, 12%, 88%, 100% { color: var(--color-text-muted); } 38%, 62% { color: color-mix(in srgb, var(--color-white) 76%, transparent); } }
 @keyframes workflow-dash { to { stroke-dashoffset: -24; } }
-@keyframes care-travel { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+@keyframes care-travel { 0% { offset-distance: 0%; opacity: 0; } 25.714% { opacity: 1; } 100% { offset-distance: 100%; opacity: 1; } }
+@keyframes care-node-halo { from { opacity: .65; transform: scale(.98); } to { opacity: 0; transform: scale(1.1); } }
+@keyframes care-chip-pop { from { opacity: 0; transform: translateY(5px) scale(.5); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes care-spinner { to { transform: rotate(360deg); } }
 .showcase {
   --showcase-supporting-text: color-mix(in srgb, var(--color-white) 68%, transparent);
   position: relative;
@@ -557,6 +578,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .feature-card, .feature-card-hours, .feature-card-cost, .feature-card-lab, .feature-card-sterile, .feature-card-quality, .feature-card-care { height: 30rem; min-height: 30rem; aspect-ratio: auto; }
   .feature-card-care { height: 30rem; min-height: 30rem; }
   .care-visual { padding: .5rem; }
+  .care-workflow-body { padding: 0; }
   .care-workflow-header { gap: .5rem; padding: .75rem; }
   .care-workflow-header em { min-width: 4.125rem; padding-inline: .45rem; }
   .care-workflow-stage { height: 17rem !important; }
