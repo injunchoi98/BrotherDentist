@@ -29,6 +29,7 @@ const variants = [
   ["implant-restoration-lab-v1-2x.png", [960, 1658, 3316]],
   ["implant-restoration-clean-background-v2.png", [480, 960, 1658]],
   ["implant-restoration-product-master-2x-alpha.png", [960, 1658, 3316]],
+  ["implant-natural-recovery-mobile.png", [480, 960, 1423]],
   ["implant-restoration-scene-implant-alpha.png", [480, 960, 1658]],
   ["implant-restoration-scene-holder-alpha.png", [480, 960, 1658]],
   ["implant-restoration-complete-v3-alpha.png", [190, 379]],

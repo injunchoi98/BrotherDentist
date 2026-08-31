@@ -307,7 +307,8 @@ const initHeroExpansion = () => {
 const initPrecisionSequence = () => {
   if (!precision || !precisionSticky || !precisionCard || !precisionImage || !precisionReveal || !precisionRevealContent || !precisionStage || !precisionProductStage || !precisionRevealImage || !precisionLightPlane || !precisionProductPlane || !precisionProduct || !precisionProductImage || !precisionAmbient || precisionCopies.length !== 3) return;
 
-  const desktopMedia = matchMedia("(min-width: 64.0625rem)");
+  const sequenceMedia = matchMedia("(min-width: 40rem)");
+  const tabletSequenceMedia = matchMedia("(max-width: 64rem)");
   let disposeGuard = null;
 
   const getFrameClipPath = () => {
@@ -324,11 +325,14 @@ const initPrecisionSequence = () => {
     disposeGuard = null;
     clearSceneStyles();
 
-    if (!desktopMedia.matches) return;
+    if (!sequenceMedia.matches) return;
 
     disposeGuard = createPinHeightGuard({
       section: precision,
-      allowMobile: false,
+      // Small tablets still use the pinned sequence. The width media query
+      // above keeps this opt-in away from phone layouts, while the shared
+      // height guard and reduced-motion preference remain authoritative.
+      allowMobile: true,
       minimumHeightRem: () => calculatePinMinimumHeightRem({
         headerHeightPixels: header?.offsetHeight || 0,
         contentHeightPixels: Math.max(...precisionCopies.map((copy) => copy.offsetHeight)),
@@ -402,15 +406,24 @@ const initPrecisionSequence = () => {
         }, "implant-scene+=.82");
         timeline.to({}, { duration: .72 });
 
-        timeline.addLabel("frame-shrink", ">");
-        timeline.set(precisionCard, { autoAlpha: 0 }, "frame-shrink");
-        timeline.to(precisionReveal, {
-          clipPath: getFrameClipPath,
-          duration: 1.15,
-        }, "frame-shrink");
+        if (tabletSequenceMedia.matches) {
+          // On tablets the image remains full bleed. Keep only a short reading
+          // beat here instead of spending scroll distance on the desktop-only
+          // inset/rounded-card transition.
+          timeline.addLabel("scene-hold", ">");
+          timeline.set(precisionCard, { autoAlpha: 0 }, "scene-hold");
+          timeline.to({}, { duration: .48 });
+        } else {
+          timeline.addLabel("frame-shrink", ">");
+          timeline.set(precisionCard, { autoAlpha: 0 }, "frame-shrink");
+          timeline.to(precisionReveal, {
+            clipPath: getFrameClipPath,
+            duration: 1.15,
+          }, "frame-shrink");
 
-        timeline.addLabel("frame-hold", ">");
-        timeline.to({}, { duration: .48 });
+          timeline.addLabel("frame-hold", ">");
+          timeline.to({}, { duration: .48 });
+        }
 
         timeline.addLabel("frame-exit", ">");
         timeline.to(precisionReveal, {
@@ -451,7 +464,8 @@ const initPrecisionSequence = () => {
   };
 
   syncPrecisionLayout();
-  desktopMedia.addEventListener("change", syncPrecisionLayout);
+  sequenceMedia.addEventListener("change", syncPrecisionLayout);
+  tabletSequenceMedia.addEventListener("change", syncPrecisionLayout);
 };
 
 initSiteHeader({ hero });

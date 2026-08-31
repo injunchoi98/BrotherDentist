@@ -22,7 +22,6 @@
 
 .implant-precision-mobile {
   display: none;
-  margin-top: -100svh;
 }
 
 .implant-hero {
@@ -321,20 +320,9 @@
   color: var(--color-text);
 }
 
-.implant-precision-eyebrow {
-  margin-bottom: 1rem;
-  color: color-mix(in srgb, var(--color-white) 74%, transparent);
-  font-size: var(--landing-ui-label-size);
-  font-weight: var(--landing-font-weight-bold);
-  line-height: var(--landing-ui-label-line-height);
-}
-
 .implant-precision-copy h2,
 .implant-fallback-photo h2,
-.implant-fallback-restoration h2,
-.implant-mobile-photo h2,
-.implant-mobile-details h2,
-.implant-mobile-plan h2 {
+.implant-fallback-restoration h2 {
   margin: 0 0 1rem;
   font-size: var(--landing-heading-3-size);
   font-weight: var(--landing-font-weight-bold);
@@ -342,10 +330,8 @@
   letter-spacing: var(--landing-heading-3-letter-spacing);
 }
 
-.implant-precision-copy--diagnosis > p:not(.implant-precision-eyebrow),
-.implant-fallback-photo div > p:not(.implant-precision-eyebrow),
-.implant-mobile-photo-copy > p:not(.implant-precision-eyebrow),
-.implant-mobile-photo-copy section > p {
+.implant-precision-copy--diagnosis > p,
+.implant-fallback-photo div > p {
   max-width: var(--landing-body-2-measure);
   margin-bottom: 0;
   color: color-mix(in srgb, var(--color-white) 82%, transparent);
@@ -355,14 +341,29 @@
 
 .implant-precision-copy--benefit > p,
 .implant-precision-copy--plan > p,
-.implant-fallback-restoration section > p,
-.implant-mobile-details p,
-.implant-mobile-plan p {
+.implant-fallback-restoration section > p {
   max-width: var(--landing-body-2-measure);
   margin-bottom: 0;
   font-size: var(--landing-body-2-size);
   font-weight: var(--landing-font-weight-regular);
   line-height: var(--landing-body-2-line-height);
+}
+
+.implant-mobile-copy h2 {
+  margin: 0 0 .6rem;
+  font-size: var(--landing-heading-4-size);
+  font-weight: var(--landing-font-weight-bold);
+  line-height: var(--landing-heading-4-line-height);
+  letter-spacing: var(--landing-heading-4-letter-spacing);
+}
+
+.implant-mobile-copy > p {
+  max-width: 25rem;
+  margin-bottom: 0;
+  color: var(--color-text-muted);
+  font-size: var(--landing-body-4-size);
+  font-weight: var(--landing-font-weight-regular);
+  line-height: var(--landing-body-4-line-height);
 }
 
 .implant-precision-fallback {
@@ -490,39 +491,60 @@
 }
 
 @media (max-width: 64rem) {
+  .implant-hero {
+    /* The expansion consumes 120svh of scroll. Adding the 100svh sticky
+     * viewport gives the section its complete natural-flow height without the
+     * desktop-only -100svh overlap or a blank trailing viewport. */
+    height: 220svh;
+    min-height: 220svh;
+  }
+
   .implant-hero-sticky {
     --hero-title-inline: 0;
     --hero-title-bottom: 3rem;
   }
 
-  /* Tablet and mobile use one authored photograph. The desktop cutout layers
-   * are intentionally absent so their alignment cannot drift with the crop. */
+  /* Phones use the static card story. Tablet widths override this below and
+   * keep the authored GSAP sequence and hero overlap. */
   .implant-precision {
     display: none;
   }
 
   .implant-precision-mobile {
+    --implant-mobile-card-gap: clamp(
+      2.8rem,
+      calc(2.1rem + 3.5vw),
+      5.6rem
+    );
     z-index: 2;
     display: grid;
-    gap: var(--landing-section-space);
-    margin-top: -100svh;
-    padding: 0 var(--space-page) var(--landing-section-space);
+    gap: var(--implant-mobile-card-gap);
+    margin-top: 0;
+    padding: var(--implant-mobile-card-gap) var(--space-page);
   }
 
-  .implant-mobile-photo {
-    position: relative;
+  .implant-mobile-story {
     display: grid;
-    min-height: min(48rem, 100svh);
-    align-items: end;
+    gap: 1.25rem;
+  }
+
+  .implant-mobile-visual {
+    position: relative;
     overflow: hidden;
-    border-radius: var(--radius-card);
-    color: var(--color-white);
+    border-radius: 2rem;
     background: var(--color-black);
   }
 
-  .implant-mobile-photo > picture,
-  .implant-mobile-photo > picture img,
-  .implant-mobile-photo-shade {
+  .implant-mobile-visual--lead {
+    height: calc(70svh - var(--header-height-mobile));
+  }
+
+  .implant-mobile-visual--compact {
+    aspect-ratio: 556 / 432;
+  }
+
+  .implant-mobile-visual > picture,
+  .implant-mobile-visual > picture img {
     position: absolute;
     inset: 0;
     display: block;
@@ -530,122 +552,33 @@
     height: 100%;
   }
 
-  .implant-mobile-photo > picture img {
+  .implant-mobile-visual > picture img {
     object-fit: cover;
     object-position: 50% 48%;
   }
 
-  .implant-mobile-photo--restoration > picture img {
-    object-position: 50% center;
+  .implant-mobile-visual--restoration > picture img {
+    object-position: 66% center;
   }
 
-  .implant-mobile-photo-shade {
-    background: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--color-black) 4%, transparent) 0%,
-      color-mix(in srgb, var(--color-black) 16%, transparent) 42%,
-      color-mix(in srgb, var(--color-black) 88%, transparent) 100%
-    );
+  .implant-mobile-visual--recovery > picture img {
+    object-position: center;
+  }
+}
+
+@media (min-width: 40rem) and (max-width: 64rem) {
+  .implant-hero {
+    height: 320svh;
+    min-height: 320svh;
   }
 
-  .implant-mobile-photo--restoration .implant-mobile-photo-shade {
-    background: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--color-black) 2%, transparent) 0%,
-      color-mix(in srgb, var(--color-black) 12%, transparent) 36%,
-      color-mix(in srgb, var(--color-black) 90%, transparent) 100%
-    );
-  }
-
-  .implant-mobile-photo-copy {
-    position: relative;
-    z-index: 1;
-    padding: clamp(2rem, 6vw, 4rem);
-    text-align: left;
-  }
-
-  .implant-mobile-photo-copy--restoration {
-    width: min(36rem, 100%);
-  }
-
-  .implant-mobile-photo-copy .implant-precision-eyebrow {
-    margin-bottom: .75rem;
-  }
-
-  .implant-mobile-photo-copy h2 {
-    margin-bottom: .75rem;
-  }
-
-  .implant-mobile-plan {
-    position: relative;
-    display: grid;
-    min-height: min(44rem, 78svh);
-    align-items: center;
-    overflow: hidden;
-    border: 1px solid var(--color-line);
-    border-radius: var(--radius-card);
-    background: var(--color-gray);
-  }
-
-  .implant-mobile-plan::before {
-    content: "";
-    position: absolute;
-    inset: 20% -8% -12% 36%;
-    background: radial-gradient(
-      ellipse at center,
-      color-mix(in srgb, var(--color-white) 88%, transparent) 0%,
-      color-mix(in srgb, var(--color-white) 38%, transparent) 40%,
-      transparent 72%
-    );
-    pointer-events: none;
-  }
-
-  .implant-mobile-plan-copy {
-    position: relative;
-    z-index: 2;
-    width: 52%;
-    padding: clamp(2rem, 6vw, 4rem);
-  }
-
-  .implant-mobile-plan-product {
-    position: absolute;
-    z-index: 1;
-    right: 7%;
-    bottom: -7%;
+  .implant-precision {
     display: block;
-    width: auto;
-    height: 84%;
-    pointer-events: none;
+    margin-top: -100svh;
   }
 
-  .implant-mobile-plan-product::after {
-    content: "";
-    position: absolute;
-    right: 18%;
-    bottom: 6%;
-    left: 18%;
-    height: 4%;
-    border-radius: 50%;
-    background: radial-gradient(ellipse, color-mix(in srgb, var(--color-black) 18%, transparent), transparent 72%);
-    filter: blur(.45rem);
-  }
-
-  .implant-mobile-plan-product img {
-    position: relative;
-    z-index: 1;
-    display: block;
-    width: auto;
-    height: 100%;
-    object-fit: contain;
-    filter: drop-shadow(0 .75rem 1rem color-mix(in srgb, var(--color-black) 12%, transparent));
-  }
-
-  .implant-mobile-plan h2 {
-    margin-bottom: .75rem;
-  }
-
-  .implant-mobile-plan p {
-    color: var(--color-text-muted);
+  .implant-precision-mobile {
+    display: none;
   }
 }
 
@@ -676,46 +609,6 @@
 
   .implant-precision-mobile {
     padding-inline: 1.25rem;
-  }
-
-  .implant-mobile-photo {
-    min-height: calc(100svh - 1.25rem);
-    border-radius: 2.5rem;
-  }
-
-  .implant-mobile-photo--restoration {
-    min-height: min(50rem, calc(100svh + 8rem));
-  }
-
-  .implant-mobile-photo--restoration > picture img {
-    object-position: 32% center;
-  }
-
-  .implant-mobile-photo-copy {
-    padding: 1.5rem;
-  }
-
-  .implant-mobile-photo-copy--restoration {
-    width: 100%;
-  }
-
-  .implant-mobile-plan {
-    min-height: min(43rem, 86svh);
-    align-items: start;
-    border-radius: 2.5rem;
-  }
-
-  .implant-mobile-plan-copy {
-    width: 100%;
-    padding: 2rem 1.5rem;
-  }
-
-  .implant-mobile-plan-product {
-    right: auto;
-    bottom: -5%;
-    left: 50%;
-    height: 58%;
-    transform: translateX(-50%);
   }
 }
 

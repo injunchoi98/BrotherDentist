@@ -13,7 +13,7 @@ await cp(resolve(root, "src"), resolve(dist, "src"), { recursive: true });
 await build({
   entryPoints: {
     main: resolve(root, "src/main.js"),
-    implant: resolve(root, "src/implant-scenes.js")
+    "implant-scenes": resolve(root, "src/implant-scenes.js")
   },
   outdir: resolve(dist, "src"),
   bundle: true,
@@ -26,7 +26,7 @@ await build({
 await build({
   entryPoints: {
     styles: resolve(root, "src/styles.css"),
-    implant: resolve(root, "src/implant-scenes.css")
+    "implant-scenes": resolve(root, "src/implant-scenes.css")
   },
   outdir: resolve(dist, "src"),
   bundle: true,
@@ -34,6 +34,14 @@ await build({
   minify: false,
   target: ["es2020"]
 });
+
+// The implant page loads /src/implant-scenes.js directly. Keep this guard next
+// to the bundling step so an entry-name regression cannot silently ship the
+// copied source module with browser-unresolvable bare `gsap` imports again.
+const implantBundle = await readFile(resolve(dist, "src/implant-scenes.js"), "utf8");
+if (/\bfrom\s*["']gsap(?:\/ScrollTrigger)?["']/.test(implantBundle)) {
+  throw new Error("implant-scenes.js must be the bundled browser entry");
+}
 
 const stamp = new Date().toISOString();
 for (const page of ["index.html", "implant.html"]) {
