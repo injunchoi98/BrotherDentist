@@ -1,6 +1,5 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ChevronLeft, Menu, Search } from "reicon";
 import {
   calculatePinMinimumHeightRem,
   createPinHeightGuard
@@ -9,25 +8,6 @@ import { createDiscreteStageScrollTrigger } from "../utils/discrete-stage-scroll
 
 gsap.registerPlugin(ScrollTrigger);
 
-const concernIcons = {
-  "arrow-left": ChevronLeft,
-  search: Search,
-  menu: Menu
-};
-
-const renderConcernIcons = (section) => {
-  section.querySelectorAll("[data-concern-icon]").forEach((slot) => {
-    const createIcon = concernIcons[slot.dataset.concernIcon];
-    if (!createIcon) return;
-    slot.replaceChildren(createIcon({
-      size: 24,
-      color: "currentColor",
-      className: "concern-chat-icon",
-      attrs: { "aria-hidden": "true", focusable: "false" }
-    }));
-  });
-};
-
 export function initConcernScroll() {
   const section = document.querySelector("[data-concern]");
   if (!section) return;
@@ -35,8 +15,6 @@ export function initConcernScroll() {
   const dialogue = section.querySelector("[data-concern-dialogue]");
   const messages = gsap.utils.toArray("[data-concern-message]", section);
   const header = document.querySelector("[data-header]");
-
-  renderConcernIcons(section);
 
   const getTextMinimumHeightRem = () => {
     const copyStyles = getComputedStyle(section.querySelector(".concern-copy"));
@@ -104,21 +82,28 @@ export function initConcernScroll() {
       const stageLabels = Object.freeze(["first", "second", "third"]);
 
       gsap.set([chatHeader, dialogue, messages[0]], { autoAlpha: 1 });
-      gsap.set(messages.slice(1), { autoAlpha: 0, y: 18, scale: .96 });
+      gsap.set(messages.slice(1), {
+        autoAlpha: 0,
+        y: 18,
+        // Message 2 is left-aligned and message 3 returns to the right. Each
+        // new bubble enters from its own edge while the earlier bubbles remain
+        // visible, so the conversation visibly accumulates one step at a time.
+        x: (index) => index % 2 === 0 ? -18 : 18,
+        scale: .96
+      });
 
       timeline
         .addLabel(stageLabels[0], 0)
         // A reveal begins immediately after input. The former empty hold tweens
         // made a valid swipe look ignored before each bubble finally appeared.
-        .to(messages[1], { autoAlpha: 1, y: 0, scale: 1, duration: .45 })
+        .to(messages[1], { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: .45 })
         .addLabel(stageLabels[1])
-        .to(messages[2], { autoAlpha: 1, y: 0, scale: 1, duration: .45 })
+        .to(messages[2], { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: .45 })
         .addLabel(stageLabels[2])
         .to([chatHeader, ...messages], {
           autoAlpha: 0,
           y: -16,
           scale: .78,
-          transformOrigin: "right center",
           duration: .6,
           stagger: { each: .035, from: "end" },
           ease: "power3.in"

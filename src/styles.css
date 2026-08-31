@@ -8,11 +8,10 @@
   --landing-font-family: "Noto Sans KR", var(--seed-font-family-sans);
   --color-brand: #2763ea;
   /* Exact dominant colors sampled from the supplied HandOff chat reference. */
-  --color-concern-canvas: #abc2d1;
-  --color-concern-bubble: #fde40b;
+  --color-concern-canvas: #abc1d1;
+  --color-concern-bubble: #fde404;
   --color-concern-ink: #191919;
   --color-concern-meta: #444d54;
-  --color-concern-control: #f2f2f2;
   --color-text: #101615;
   --color-text-muted: #59615f;
   --color-line: #d9dddc;
@@ -108,32 +107,22 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .concern-section[data-pin-disabled] .concern-fallback-list { display: grid; width: min(calc(100% - (var(--space-page) * 2)), 46rem); min-height: max(100svh, var(--pin-fallback-min-height)); place-items: center; margin-inline: auto; padding-block: calc(var(--header-height) + 2rem) 3rem; }
 .concern-fallback-copy { container: concern-copy / inline-size; position: relative; z-index: 2; display: grid; width: 100%; justify-items: center; gap: clamp(1rem, 2svh, 1.5rem); text-align: center; }
 .concern-copy { container: concern-copy / inline-size; display: grid; width: min(100%, 46rem); gap: clamp(1rem, 2svh, 1.5rem); padding-top: 1rem; text-align: center; }
-.concern-chat-header { position: relative; display: flex; width: min(100%, 42rem); min-height: 3.5rem; align-items: center; justify-content: space-between; margin-inline: auto; }
-.concern-chat-back, .concern-chat-actions { display: flex; height: 2.75rem; align-items: center; justify-content: center; border-radius: 999px; color: #242424; background: var(--color-concern-control); box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 .25rem .75rem rgba(0,0,0,.08); }
-.concern-chat-back { width: 4rem; gap: .125rem; padding-right: .125rem; }
-.concern-chat-back b { font-size: var(--landing-heading-4-size); font-weight: var(--landing-font-weight-medium); line-height: var(--landing-heading-4-line-height); }
-.concern-chat-actions { width: 5.75rem; gap: .75rem; }
-.concern-chat-back i, .concern-chat-actions i { display: grid; width: 1.5rem; height: 1.5rem; flex: none; place-items: center; }
-.concern-chat-icon { display: block; width: 1.5rem; height: 1.5rem; }
-.display-title { position: absolute; top: 50%; left: 50%; width: max-content; max-width: calc(100% - 11rem); margin: 0; overflow: hidden; font-size: var(--landing-heading-4-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-heading-4-line-height); text-overflow: ellipsis; white-space: nowrap; transform: translate(-50%, -50%); }
-.concern-dialogue { display: grid; width: min(100%, 42rem); justify-items: end; row-gap: .375rem; margin-inline: auto; text-align: left; }
-.concern-message { display: flex; width: 100%; align-items: flex-end; justify-content: flex-end; gap: .375rem; transform-origin: right center; }
-.concern-time { flex: none; margin-bottom: .125rem; color: var(--color-concern-meta); font-size: var(--landing-ui-label-size); font-style: normal; line-height: var(--landing-ui-label-line-height); font-variant-numeric: tabular-nums; }
-.concern-bubble { position: relative; isolation: isolate; width: fit-content; max-width: min(76%, 32rem); margin: 0; border-radius: .75rem; padding: .375rem .75rem; color: var(--color-concern-ink); background: var(--color-concern-bubble); font-size: var(--landing-body-2-size); font-weight: var(--landing-font-weight-regular); line-height: var(--landing-body-2-line-height); text-align: left; white-space: pre-line; }
-/* Photo 4's iPhone capture is 3x: the rounded body measures about 34 CSS px
- * high with a 12px corner, and the fin projects only about 2px beyond the
- * body's right edge. Most of this 12x10 path sits behind the rounded corner so
- * the visible result is a short curved Kakao-style tip, not a large triangle. */
+.concern-chat-header { width: min(100%, 42rem); min-height: 3.5rem; margin-inline: auto; }
+.concern-dialogue { display: grid; width: min(100%, 42rem); justify-items: stretch; row-gap: .625rem; margin-inline: auto; text-align: left; }
+.concern-message { display: flex; width: 100%; align-items: flex-end; justify-content: flex-end; gap: .5rem; transform-origin: right center; }
+/* row-reverse keeps the timestamp to the bubble's right. Its main axis also
+ * reverses, so flex-end—not flex-start—anchors this message group to the
+ * dialogue's physical left edge. */
+.concern-message:nth-child(even) { flex-direction: row-reverse; justify-content: flex-end; transform-origin: left center; }
+.concern-time { flex: none; margin-bottom: .125rem; color: var(--color-concern-meta); font-size: var(--landing-ui-control-size); font-style: normal; line-height: var(--landing-ui-control-line-height); font-variant-numeric: tabular-nums; }
+.concern-bubble { position: relative; isolation: isolate; width: fit-content; min-width: min(17rem, 82%); max-width: min(82%, 34rem); margin: 0; border-radius: 1.25rem; padding: 1rem; color: var(--color-concern-ink); background: var(--color-concern-bubble); font-size: var(--landing-body-1-size); font-weight: var(--landing-font-weight-regular); line-height: var(--landing-body-1-line-height); text-align: left; text-wrap: pretty; white-space: pre-line; }
+/* The reference's 2x capture has a 40px corner and a 4px tail projection.
+ * At CSS scale that becomes a 20px radius and a 2px projection. The 24px-wide
+ * tail overlaps the full rounded-corner inset, eliminating an antialias seam. */
 .concern-bubble::before { display: none; }
-.concern-bubble::after { content: ""; position: absolute; z-index: -1; top: .0625rem; right: -.125rem; width: .75rem; height: .625rem; background: var(--color-concern-bubble); clip-path: path("M 0 0 H 12 C 9 1 7 4 6 10 C 5 6 3 2 0 0 Z"); }
+.concern-bubble::after { content: ""; position: absolute; z-index: -1; top: 0; right: -.25rem; width: 1.5rem; height: 1.25rem; background: var(--color-concern-bubble); clip-path: path("M 0 0 H 24 C 19 2 15 6 13 10 C 10 14 9 18 9 20 C 7 12 4 4 0 0 Z"); }
+.concern-message:nth-child(even) .concern-bubble::after { right: auto; left: -.25rem; transform: scaleX(-1); }
 .concern-bubble:empty { display: none; }
-
-/* Hide both decorative side controls only when their own title container can
- * no longer preserve the complete one-line title with safe gaps on each side. */
-@container concern-copy (max-width: 19rem) {
-  .concern-chat-back, .concern-chat-actions { visibility: hidden; }
-  .display-title { max-width: 100%; }
-}
 .brand-reveal { position: relative; height: 320svh; overflow: clip; background: var(--color-white); }
 .brand-sticky { position: sticky; top: 0; min-height: 100svh; display: grid; place-items: center; overflow: hidden; }
 .brand-title { position: relative; z-index: 1; display: grid; width: 100%; gap: clamp(.8rem, 2svh, 1.5rem); margin: 0; padding-inline: var(--space-page); font-size: var(--landing-heading-2-size); line-height: var(--landing-heading-2-line-height); text-align: center; }
@@ -630,8 +619,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .concern-fallback-copy { gap: 1rem; }
   .concern-copy { gap: 1rem; }
   .concern-dialogue { width: min(100%, 31rem); margin-top: 0; }
-  .concern-message { gap: .3125rem; }
-  .concern-bubble { max-width: 76%; }
+  .concern-message { gap: .375rem; }
+  .concern-bubble { min-width: min(14rem, 86%); max-width: 86%; }
   .brand-title { max-width: none; }
   /* The stable pin remains svh-based, while the expanding artwork may paint
    * into the extra visual viewport exposed when Safari collapses its bars. */

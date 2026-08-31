@@ -207,7 +207,13 @@ export function createDiscreteStageScrollTrigger({
   };
 
   const beginNativeBackwardExit = () => {
-    if (!storyActive || exiting || currentStageIndex !== 0) return false;
+    if (
+      !storyActive
+      || exiting
+      || stageTween?.isActive()
+      || scrollTween?.isActive()
+      || currentStageIndex !== 0
+    ) return false;
 
     /*
      * FIRST-SCENE OUTER EDGE CONTRACT
@@ -325,7 +331,9 @@ export function createDiscreteStageScrollTrigger({
     // ignoreCheck runs before Observer's preventDefault. Releasing the story
     // here lets this very wheel event and its remaining momentum stay native.
     ignoreCheck: (event) => (
-      event.deltaY < 0 && beginNativeBackwardExit()
+      event.deltaY < 0
+      && !wheelGestureConsumed
+      && beginNativeBackwardExit()
     ),
     onWheel: (self) => consumeWheelGesture(self.deltaY > 0 ? 1 : -1),
     onStop: () => {
@@ -351,7 +359,11 @@ export function createDiscreteStageScrollTrigger({
     // A finger moving downward means the document should move upward. This
     // capture listener runs before Observer's touchmove listener, so disabling
     // the Observer here prevents it from cancelling the native edge gesture.
-    if (deltaY > 0 && Math.abs(deltaY) >= Math.abs(deltaX)) {
+    if (
+      !touchGestureConsumed
+      && deltaY > 0
+      && Math.abs(deltaY) >= Math.abs(deltaX)
+    ) {
       beginNativeBackwardExit();
     }
   };
