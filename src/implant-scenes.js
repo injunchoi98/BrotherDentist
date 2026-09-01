@@ -10,9 +10,11 @@ import {
   createPinHeightGuard,
   getSmallViewportHeight,
 } from "./utils/pin-height-guard.js";
+import { initKakaoStableViewportHeight } from "./utils/viewport-state.js";
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
+initKakaoStableViewportHeight();
 
 const header = document.querySelector("[data-header]");
 const hero = document.querySelector("[data-implant-hero]");

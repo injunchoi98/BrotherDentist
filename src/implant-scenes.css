@@ -1005,6 +1005,49 @@
 
 }
 
+/* KakaoTalk's WKWebView can recalculate even `svh` while its custom bottom
+ * toolbar expands and collapses. Keep the mobile story geometry tied to the
+ * stable opening viewport captured by viewport-state.js. */
+@media (max-width: 64rem) {
+  html[data-kakao-in-app] .implant-hero:not([data-pin-disabled]) {
+    height: calc(var(--kakao-stable-viewport-height) * 2.2);
+    min-height: calc(var(--kakao-stable-viewport-height) * 2.2);
+  }
+
+  html[data-kakao-in-app] .implant-hero:not([data-pin-disabled]) .implant-hero-sticky,
+  html[data-kakao-in-app] .implant-precision:not([data-pin-disabled]) .implant-precision-sticky {
+    height: var(--kakao-stable-viewport-height);
+    min-height: var(--kakao-stable-viewport-height);
+  }
+
+  html[data-kakao-in-app] .implant-mobile-visual--lead {
+    height: calc((var(--kakao-stable-viewport-height) * .7) - var(--header-height-mobile));
+  }
+}
+
+@media (min-width: 40rem) and (max-width: 64rem) {
+  html[data-kakao-in-app] .implant-hero:not([data-pin-disabled]) {
+    height: calc(var(--kakao-stable-viewport-height) * 3.2);
+    min-height: calc(var(--kakao-stable-viewport-height) * 3.2);
+  }
+
+  html[data-kakao-in-app] .implant-precision:not([data-pin-disabled]) {
+    height: calc(var(--kakao-stable-viewport-height) * 5);
+    min-height: calc(var(--kakao-stable-viewport-height) * 5);
+    margin-top: calc(var(--kakao-stable-viewport-height) * -1);
+  }
+
+  html[data-kakao-in-app] .implant-digital-story:not([data-pin-disabled]) {
+    height: calc(var(--kakao-stable-viewport-height) * 6.09);
+    min-height: calc(var(--kakao-stable-viewport-height) * 6.09);
+  }
+
+  html[data-kakao-in-app] .implant-digital-story:not([data-pin-disabled]) .implant-digital-sticky {
+    height: var(--kakao-stable-viewport-height);
+    min-height: var(--kakao-stable-viewport-height);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .implant-hero,
   .implant-precision {
