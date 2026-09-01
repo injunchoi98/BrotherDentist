@@ -6,6 +6,7 @@ const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const files = [
   "index.html",
   "implant.html",
+  "general.html",
   "src/components/coverflow.js",
   "src/components/doctor-gallery.js",
   "src/components/review-marquee.js",
@@ -58,4 +59,9 @@ for (const file of [
   await access(resolve(root, "assets/images/webp", file));
 }
 
-console.log(`Image delivery contract passed: WebP, srcset, lazy loading, mobile pin fallback, and ${qualitySourceCount} source images reused across ${qualityColumns * qualityRows} virtual logo tiles.`);
+for (let frame = 1; frame <= 106; frame += 1) {
+  const filename = `story-frame-${String(frame).padStart(3, "0")}.webp`;
+  await access(resolve(root, "assets/images/implant-digital-sequence", filename));
+}
+
+console.log(`Image delivery contract passed: WebP, srcset, lazy loading, 106 implant sequence frames, mobile pin fallback, and ${qualitySourceCount} source images reused across ${qualityColumns * qualityRows} virtual logo tiles.`);

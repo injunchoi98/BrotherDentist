@@ -6,6 +6,7 @@ const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const css = (await Promise.all([
   "src/styles.css",
   "src/implant-scenes.css",
+  "src/general.css",
 ].map((file) => readFile(resolve(root, file), "utf8")))).join("\n");
 // Cloudflare checks out only this repository; validate the committed deployment
 // snapshot instead of relying on the parent workspace's token file.

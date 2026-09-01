@@ -1,6 +1,7 @@
 @import "./styles.css";
 
 .implant-page {
+  --color-implant-ct-canvas: #000107;
   overflow-x: clip;
   background: var(--color-white);
 }
@@ -11,6 +12,11 @@
 
 .implant-page .site-header[data-on-light] {
   color: var(--color-text);
+}
+
+.implant-page .site-header[data-on-dark]:not([data-menu-open]) {
+  color: var(--color-white);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--color-black) 52%, transparent), transparent);
 }
 
 .implant-hero,
@@ -490,6 +496,291 @@
   padding: clamp(1.5rem, 7vw, 6rem);
 }
 
+.implant-digital {
+  --implant-digital-copy-left: max(clamp(3rem, 13vw, 13rem), calc((100vw - var(--content-max)) / 2 + 3rem));
+  position: relative;
+  z-index: 3;
+  color: var(--color-white);
+  background: var(--color-implant-ct-canvas);
+}
+
+.implant-digital-intro {
+  width: 100%;
+  margin-inline: 0;
+  padding-inline: var(--implant-digital-copy-left) var(--space-page);
+  padding-top: clamp(6rem, 13svh, 10rem);
+  padding-bottom: clamp(3rem, 7svh, 5.5rem);
+}
+
+.implant-digital-intro h2 {
+  max-width: 17em;
+  margin: 0 0 1rem;
+  font-size: var(--landing-heading-3-size);
+  font-weight: var(--landing-font-weight-bold);
+  line-height: var(--landing-heading-3-line-height);
+  letter-spacing: var(--landing-heading-3-letter-spacing);
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.implant-digital-intro > p {
+  max-width: var(--landing-body-2-measure);
+  margin: 0;
+  color: color-mix(in srgb, var(--color-white) 78%, transparent);
+  font-size: var(--landing-body-2-size);
+  font-weight: var(--landing-font-weight-regular);
+  line-height: var(--landing-body-2-line-height);
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+.implant-digital-story {
+  position: relative;
+  height: 675svh;
+  min-height: 675svh;
+  overflow: clip;
+  background: var(--color-implant-ct-canvas);
+}
+
+.implant-digital-sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--color-implant-ct-canvas);
+}
+
+.implant-digital-layout {
+  --implant-digital-stage-scale: .9;
+  --implant-digital-stage-x-percent: 10;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin-inline: 0;
+}
+
+.implant-digital-copy {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: var(--implant-digital-copy-left);
+  width: min(28%, 34rem);
+  will-change: transform;
+}
+
+.implant-digital-stage {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  right: max(var(--space-page), calc((100% - var(--content-max)) / 2));
+  width: min(50%, 91svh, 46rem);
+  height: auto;
+  aspect-ratio: 23 / 20;
+  overflow: hidden;
+  background: var(--color-implant-ct-canvas);
+  transform: translate3d(10%, -50%, 0) scale(.9);
+  transform-origin: center;
+  will-change: transform;
+}
+
+.implant-digital-poster,
+.implant-digital-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.implant-digital-poster {
+  object-fit: contain;
+  opacity: 1;
+  transition: opacity .14s ease;
+}
+
+.implant-digital-canvas {
+  opacity: 0;
+  transition: opacity .14s ease;
+}
+
+.implant-digital-story[data-sequence-ready] .implant-digital-poster {
+  opacity: 0;
+}
+
+.implant-digital-story[data-sequence-ready] .implant-digital-canvas {
+  opacity: 1;
+}
+
+.implant-digital-stage-shade {
+  display: none;
+}
+
+.implant-digital-steps {
+  position: relative;
+  min-height: 18rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+.implant-digital-step {
+  position: absolute;
+  inset: 0 0 auto;
+  opacity: 0;
+  transform: translate3d(0, 1rem, 0);
+  transition:
+    opacity .18s ease,
+    transform .22s ease;
+}
+
+.implant-digital-step-visual {
+  display: none;
+}
+
+.implant-digital-step[aria-current="step"] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.implant-digital-step-number {
+  display: block;
+  margin-bottom: .5rem;
+  color: var(--color-keyword-on-dark);
+  font-size: var(--landing-body-3-size);
+  font-weight: var(--landing-font-weight-bold);
+  line-height: var(--landing-body-3-line-height);
+  font-variant-numeric: tabular-nums;
+}
+
+.implant-digital-step h3 {
+  margin: 0 0 .65rem;
+  font-size: var(--landing-heading-3-size);
+  font-weight: var(--landing-font-weight-bold);
+  line-height: var(--landing-heading-3-line-height);
+  letter-spacing: var(--landing-heading-3-letter-spacing);
+  overflow-wrap: anywhere;
+}
+
+.implant-digital-step p {
+  max-width: var(--landing-body-2-measure);
+  margin: 0;
+  color: color-mix(in srgb, var(--color-white) 78%, transparent);
+  font-size: var(--landing-body-2-size);
+  font-weight: var(--landing-font-weight-regular);
+  line-height: var(--landing-body-2-line-height);
+  overflow-wrap: anywhere;
+}
+
+.implant-digital-story[data-pin-disabled] {
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+  padding: clamp(2rem, 6vw, 4rem) var(--space-page) clamp(4rem, 8vw, 7rem);
+}
+
+.implant-digital-story[data-pin-disabled] .implant-digital-sticky {
+  position: relative;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+.implant-digital-story[data-pin-disabled] .implant-digital-layout {
+  position: relative;
+  display: block;
+  height: auto;
+}
+
+.implant-digital-story[data-pin-disabled] .implant-digital-copy {
+  position: relative;
+  top: auto;
+  left: auto;
+  width: 100%;
+  transform: none;
+}
+
+.implant-digital-story[data-pin-disabled] .implant-digital-stage {
+  display: none;
+}
+
+.implant-digital-story[data-pin-disabled] .implant-digital-steps {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 0;
+  gap: clamp(2.8rem, calc(2.1rem + 3.5vw), 5.6rem);
+  margin-top: clamp(3rem, 7vw, 5rem);
+}
+
+.implant-digital-story[data-pin-disabled] .implant-digital-step {
+  position: relative;
+  inset: auto;
+  display: grid;
+  gap: 1.25rem;
+  opacity: 1;
+  transform: none;
+}
+
+.implant-digital-story[data-pin-disabled] .implant-digital-step-visual {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  overflow: hidden;
+  border-radius: 0;
+  background: var(--color-implant-ct-canvas);
+}
+
+.implant-digital-story[data-pin-disabled] .implant-digital-step-copy {
+  display: block;
+}
+
+.implant-section-label {
+  margin: 0 0 .85rem;
+  color: var(--color-keyword);
+  font-size: var(--landing-body-3-size);
+  font-weight: var(--landing-font-weight-bold);
+  line-height: var(--landing-body-3-line-height);
+  letter-spacing: .08em;
+}
+
+.implant-solutions {
+  position: relative;
+  z-index: 4;
+}
+
+.implant-treatment-cards .treatment-card picture {
+  aspect-ratio: 4 / 3;
+  background: var(--color-white);
+}
+
+.implant-treatment-cards .treatment-card img {
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+.implant-treatment-cards .treatment-card:hover img {
+  transform: translateY(-.5rem);
+}
+
+.implant-case-section {
+  position: relative;
+  z-index: 4;
+}
+
+@media (min-width: 72.001rem) {
+  .implant-treatment-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.implant-case-heading .implant-section-label {
+  margin-bottom: .85rem;
+}
+
 @media (max-width: 64rem) {
   .implant-hero {
     /* The expansion consumes 120svh of scroll. Adding the 100svh sticky
@@ -530,9 +821,11 @@
 
   .implant-mobile-visual {
     position: relative;
+    isolation: isolate;
     overflow: hidden;
     border-radius: 2rem;
     background: var(--color-black);
+    transform: translateZ(0);
   }
 
   .implant-mobile-visual--lead {
@@ -543,7 +836,16 @@
     aspect-ratio: 556 / 432;
   }
 
-  .implant-mobile-visual > picture,
+  .implant-mobile-visual > picture {
+    position: absolute;
+    /* Bleed the media underneath the antialiased rounded clip so the dark
+     * fallback surface cannot appear as a one-pixel fringe. */
+    inset: -1px;
+    display: block;
+    width: auto;
+    height: auto;
+  }
+
   .implant-mobile-visual > picture img {
     position: absolute;
     inset: 0;
@@ -563,6 +865,26 @@
 
   .implant-mobile-visual--recovery > picture img {
     object-position: center;
+  }
+
+  .implant-digital-story {
+    height: 609svh;
+    min-height: 609svh;
+  }
+
+  .implant-digital-layout {
+    --implant-digital-stage-scale: .9;
+    --implant-digital-stage-x-percent: 10;
+  }
+
+  .implant-digital-copy {
+    width: min(31%, 23rem);
+  }
+
+  .implant-digital-stage {
+    width: min(50%, 46rem);
+    height: auto;
+    transform: translate3d(0, -50%, 0);
   }
 }
 
@@ -610,6 +932,77 @@
   .implant-precision-mobile {
     padding-inline: 1.25rem;
   }
+
+}
+
+@media (max-width: 39.999rem) {
+  .implant-digital-intro {
+    width: min(100% - (var(--space-page) * 2), var(--content-max));
+    margin-inline: auto;
+    padding-inline: 0;
+    padding-top: clamp(5rem, 14vw, 7rem);
+    padding-bottom: clamp(1rem, 4vw, 2rem);
+  }
+
+  .implant-digital-story {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding: clamp(2rem, 7vw, 3rem) 1.25rem clamp(5rem, 14vw, 8rem);
+  }
+
+  .implant-digital-sticky {
+    position: relative;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .implant-digital-layout {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .implant-digital-copy {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    transform: none;
+  }
+
+  .implant-digital-stage {
+    display: none;
+  }
+
+  .implant-digital-steps {
+    display: grid;
+    min-height: 0;
+    gap: clamp(2.8rem, 11vw, 4.25rem);
+    margin-top: clamp(3rem, 12vw, 4.5rem);
+    pointer-events: auto;
+  }
+
+  .implant-digital-step {
+    position: relative;
+    inset: auto;
+    display: grid;
+    gap: 1.25rem;
+    opacity: 1;
+    transform: none;
+  }
+
+  .implant-digital-step-visual {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    overflow: hidden;
+    border-radius: 0;
+    background: var(--color-implant-ct-canvas);
+  }
+
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -618,4 +1011,5 @@
     height: auto;
     min-height: 100svh;
   }
+
 }

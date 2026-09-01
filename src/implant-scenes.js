@@ -1,6 +1,10 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { initSiteHeader } from "./components/site-header.js";
+import { initImplantDigitalSequence } from "./components/implant-digital-sequence.js";
+import { initCoverflow } from "./components/coverflow.js";
+import { initFaqSection } from "./components/faq-section.js";
+import { implantCases, implantFaqs } from "./data.js";
 import {
   calculatePinMinimumHeightRem,
   createPinHeightGuard,
@@ -193,7 +197,7 @@ const syncRestorationStage = () => {
   const scale = Math.max(
     width / RESTORATION_STAGE_WIDTH,
     height / RESTORATION_STAGE_HEIGHT,
-  );
+  ) * 1.002;
   precisionSticky.style.setProperty("--restoration-stage-scale", scale.toFixed(6));
   precisionSticky.style.setProperty(
     "--restoration-stage-x",
@@ -472,6 +476,14 @@ initSiteHeader({ hero });
 initHeroExpansion();
 initRestorationStage();
 initPrecisionSequence();
+initImplantDigitalSequence({ header });
+initCoverflow(document.querySelector("[data-implant-coverflow]"), implantCases);
+initFaqSection(document.querySelector("[data-implant-faq]"), {
+  label: "FAQ",
+  title: "임플란트,\n무엇이 궁금하세요?",
+  subtitle: "진료 전에 많이 물어보시는 내용을 먼저 정리했습니다.",
+  items: implantFaqs,
+});
 
 Promise.all([
   document.fonts?.ready,

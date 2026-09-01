@@ -5,11 +5,63 @@ export const concerns = [
 ];
 
 export const cases = [
-  { category: "임플란트", title: "한쪽으로만 씹던 습관을 줄이도록", copy: "오른쪽 아래 어금니가 비어 반대편으로만 식사하던 경우입니다. CT로 잇몸뼈와 신경 위치를 확인하고, 주변 치아와 맞물리는 높이까지 조정했습니다.", image: "./assets/images/case-implant.png" },
-  { category: "치아 미백", title: "커피 착색이 신경 쓰이던 앞니", copy: "치아마다 달랐던 색과 기존 보철물의 밝기를 먼저 비교했습니다. 한 번에 과하게 밝히지 않고 얼굴에 어울리는 단계까지 나눠 진행했습니다.", image: "./assets/images/case-whitening.png" },
-  { category: "일반 진료", title: "씹을 때만 찌릿했던 어금니", copy: "겉으로 보이는 충치뿐 아니라 금이 간 범위와 신경 반응을 함께 검사했습니다. 자연치아를 남길 수 있는 범위를 확인한 뒤 필요한 부위부터 치료했습니다.", image: "./assets/images/case-general.png" },
-  { category: "임플란트", title: "식사할 때 움직이던 틀니", copy: "남아 있는 치아와 잇몸뼈 상태를 확인해 고정이 필요한 위치를 정했습니다. 씹을 때 흔들림을 줄이고 세척과 관리가 가능하도록 보철 형태를 맞췄습니다.", image: "./assets/images/case-implant.png" },
-  { category: "치아 미백", title: "사진에서 유독 어두워 보이던 치아", copy: "앞니 표면의 착색과 치아 안쪽 색을 구분해 확인했습니다. 현재 치아에서 가능한 밝기를 먼저 보여드리고 단계별로 변화를 확인했습니다.", image: "./assets/images/case-whitening.png" }
+  { category: "임플란트", title: "한쪽으로만 씹던 습관을 줄이도록", copy: "오른쪽 아래 어금니가 비어 반대편으로만 식사하던 경우입니다. CT로 잇몸뼈와 신경 위치를 확인하고, 주변 치아와 맞물리는 높이까지 조정했습니다.", image: "./assets/images/case-main-implant-single-v2.png" },
+  { category: "치아 미백", title: "커피 착색이 신경 쓰이던 앞니", copy: "치아마다 달랐던 색과 기존 보철물의 밝기를 먼저 비교했습니다. 한 번에 과하게 밝히지 않고 얼굴에 어울리는 단계까지 나눠 진행했습니다.", image: "./assets/images/case-main-whitening-coffee-v2.png" },
+  { category: "일반 진료", title: "씹을 때만 찌릿했던 어금니", copy: "겉으로 보이는 충치뿐 아니라 금이 간 범위와 신경 반응을 함께 검사했습니다. 자연치아를 남길 수 있는 범위를 확인한 뒤 필요한 부위부터 치료했습니다.", image: "./assets/images/case-main-molar-crack-v2.png" },
+  { category: "임플란트", title: "식사할 때 움직이던 틀니", copy: "남아 있는 치아와 잇몸뼈 상태를 확인해 고정이 필요한 위치를 정했습니다. 씹을 때 흔들림을 줄이고 세척과 관리가 가능하도록 보철 형태를 맞췄습니다.", image: "./assets/images/case-main-implant-denture-v2.png" },
+  { category: "치아 미백", title: "사진에서 유독 어두워 보이던 치아", copy: "앞니 표면의 착색과 치아 안쪽 색을 구분해 확인했습니다. 현재 치아에서 가능한 밝기를 먼저 보여드리고 단계별로 변화를 확인했습니다.", image: "./assets/images/case-main-whitening-photo-v2.png" }
+];
+
+export const implantCases = [
+  {
+    category: "단일 임플란트",
+    title: "한쪽으로만 씹던 빈 어금니 자리",
+    copy: "CT로 잇몸뼈의 상태를 확인하고, 반대편 치아와 맞물리는 높이까지 고려해 식립 위치를 계획합니다.",
+    image: "./assets/images/case-implant-single-molar-v2.png",
+  },
+  {
+    category: "앞니 임플란트",
+    title: "웃을 때 먼저 보이는 앞니 자리",
+    copy: "잇몸선과 양옆 치아의 모양, 얼굴에서 보이는 치아의 비율을 함께 살펴 자연스럽게 이어지도록 보철을 계획합니다.",
+    image: "./assets/images/case-implant-anterior-v2.png",
+  },
+  {
+    category: "다수 임플란트",
+    title: "여러 어금니가 함께 비어 있다면",
+    copy: "씹는 힘이 한쪽에 몰리지 않도록 식립 위치와 보철 연결 범위를 정하고, 위아래 치아의 맞물림을 함께 조정합니다.",
+    image: "./assets/images/case-implant-multiple-posterior-v2.png",
+  },
+  {
+    category: "임플란트 틀니",
+    title: "식사할 때마다 움직이던 틀니",
+    copy: "남아 있는 치아와 잇몸뼈 상태를 확인해 필요한 고정 위치를 정하고, 씹을 때 흔들림과 들뜸을 줄이도록 연결 구조를 설계합니다.",
+    image: "./assets/images/case-implant-overdenture-v2.png",
+  },
+  {
+    category: "전체 임플란트",
+    title: "여러 치아가 비어 식사가 어려웠다면",
+    copy: "전체 치열의 높이와 입술선, 위아래 치아의 맞물림을 함께 확인해 기능과 인상을 모두 고려한 보철 계획을 세웁니다.",
+    image: "./assets/images/case-implant-full-arch-v2.png",
+  },
+];
+
+export const implantFaqs = [
+  {
+    question: "임플란트 아프지 않나요?",
+    answer: "수술 후에는 개인차에 따라 통증과 부기가 생길 수 있습니다. 365서울감동치과는 표면 마취, 무바늘 마취, 극미세침 마취 등 단계별 마취와 치료 중 상태 확인으로 과정의 부담을 줄이기 위해 노력합니다.",
+  },
+  {
+    question: "임플란트의 수명은 어떻게 되나요?",
+    answer: "임플란트의 사용 기간은 구강 위생, 잇몸 상태, 교합과 생활 습관에 따라 달라집니다. 자연치아처럼 꼼꼼하게 관리하고 정기검진을 이어가면 오랫동안 안정적으로 사용하는 데 도움이 됩니다.",
+  },
+  {
+    question: "임플란트 치료 기간은 어느 정도인가요?",
+    answer: "잇몸뼈 상태와 골 이식 여부에 따라 달라지지만, 일반적으로 아랫니는 2~3개월, 윗니는 5~6개월 정도의 기간을 예상합니다. 검사 결과와 회복 속도에 따라 전체 일정은 달라질 수 있습니다.",
+  },
+  {
+    question: "임플란트를 못할 수도 있나요?",
+    answer: "전신질환이 있다고 임플란트가 모두 불가능한 것은 아닙니다. 현재 질환의 조절 상태와 복용 약을 먼저 확인하고, 필요한 경우 주치의와 협진한 뒤 CT와 구강 검사 결과를 바탕으로 가능 여부와 치료 시기를 결정합니다.",
+  },
 ];
 
 export const doctors = [

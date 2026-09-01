@@ -16,6 +16,7 @@ export function initSiteHeader({ hero } = {}) {
   const skipLink = document.querySelector(".skip-link");
   const desktopNavigationInput = matchMedia("(min-width: 64.0625rem)");
   let lastHeaderScrollY = Math.max(0, scrollY);
+  let menuFocusFrame = 0;
 
   const revealHeader = () => {
     header.removeAttribute("data-hidden");
@@ -36,6 +37,10 @@ export function initSiteHeader({ hero } = {}) {
   const setMenuOpen = (open, restoreFocus = true, focusFirstItem = false) => {
     if (!menuButton || !nav) return;
     const wasOpen = nav.hasAttribute("data-open");
+    if (menuFocusFrame) {
+      cancelAnimationFrame(menuFocusFrame);
+      menuFocusFrame = 0;
+    }
     menuButton.setAttribute("aria-expanded", String(open));
     menuButton.setAttribute("aria-label", open ? "메뉴 닫기" : "메뉴 열기");
     nav.toggleAttribute("data-open", open);
@@ -49,7 +54,12 @@ export function initSiteHeader({ hero } = {}) {
     // Keep the entire navigation and its current focus visible while the
     // off-canvas menu is open, regardless of the previous scroll direction.
     if (open) revealHeader();
-    if (open && focusFirstItem) requestAnimationFrame(() => nav.querySelector("a")?.focus());
+    if (open && focusFirstItem) {
+      menuFocusFrame = requestAnimationFrame(() => {
+        menuFocusFrame = 0;
+        if (nav.hasAttribute("data-open")) nav.querySelector("a")?.focus();
+      });
+    }
     else if (!open && restoreFocus && wasOpen) menuButton.focus();
   };
 
@@ -157,6 +167,7 @@ export function initSiteHeader({ hero } = {}) {
   desktopNavigationInput.addEventListener("change", handleDesktopNavigationChange);
 
   return () => {
+    if (menuFocusFrame) cancelAnimationFrame(menuFocusFrame);
     removeEventListener("scroll", updateHeader);
     removeEventListener("keydown", handleKeydown);
     menuButton?.removeEventListener("click", handleMenuClick);

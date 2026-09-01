@@ -8,8 +8,8 @@
     <title>365서울감동치과의원</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%232763ea%22/><text x=%2232%22 y=%2240%22 font-size=%2226%22 text-anchor=%22middle%22 fill=%22white%22>365</text></svg>" />
     <link rel="preload" as="image" href="./assets/images/webp/clinic-hero-poster-1920.webp" type="image/webp" fetchpriority="high" />
-    <link rel="stylesheet" href="./src/styles.css?v=20260831-header-borderless-1" />
-    <script type="module" src="./src/main.js?v=20260831-concern-bubble-clone-2"></script>
+    <link rel="stylesheet" href="./src/styles.css?v=20260901-keyword-token-1" />
+    <script type="module" src="./src/main.js?v=20260901-concern-native-scroll-1"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
@@ -26,7 +26,7 @@
           <div class="nav-submenu" id="treatment-submenu" data-treatment-submenu>
             <div class="nav-submenu-inner">
               <a href="./implant.html">임플란트</a>
-              <a href="#treatment-general">일반 진료</a>
+              <a href="./general.html">일반 진료</a>
               <a href="#treatment-whitening">치아 미백</a>
             </div>
           </div>
@@ -116,7 +116,7 @@
         <div class="landing-container section-heading case-heading">
           <div><h2 id="case-title">환자분들의 실제 치료 여정을<br />그대로 담은 치료 증례</h2></div>
         </div>
-        <div class="coverflow" data-coverflow tabindex="0" aria-roledescription="carousel" aria-label="치료 증례">
+        <div class="coverflow coverflow--five" data-coverflow tabindex="0" aria-roledescription="carousel" aria-label="치료 증례">
           <div class="coverflow-track" data-coverflow-track aria-live="polite"></div>
         </div>
       </section>
@@ -137,7 +137,7 @@
           </aside>
           <div class="treatment-cards">
             <a class="treatment-card" id="treatment-implant" href="./implant.html"><picture><source type="image/webp" srcset="./assets/images/webp/treatment-implant-v2-480.webp 480w, ./assets/images/webp/treatment-implant-v2-960.webp 960w, ./assets/images/webp/treatment-implant-v2-1122.webp 1122w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 33vw" /><img src="./assets/images/treatment-implant-v2.png" alt="의료진과 환자가 함께 확인하는 임플란트 3D CT" width="1122" height="1402" loading="lazy" decoding="async" /></picture><h3>임플란트</h3><p>3D CT로 잇몸뼈와 신경 위치를 확인한 뒤 식립 위치를 정합니다. 수술에서 끝내지 않고 보철의 씹는 높이와 치료 후 관리까지 이어서 봅니다.</p></a>
-            <a class="treatment-card" id="treatment-general" href="#visit"><picture><source type="image/webp" srcset="./assets/images/webp/treatment-room-480.webp 480w, ./assets/images/webp/treatment-room-960.webp 960w, ./assets/images/webp/treatment-room-1440.webp 1440w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 33vw" /><img src="./assets/images/treatment-room.png" alt="일반 진료 공간" width="1536" height="1024" loading="lazy" decoding="async" /></picture><h3>일반 진료</h3><p>같은 통증이라도 충치, 잇몸, 교합 문제에 따라 치료가 달라집니다. 검사 결과를 함께 보고 지금 치료할 부분과 지켜볼 부분을 나눠 설명합니다.</p></a>
+            <a class="treatment-card" id="treatment-general" href="./general.html"><picture><source type="image/webp" srcset="./assets/images/webp/treatment-room-480.webp 480w, ./assets/images/webp/treatment-room-960.webp 960w, ./assets/images/webp/treatment-room-1440.webp 1440w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 33vw" /><img src="./assets/images/treatment-room.png" alt="일반 진료 공간" width="1536" height="1024" loading="lazy" decoding="async" /></picture><h3>일반 진료</h3><p>같은 통증이라도 충치, 잇몸, 교합 문제에 따라 치료가 달라집니다. 검사 결과를 함께 보고 지금 치료할 부분과 지켜볼 부분을 나눠 설명합니다.</p></a>
             <a class="treatment-card" id="treatment-whitening" href="#visit"><picture><source type="image/webp" srcset="./assets/images/webp/treatment-whitening-v2-480.webp 480w, ./assets/images/webp/treatment-whitening-v2-960.webp 960w, ./assets/images/webp/treatment-whitening-v2-1122.webp 1122w" sizes="(max-width: 48rem) calc(100vw - 2.5rem), 33vw" /><img src="./assets/images/treatment-whitening-v2.png" alt="치아 색상표로 현재 밝기를 확인하는 미백 상담" width="1122" height="1402" loading="lazy" decoding="async" /></picture><h3>치아 미백</h3><p>현재 치아의 색과 착색 원인을 먼저 확인합니다. 무조건 하얗게 만들기보다 얼굴과 기존 보철물에 어울리는 밝기를 정해 진행합니다.</p></a>
           </div>
         </div>
@@ -604,7 +604,7 @@
             </div>
           </div>
           <div class="visit-divider" aria-hidden="true"></div>
-          <picture class="visit-map-picture"><source type="image/webp" srcset="./assets/images/webp/visit-map-placeholder-480.webp 480w, ./assets/images/webp/visit-map-placeholder-960.webp 960w, ./assets/images/webp/visit-map-placeholder-1600.webp 1600w" sizes="(max-width: 48rem) 100vw, 50vw" /><img class="visit-map" src="./assets/images/visit-map-placeholder.png" alt="365서울감동치과의원 위치를 표시한 지도 목업" width="1896" height="830" loading="lazy" decoding="async" /></picture>
+          <picture class="visit-map-picture"><source type="image/webp" srcset="./assets/images/webp/visit-map-naver-v3-480.webp 480w, ./assets/images/webp/visit-map-naver-v3-960.webp 960w, ./assets/images/webp/visit-map-naver-v3-1600.webp 1600w" sizes="(max-width: 48rem) 100vw, 50vw" /><img class="visit-map" src="./assets/images/visit-map-naver-v3.png" alt="365서울감동치과의원 위치를 표시한 지도" width="1672" height="941" loading="lazy" decoding="async" /></picture>
         </div>
       </section>
     </main>
@@ -622,7 +622,7 @@
         </div>
         <nav class="footer-navigation" aria-label="사이트 메뉴">
           <div class="footer-column"><h2><a href="#top">치과 소개</a></h2></div>
-          <div class="footer-column"><h2>진료 항목</h2><a href="./implant.html">임플란트</a><a href="#treatment-general">일반 진료</a><a href="#treatment-whitening">치아 미백</a></div>
+          <div class="footer-column"><h2>진료 항목</h2><a href="./implant.html">임플란트</a><a href="./general.html">일반 진료</a><a href="#treatment-whitening">치아 미백</a></div>
           <div class="footer-column"><h2><a href="#visit">오시는 길</a></h2></div>
         </nav>
       </div>

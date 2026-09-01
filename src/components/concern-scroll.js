@@ -4,7 +4,6 @@ import {
   calculatePinMinimumHeightRem,
   createPinHeightGuard
 } from "../utils/pin-height-guard.js";
-import { createDiscreteStageScrollTrigger } from "../utils/discrete-stage-scroll.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -56,30 +55,28 @@ export function initConcernScroll() {
     minimumHeightRem: getTextMinimumHeightRem,
     onEnable: () => {
       /*
-       * SECTION 2 — DISCRETE CHAT CONTRACT
+       * SECTION 2 — NATIVE CONTINUOUS CHAT CONTRACT
        *
-       * 사용자 의도: 강한 스와이프 한 번으로 이 섹션 전체를 넘기지
-       * 않는다. 말풍선 하나가 한 단계이며, 마지막 말풍선 다음에 들어온
-       * 별도의 스와이프만 "필요한 치료만 정직하게" 섹션으로 이동한다.
+       * 사용자 의도: 이 구간에서 스크롤을 단계별로 붙잡거나 스냅하지
+       * 않는다. 브라우저의 기본 스크롤 거리를 그대로 사용하면서 섹션
+       * 안의 진행률에 맞춰 말풍선만 연속적으로 나타나고 사라진다.
        *
-       * The three bubbles are three complete resting states on every viewport.
-       * One physical wheel, swipe, or keyboard gesture must reveal at most one
-       * new bubble even when that gesture has enough velocity to cross the
-       * section. Intermediate progress between bubbles has no product meaning,
-       * so the controller drives this timeline directly between named labels.
-       *
-       * Do not reuse the showcase section's continuous boundary controller here.
-       * Conversely, do not reuse this discrete controller for showcase: its
-       * photos, words and map carry meaning while they move between titles.
+       * ScrollTrigger observes document progress only. It does not install a
+       * wheel/touch Observer, prevent default input, restore scroll positions,
+       * or define snap points. Keyboard, wheel, and touch therefore all keep
+       * their native page-scrolling behavior.
        */
       const timeline = gsap.timeline({
-        paused: true,
-        // The stage controller eases the timeline's playhead with tweenTo().
-        // Keep inner reveals linear so forward and reverse do not compound two
-        // eases and recreate the former delayed hide on upward navigation.
-        defaults: { ease: "none" }
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          id: "concern-native-scroll",
+          trigger: section,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
+          invalidateOnRefresh: true
+        }
       });
-      const stageLabels = Object.freeze(["first", "second", "third"]);
 
       gsap.set([chatHeader, dialogue, messages[0]], { autoAlpha: 1 });
       gsap.set(messages.slice(1), {
@@ -93,13 +90,8 @@ export function initConcernScroll() {
       });
 
       timeline
-        .addLabel(stageLabels[0], 0)
-        // A reveal begins immediately after input. The former empty hold tweens
-        // made a valid swipe look ignored before each bubble finally appeared.
         .to(messages[1], { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: .45 })
-        .addLabel(stageLabels[1])
         .to(messages[2], { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: .45 })
-        .addLabel(stageLabels[2])
         .to([chatHeader, ...messages], {
           autoAlpha: 0,
           y: -16,
@@ -109,24 +101,8 @@ export function initConcernScroll() {
           ease: "power3.in"
         });
 
-      const disposeScrollTrigger = createDiscreteStageScrollTrigger({
-        section,
-        animation: timeline,
-        // These timeline labels are the single source of truth for complete
-        // scenes. The controller reads their times directly; do not recreate
-        // them as normalized progress values or ScrollTrigger snap points.
-        stageLabels,
-        stepDuration: .32,
-        // `bottom bottom` ends while the next section is still one viewport
-        // below. Carry the same final gesture to this section's document bottom
-        // so the brand section replaces the chat without a blank resting frame.
-        forwardExitTarget: () => window.scrollY + section.getBoundingClientRect().bottom,
-        start: "top top",
-        end: "bottom bottom"
-      });
-
       return () => {
-        disposeScrollTrigger?.();
+        timeline.scrollTrigger?.kill();
         timeline.kill();
       };
     },

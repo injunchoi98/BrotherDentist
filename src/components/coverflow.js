@@ -2,53 +2,82 @@ import { cases } from "../data.js";
 import { responsivePicture } from "../utils/responsive-image.js";
 import { initImageCompare } from "./image-compare.js";
 
-const compareMarkup = (item, index) => `
-  <article class="case-card" data-case-card>
-    <div class="image-compare" data-compare style="--compare: 50%">
-      <div class="compare-half compare-before">${responsivePicture({ source: item.image, widths: [480, 960, 1440], sizes: "(max-width: 48rem) 84vw, 37rem", width: 1774, height: 887, alt: `${item.category} 치료 전 목업 이미지` })}</div>
-      <div class="compare-half compare-after">${responsivePicture({ source: item.image, widths: [480, 960, 1440], sizes: "(max-width: 48rem) 84vw, 37rem", width: 1774, height: 887, alt: `${item.category} 치료 후 목업 이미지` })}</div>
-      <div class="compare-line" aria-hidden="true"><span>↔</span></div>
-      <input type="range" min="5" max="95" value="50" aria-label="${item.category} 치료 전후 비교 위치" />
-      <span class="compare-label compare-label-before">BEFORE</span><span class="compare-label compare-label-after">AFTER</span>
+const modulo = (value, length) => ((value % length) + length) % length;
+
+const compareMarkup = (item, isClone = false) => `
+  <article class="case-card" data-case-card${isClone ? " data-case-clone" : ""}>
+    <div class="case-card-surface">
+      <div class="image-compare" data-compare style="--compare: 50%">
+        <div class="compare-half compare-before">${responsivePicture({ source: item.image, widths: [480, 960, 1440], sizes: "(max-width: 48rem) 84vw, 37rem", width: 1774, height: 887, alt: isClone ? "" : (item.beforeAlt || `${item.category} 치료 전 목업 이미지`) })}</div>
+        <div class="compare-half compare-after">${responsivePicture({ source: item.image, widths: [480, 960, 1440], sizes: "(max-width: 48rem) 84vw, 37rem", width: 1774, height: 887, alt: isClone ? "" : (item.afterAlt || `${item.category} 치료 후 목업 이미지`) })}</div>
+        <div class="compare-line" aria-hidden="true"><span>↔</span></div>
+        <input type="range" min="5" max="95" value="50" aria-label="${item.category} 치료 전후 비교 위치" />
+        <span class="compare-label compare-label-before">BEFORE</span><span class="compare-label compare-label-after">AFTER</span>
+      </div>
+      <div class="case-copy"><span>${item.category}</span><h3>${item.title}</h3><p>${item.copy}</p></div>
     </div>
-    <div class="case-copy"><span>${item.category}</span><h3>${item.title}</h3><p>${item.copy}</p></div>
   </article>`;
 
-export function initCoverflow() {
-  const root = document.querySelector("[data-coverflow]");
+export function initCoverflow(root = document.querySelector("[data-coverflow]"), items = cases) {
   if (!root) return;
   const track = root.querySelector("[data-coverflow-track]");
-  track.innerHTML = cases.map(compareMarkup).join("");
+  if (!track || !items.length) return;
+  const renderedItems = [...items, ...items, ...items];
+  track.innerHTML = renderedItems
+    .map((item, index) => compareMarkup(item, index < items.length || index >= items.length * 2))
+    .join("");
   root.insertAdjacentHTML("beforeend", `
-    <div class="coverflow-controls" aria-label="치료 증례 이동">
+    <div class="coverflow-controls" aria-label="${root.dataset.coverflowLabel || "치료 증례"} 이동">
       <button type="button" data-case-prev aria-label="이전 치료 증례">←</button>
-      <span aria-live="polite"><strong data-case-current>01</strong> / ${String(cases.length).padStart(2, "0")}</span>
+      <span aria-live="polite"><strong data-case-current>01</strong> / ${String(items.length).padStart(2, "0")}</span>
       <button type="button" data-case-next aria-label="다음 치료 증례">→</button>
     </div>`);
   const cards = [...track.children];
   const currentLabel = root.querySelector("[data-case-current]");
-  let active = 0;
+  const visibleRadius = root.classList.contains("coverflow--five") ? 2 : 1;
+  let active = items.length;
   let pointerStart = null;
   let autoplay = null;
+  let normalizationTimer = null;
 
   const render = () => {
     cards.forEach((card, index) => {
-      let offset = index - active;
-      const half = Math.floor(cards.length / 2);
-      if (offset > half) offset -= cards.length;
-      if (offset < -half) offset += cards.length;
+      const offset = index - active;
       card.style.setProperty("--offset", offset);
       card.style.setProperty("--abs-offset", Math.abs(offset));
+      card.dataset.distance = String(Math.abs(offset));
       card.style.zIndex = String(cards.length - Math.abs(offset));
       card.toggleAttribute("data-active", offset === 0);
       card.toggleAttribute("data-neighbor", Math.abs(offset) === 1);
-      card.toggleAttribute("data-visible", Math.abs(offset) <= 1);
+      card.toggleAttribute("data-visible", Math.abs(offset) <= visibleRadius);
       card.setAttribute("aria-hidden", offset === 0 ? "false" : "true");
       card.querySelector("input").tabIndex = offset === 0 ? 0 : -1;
     });
-    currentLabel.textContent = String(active + 1).padStart(2, "0");
+    currentLabel.textContent = String(modulo(active, items.length) + 1).padStart(2, "0");
   };
-  const move = (amount) => { active = (active + amount + cards.length) % cards.length; render(); };
+
+  const normalize = () => {
+    const middleActive = items.length + modulo(active, items.length);
+    if (active === middleActive) return;
+
+    root.setAttribute("data-coverflow-snap", "");
+    active = middleActive;
+    render();
+
+    // Commit the equivalent middle clone without motion, then restore transitions
+    // before the next requested step. This keeps rapid input inside the clone buffer.
+    void track.offsetWidth;
+    root.removeAttribute("data-coverflow-snap");
+    void track.offsetWidth;
+  };
+
+  const move = (amount) => {
+    window.clearTimeout(normalizationTimer);
+    normalize();
+    active += amount;
+    render();
+    normalizationTimer = window.setTimeout(normalize, 620);
+  };
   const stopAutoplay = () => { window.clearInterval(autoplay); autoplay = null; };
   const startAutoplay = () => {
     stopAutoplay();
@@ -61,8 +90,7 @@ export function initCoverflow() {
   track.addEventListener("click", (event) => {
     const card = event.target.closest("[data-case-card]");
     if (!card || card.hasAttribute("data-active")) return;
-    active = cards.indexOf(card);
-    render();
+    move(cards.indexOf(card) - active);
     startAutoplay();
   });
   track.addEventListener("pointerdown", (event) => {
