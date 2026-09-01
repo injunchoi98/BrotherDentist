@@ -121,7 +121,7 @@ for (const [file, widths] of variants) {
     const enlarging = enlargementSources.has(file) && width > (metadata.width || width);
     const webpOptions = losslessAlphaSources.has(file)
       ? { lossless: true, effort: 6 }
-      : { quality: enlarging ? 90 : 80, alphaQuality: 92, effort: 6, smartSubsample: true };
+      : { quality: 90, alphaQuality: 92, effort: 6, smartSubsample: true };
     let pipeline = sharp(source)
       .rotate()
       .resize({
