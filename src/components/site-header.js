@@ -17,6 +17,7 @@ export function initSiteHeader({ hero } = {}) {
   const desktopNavigationInput = matchMedia("(min-width: 64.0625rem)");
   let lastHeaderScrollY = Math.max(0, scrollY);
   let menuFocusFrame = 0;
+  let headerUpdateFrame = 0;
 
   const revealHeader = () => {
     header.removeAttribute("data-hidden");
@@ -69,9 +70,8 @@ export function initSiteHeader({ hero } = {}) {
   );
 
   const updateHeader = () => {
+    headerUpdateFrame = 0;
     const currentScrollY = Math.max(0, scrollY);
-    const lightSurfaceStart = (hero?.offsetHeight || innerHeight) - HEADER_SURFACE_OFFSET;
-    header.toggleAttribute("data-on-light", currentScrollY > lightSurfaceStart);
 
     const interactionOpen = nav?.hasAttribute("data-open")
       || treatmentMenu?.hasAttribute("data-open")
@@ -94,6 +94,16 @@ export function initSiteHeader({ hero } = {}) {
       revealHeader();
     }
   };
+  const scheduleHeaderUpdate = () => {
+    if (!headerUpdateFrame) headerUpdateFrame = requestAnimationFrame(updateHeader);
+  };
+  const heroSurfaceObserver = hero
+    ? new IntersectionObserver(([entry]) => {
+      const passedHero = !entry.isIntersecting
+        && entry.boundingClientRect.bottom <= HEADER_SURFACE_OFFSET;
+      header.toggleAttribute("data-on-light", passedHero);
+    }, { rootMargin: `-${HEADER_SURFACE_OFFSET}px 0px 0px`, threshold: 0 })
+    : null;
 
   const handleMenuClick = (event) => {
     setMenuOpen(menuButton.getAttribute("aria-expanded") !== "true", true, event.detail === 0);
@@ -155,7 +165,8 @@ export function initSiteHeader({ hero } = {}) {
 
   setTreatmentMenuOpen(false);
   updateHeader();
-  addEventListener("scroll", updateHeader, { passive: true });
+  heroSurfaceObserver?.observe(hero);
+  addEventListener("scroll", scheduleHeaderUpdate, { passive: true });
   addEventListener("keydown", handleKeydown);
   menuButton?.addEventListener("click", handleMenuClick);
   treatmentToggle?.addEventListener("click", handleTreatmentClick);
@@ -168,7 +179,9 @@ export function initSiteHeader({ hero } = {}) {
 
   return () => {
     if (menuFocusFrame) cancelAnimationFrame(menuFocusFrame);
-    removeEventListener("scroll", updateHeader);
+    if (headerUpdateFrame) cancelAnimationFrame(headerUpdateFrame);
+    heroSurfaceObserver?.disconnect();
+    removeEventListener("scroll", scheduleHeaderUpdate);
     removeEventListener("keydown", handleKeydown);
     menuButton?.removeEventListener("click", handleMenuClick);
     treatmentToggle?.removeEventListener("click", handleTreatmentClick);

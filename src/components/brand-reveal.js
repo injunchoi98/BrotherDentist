@@ -1,8 +1,12 @@
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   calculatePinMinimumHeightRem,
   createPinHeightGuard
 } from "../utils/pin-height-guard.js";
 import { bindVisualViewportMetrics } from "../utils/visual-viewport.js";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export function initBrandReveal() {
   const section = document.querySelector("[data-brand-reveal]");
@@ -37,11 +41,9 @@ export function initBrandReveal() {
     });
   };
 
-  const update = () => {
-    const rect = section.getBoundingClientRect();
-    const distance = Math.max(1, section.offsetHeight - (sticky?.offsetHeight || document.documentElement.clientHeight));
-    const scrolled = Math.min(distance, Math.max(0, -rect.top));
+  const render = (progress, distance) => {
     const startDistance = Math.min(distance - 1, (distance * .08) + 100);
+    const scrolled = progress * distance;
     const growth = Math.max(0, (scrolled - startDistance) / Math.max(1, distance - startDistance));
     const eased = growth * growth * (3 - (2 * growth));
     // Keep the layer completely unpainted at the closed end. On iOS Safari,
@@ -62,15 +64,22 @@ export function initBrandReveal() {
     minimumHeightRem: getTextMinimumHeightRem,
     onEnable: () => {
       const unbindVisualViewport = bindVisualViewportMetrics(sticky);
-      update();
-      addEventListener("scroll", update, { passive: true });
+      const scrollTrigger = ScrollTrigger.create({
+        id: "brand-reveal",
+        trigger: section,
+        start: "top top",
+        end: "bottom bottom",
+        invalidateOnRefresh: true,
+        onRefresh: (self) => render(self.progress, Math.max(1, self.end - self.start)),
+        onUpdate: (self) => render(self.progress, Math.max(1, self.end - self.start)),
+      });
+      render(scrollTrigger.progress, Math.max(1, scrollTrigger.end - scrollTrigger.start));
       return () => {
-        removeEventListener("scroll", update);
+        scrollTrigger.kill();
         unbindVisualViewport();
       };
     },
     onDisable: () => {
-      removeEventListener("scroll", update);
       reset();
     }
   });

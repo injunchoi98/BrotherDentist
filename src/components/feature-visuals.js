@@ -208,6 +208,9 @@ function initQualityLogoCloud(cloud, reducedMotion) {
   let viewportObserver = null;
   let visible = !("IntersectionObserver" in window);
   let pointerInside = false;
+  let pointerBounds = null;
+  let pointerFrame = 0;
+  let pendingPointer = null;
   const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
   // Match the CSS compact breakpoint exactly so a 48rem viewport never paints
   // the hidden desktop canvas behind the visible four-row marquee.
@@ -356,6 +359,10 @@ function initQualityLogoCloud(cloud, reducedMotion) {
   };
 
   const resetFocus = () => {
+    cancelAnimationFrame(pointerFrame);
+    pointerFrame = 0;
+    pendingPointer = null;
+    pointerBounds = null;
     pointerInside = false;
     state.targetFocusX = 0;
     state.targetFocusY = 0;
@@ -365,13 +372,15 @@ function initQualityLogoCloud(cloud, reducedMotion) {
     startAnimation();
   };
 
-  const updatePointerFocus = (event) => {
-    if (!finePointer.matches) return;
-    const bounds = cloud.getBoundingClientRect();
+  const applyPointerFocus = () => {
+    pointerFrame = 0;
+    if (!pendingPointer || !pointerBounds) return;
+    const { clientX, clientY } = pendingPointer;
+    const bounds = pointerBounds;
     if (!bounds.width || !bounds.height) return;
     pointerInside = true;
-    const normalizedX = (((event.clientX - bounds.left) / bounds.width) - .5) * 2;
-    const normalizedY = (((event.clientY - bounds.top) / bounds.height) - .5) * 2;
+    const normalizedX = (((clientX - bounds.left) / bounds.width) - .5) * 2;
+    const normalizedY = (((clientY - bounds.top) / bounds.height) - .5) * 2;
     const directionX = Math.max(-1, Math.min(1, normalizedX));
     const directionY = Math.max(-1, Math.min(1, normalizedY));
 
@@ -383,6 +392,15 @@ function initQualityLogoCloud(cloud, reducedMotion) {
     state.targetFocusY = directionY * Math.min(state.height * .2, 64);
     cloud.dataset.qualityMode = getMode();
     startAnimation();
+  };
+  const updatePointerFocus = (event) => {
+    if (!finePointer.matches || !pointerBounds) return;
+    pendingPointer = { clientX: event.clientX, clientY: event.clientY };
+    if (!pointerFrame) pointerFrame = requestAnimationFrame(applyPointerFocus);
+  };
+  const handlePointerEnter = (event) => {
+    pointerBounds = cloud.getBoundingClientRect();
+    updatePointerFocus(event);
   };
 
   const handleModeChange = () => {
@@ -422,6 +440,7 @@ function initQualityLogoCloud(cloud, reducedMotion) {
   });
 
   const resizeObserver = new ResizeObserver(() => {
+    pointerBounds = cloud.getBoundingClientRect();
     if (!resize()) return;
     render();
     startAnimation();
@@ -440,7 +459,7 @@ function initQualityLogoCloud(cloud, reducedMotion) {
     cloud.setAttribute("data-quality-active", "");
   }
 
-  cloud.addEventListener("pointerenter", updatePointerFocus, { passive: true });
+  cloud.addEventListener("pointerenter", handlePointerEnter, { passive: true });
   cloud.addEventListener("pointermove", updatePointerFocus, { passive: true });
   cloud.addEventListener("pointerleave", resetFocus, { passive: true });
   finePointer.addEventListener("change", handleModeChange);
@@ -451,6 +470,7 @@ function initQualityLogoCloud(cloud, reducedMotion) {
     else startAnimation();
   });
   window.addEventListener("pagehide", () => {
+    cancelAnimationFrame(pointerFrame);
     stopAnimation();
     resizeObserver.disconnect();
     viewportObserver?.disconnect();
@@ -461,8 +481,6 @@ function initCareWorkflow(workflow, reducedMotion) {
   const nodes = [...workflow.querySelectorAll("[data-care-node]")];
   const links = [...workflow.querySelectorAll("[data-care-link]")];
   const phase = workflow.querySelector("[data-care-phase]");
-  const stage = workflow.querySelector("[data-care-stage]");
-  const canvas = workflow.querySelector(".care-workflow-canvas");
   const pulse = workflow.querySelector("[data-care-pulse]");
   if (!nodes.length || !phase) return;
 
@@ -472,19 +490,10 @@ function initCareWorkflow(workflow, reducedMotion) {
     "M 534 54 C 582 54, 528 174, 576 174",
   ];
 
-  const resize = () => {
-    if (!stage || !canvas) return;
-    const scale = Math.min(1, stage.clientWidth / 736);
-    canvas.style.setProperty("--care-scale", String(scale));
-    stage.style.height = `${226 * scale}px`;
-  };
-  const resizeObserver = new ResizeObserver(resize);
-  if (stage) resizeObserver.observe(stage);
-  resize();
-
   const timeline = [850, 1000, 700, 1000, 700, 1000, 700, 1000, 2200];
   let step = reducedMotion ? timeline.length - 1 : 1;
   let timer = 0;
+  let pulseAnimation = null;
 
   const render = () => {
     nodes.forEach((node, index) => {
@@ -502,11 +511,21 @@ function initCareWorkflow(workflow, reducedMotion) {
 
     const activeLink = links.findIndex((link) => link.dataset.state === "active");
     if (pulse) {
+      pulseAnimation?.cancel();
+      pulseAnimation = null;
       pulse.removeAttribute("data-active");
       if (activeLink >= 0) {
         pulse.style.offsetPath = `path("${linkPaths[activeLink]}")`;
-        void pulse.offsetWidth;
         pulse.setAttribute("data-active", "");
+        pulseAnimation = pulse.animate([
+          { offsetDistance: "0%", opacity: 0 },
+          { offsetDistance: "25.714%", opacity: 1, offset: .25714 },
+          { offsetDistance: "100%", opacity: 1 },
+        ], {
+          duration: 700,
+          easing: "cubic-bezier(.5, 0, .5, 1)",
+          fill: "both",
+        });
       }
     }
 
@@ -529,7 +548,7 @@ function initCareWorkflow(workflow, reducedMotion) {
     schedule();
     window.addEventListener("pagehide", () => {
       window.clearTimeout(timer);
-      resizeObserver.disconnect();
+      pulseAnimation?.cancel();
     }, { once: true });
   }
 }

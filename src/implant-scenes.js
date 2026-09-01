@@ -46,6 +46,7 @@ const PRODUCT_MASTER_LEFT = 1979 / 2;
 const PRODUCT_MASTER_TOP = 398 / 2;
 const PRODUCT_MASTER_WIDTH = 386 / 2;
 const PRODUCT_MASTER_HEIGHT = 955 / 2;
+let ambientPointerBounds = null;
 
 const initProductAmbient = () => {
   if (!precisionAmbient) return;
@@ -59,6 +60,8 @@ const initProductAmbient = () => {
   let height = 0;
   let visible = true;
   let animationFrame = 0;
+  let pointerFrame = 0;
+  let pendingPointer = null;
   let particleColor = "";
 
   const random = (minimum, maximum) => minimum + Math.random() * (maximum - minimum);
@@ -159,14 +162,23 @@ const initProductAmbient = () => {
     }
   };
 
-  const handlePointerMove = (event) => {
-    const bounds = precisionAmbient.getBoundingClientRect();
-    pointer.x = event.clientX - bounds.left;
-    pointer.y = event.clientY - bounds.top;
+  const applyPointerPosition = () => {
+    pointerFrame = 0;
+    if (!pendingPointer || !ambientPointerBounds) return;
+    pointer.x = pendingPointer.clientX - ambientPointerBounds.left;
+    pointer.y = pendingPointer.clientY - ambientPointerBounds.top;
     pointer.active = true;
+  };
+  const handlePointerMove = (event) => {
+    if (!visible || !desktopMedia.matches || !ambientPointerBounds) return;
+    pendingPointer = { clientX: event.clientX, clientY: event.clientY };
+    if (!pointerFrame) pointerFrame = requestAnimationFrame(applyPointerPosition);
   };
 
   const handlePointerReset = () => {
+    cancelAnimationFrame(pointerFrame);
+    pointerFrame = 0;
+    pendingPointer = null;
     pointer.active = false;
   };
 
@@ -186,6 +198,7 @@ const initProductAmbient = () => {
   window.addEventListener("pointermove", handlePointerMove, { passive: true });
   window.addEventListener("blur", handlePointerReset);
   document.addEventListener("pointerleave", handlePointerReset);
+  window.addEventListener("pagehide", handlePointerReset, { once: true });
   resize();
   start();
 };
@@ -231,6 +244,12 @@ const syncRestorationStage = () => {
   precisionSticky.style.setProperty("--implant-shadow-top", `${shadowTop.toFixed(3)}px`);
   precisionSticky.style.setProperty("--implant-shadow-width", `${shadowWidth.toFixed(3)}px`);
   precisionSticky.dataset.implantSceneScale = scale.toFixed(6);
+  ambientPointerBounds = {
+    left: lightLeft,
+    top: lightTop,
+    width: lightWidth,
+    height: lightWidth * 6 / 13,
+  };
 };
 
 const initRestorationStage = () => {

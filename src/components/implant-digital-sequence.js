@@ -212,7 +212,6 @@ export function initImplantDigitalSequence({ header } = {}) {
   let renderFrame = 0;
   let sequenceEnabled = false;
   let nearViewport = false;
-  let layoutMetrics = null;
 
   const drawFrame = (frame) => {
     if (!frame || !canvas.width || !canvas.height) return;
@@ -268,45 +267,8 @@ export function initImplantDigitalSequence({ header } = {}) {
     scheduleRender();
   };
 
-  const measureLayout = () => {
-    const styles = getComputedStyle(layout);
-    const stageScale = Number.parseFloat(styles.getPropertyValue("--implant-digital-stage-scale")) || 1;
-    const stageXPercent = Number.parseFloat(styles.getPropertyValue("--implant-digital-stage-x-percent")) || 0;
-    const layoutHeight = layout.clientHeight;
-    const topSafety = Math.max((header?.offsetHeight || 0) + 24, 32);
-
-    layoutMetrics = {
-      copyY: Math.max(topSafety, (layoutHeight - copy.offsetHeight) / 2),
-      stageScale,
-      stageXPercent,
-    };
-  };
-
-  const applyLayout = () => {
-    if (!sequenceEnabled || !layoutMetrics) return;
-    const { copyY, stageScale, stageXPercent } = layoutMetrics;
-
-    gsap.set(copy, {
-      x: 0,
-      y: copyY,
-      force3D: true,
-    });
-    gsap.set(stage, {
-      x: 0,
-      xPercent: stageXPercent,
-      y: 0,
-      yPercent: -50,
-      scale: stageScale,
-      transformOrigin: "50% 50%",
-      force3D: true,
-    });
-    story.dataset.layoutProgress = "0.000";
-  };
-
   const refreshLayout = () => {
     resizeCanvas();
-    measureLayout();
-    applyLayout();
   };
 
   const setActiveStep = (index) => {
@@ -326,9 +288,6 @@ export function initImplantDigitalSequence({ header } = {}) {
     desiredFrame = nextFrame;
     story.dataset.sequenceFrame = String(nextFrame + 1).padStart(FRAME_DIGITS, "0");
     setActiveStep(getStepIndex(nextFrame));
-    // The visual remains in the right column for every frame; only the actual
-    // rendered camera moves around the anatomy.
-    applyLayout();
     store.warmWindow(nextFrame, direction);
     store.decodeFrame(nextFrame, nextFrame).then(scheduleRender);
     scheduleRender();
@@ -349,8 +308,6 @@ export function initImplantDigitalSequence({ header } = {}) {
 
   const resizeObserver = new ResizeObserver(refreshLayout);
   resizeObserver.observe(stage);
-  resizeObserver.observe(layout);
-  resizeObserver.observe(copy);
   refreshLayout();
   setActiveStep(0);
 
@@ -411,8 +368,6 @@ export function initImplantDigitalSequence({ header } = {}) {
       sequenceEnabled = false;
       story.removeAttribute("data-sequence-ready");
       delete story.dataset.sequenceFrame;
-      delete story.dataset.layoutProgress;
-      gsap.set([copy, stage], { clearProps: "transform" });
       setActiveStep(0);
     },
   });

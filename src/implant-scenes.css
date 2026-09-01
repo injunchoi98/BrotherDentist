@@ -564,9 +564,10 @@
 .implant-digital-copy {
   position: absolute;
   z-index: 3;
-  top: 0;
+  top: 50%;
   left: var(--implant-digital-copy-left);
   width: min(28%, 34rem);
+  transform: translate3d(0, -50%, 0);
   will-change: transform;
 }
 

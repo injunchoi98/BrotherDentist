@@ -78,7 +78,7 @@ const variants = [
   ["general-process-plan-v2.png", [480, 960, 1440]],
   ["general-process-treatment-v2.png", [480, 960, 1440]],
   ["general-process-aftercare-v2.png", [480, 960, 1440]],
-  ["visit-map-naver-v3.png", [480, 960, 1600]],
+  ["visit-map-naver-v3-2x.png", [480, 960, 1600, 2400, 3200]],
   ["review-profile-01.jpg", [48, 96]],
   ["review-profile-02.jpg", [48, 96]],
   ["review-profile-03.jpg", [48, 96]],

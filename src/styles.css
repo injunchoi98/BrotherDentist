@@ -148,21 +148,22 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .case-section { --case-backdrop: var(--color-gray); overflow: hidden; }
 .case-heading h2 { max-width: 22ch; }
 .coverflow { position: relative; min-height: 0; padding-bottom: 5rem; }
-.coverflow-track { position: relative; height: 36rem; perspective: 1200px; touch-action: pan-y; }
-.case-card { --offset: 0; --abs-offset: 0; --case-dim: .5; position: absolute; left: 50%; top: 0; width: min(78vw, 37rem); isolation: isolate; opacity: 0; pointer-events: none; transform: translateX(calc(-50% + (var(--offset) * min(38vw, 28rem)))) translateZ(calc(var(--abs-offset) * -190px)) rotateY(calc(var(--offset) * -15deg)) scale(calc(1 - (min(var(--abs-offset), 2) * .09))); transition: transform .6s cubic-bezier(.2,.75,.2,1), opacity .35s; cursor: pointer; backface-visibility: hidden; }
+.coverflow-track { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); min-height: 36rem; perspective: 1200px; touch-action: pan-y; }
+.case-card { --offset: 0; --abs-offset: 0; --case-dim: .5; position: relative; grid-area: 1 / 1; align-self: start; justify-self: center; width: min(78vw, 37rem); isolation: isolate; opacity: 0; pointer-events: none; transform: translateX(calc(var(--offset) * min(38vw, 28rem))) translateZ(calc(var(--abs-offset) * -190px)) rotateY(calc(var(--offset) * -15deg)) scale(calc(1 - (min(var(--abs-offset), 2) * .09))); transition: transform .6s cubic-bezier(.2,.75,.2,1), opacity .35s; cursor: pointer; backface-visibility: hidden; }
 .case-card::before { content: ""; position: absolute; z-index: 0; inset: -2px; background: var(--case-backdrop); pointer-events: none; }
 .case-card-surface { position: relative; z-index: 1; height: 100%; overflow: hidden; border-radius: var(--radius-card); background: var(--color-white); clip-path: inset(0 round var(--radius-card)); isolation: isolate; }
 .case-card-surface::before { content: ""; position: absolute; z-index: 7; inset: 0; border: 1px solid var(--color-line); border-radius: inherit; pointer-events: none; }
 .case-card[data-visible]:not([data-active]) .case-card-surface::after { content: ""; position: absolute; z-index: 6; inset: 0; border-radius: inherit; background: rgb(255 255 255 / var(--case-dim)); pointer-events: none; }
 .case-card[data-neighbor] { opacity: 1; pointer-events: auto; }
 .case-card[data-active] { filter: none; opacity: 1; pointer-events: auto; cursor: default; }
-.coverflow--five .coverflow-track { height: 32rem; }
+.coverflow--five .coverflow-track { min-height: 32rem; }
 .coverflow[data-coverflow-snap] .case-card { transition: none; }
-.coverflow--five .case-card { width: min(78vw, 37rem); transform: translateX(calc(-50% + (var(--offset) * 25vw))) translateZ(calc(var(--abs-offset) * -150px)) rotateY(calc(var(--offset) * -8deg)); }
+.coverflow--five .case-card { width: min(78vw, 37rem); transform: translateX(calc(var(--offset) * 25vw)) translateZ(calc(var(--abs-offset) * -150px)) rotateY(calc(var(--offset) * -8deg)); }
 .coverflow--five .case-card[data-visible]:not([data-active]) { opacity: 1; pointer-events: auto; }
 .coverflow--five .case-card[data-distance="1"] { --case-dim: .32; }
 .coverflow--five .case-card[data-distance="2"] { --case-dim: .68; }
 .case-card:not([data-active]) .image-compare input { pointer-events: none; }
+.case-card:not([data-active]) .compare-line span { opacity: 0; }
 .image-compare { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: calc(var(--radius-card) - 1px) calc(var(--radius-card) - 1px) 0 0; background: var(--color-white); clip-path: inset(0 round calc(var(--radius-card) - 1px) calc(var(--radius-card) - 1px) 0 0); isolation: isolate; }
 .compare-half { position: absolute; inset: 0; overflow: hidden; }
 .compare-half picture { position: absolute; inset: 0; }
@@ -171,7 +172,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .compare-after { clip-path: inset(0 0 0 var(--compare)); }
 .compare-after img { right: -2px; }
 .compare-line { position: absolute; z-index: 3; left: var(--compare); top: 0; bottom: 0; width: 2px; translate: -1px; background: var(--color-white); }
-.compare-line span { position: absolute; top: 50%; left: 50%; display: grid; width: 2.75rem; height: 2.75rem; place-items: center; translate: -50% -50%; border-radius: 50%; background: var(--color-white); color: var(--color-text); box-shadow: 0 5px 20px rgba(0,0,0,.18); }
+.compare-line span { position: absolute; top: 50%; left: 50%; display: grid; width: 2.75rem; height: 2.75rem; place-items: center; translate: -50% -50%; border-radius: 50%; background: var(--color-white); color: var(--color-text); box-shadow: 0 5px 20px rgba(0,0,0,.18); transition: opacity .2s ease; }
+.compare-line span::before { content: ""; width: 1rem; height: .55rem; background: currentColor; clip-path: polygon(0 50%, 30% 0, 30% 34%, 70% 34%, 70% 0, 100% 50%, 70% 100%, 70% 66%, 30% 66%, 30% 100%); }
 .image-compare input { position: absolute; z-index: 4; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
 .compare-label { position: absolute; z-index: 3; top: 1rem; border-radius: 999px; padding: .25rem .6rem; color: var(--color-white); background: rgba(0,0,0,.48); font-size: var(--landing-ui-meta-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-ui-meta-line-height); }
 .compare-label-before { left: 1rem; }.compare-label-after { right: 1rem; }
@@ -200,7 +202,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .faq-icon::before, .faq-icon::after { content: ""; position: absolute; width: .7rem; height: 1px; background: var(--color-white); transition: transform .2s ease; }
 .faq-icon::after { transform: rotate(90deg); }
 .faq-trigger[aria-expanded="true"] .faq-icon::after { transform: rotate(90deg) scaleX(0); }
-.faq-panel { overflow: hidden; }
+.faq-panel { display: grid; overflow: hidden; grid-template-rows: 0fr; visibility: hidden; opacity: 0; transition: grid-template-rows .25s ease, opacity .25s ease, visibility 0s linear .25s; }
+.faq-item[data-open] .faq-panel { grid-template-rows: 1fr; visibility: visible; opacity: 1; transition-delay: 0s; }
+.faq-panel-inner { min-height: 0; overflow: hidden; }
 .faq-answer { margin: 0; padding: 0 1.25rem 1.25rem; color: var(--color-text-muted); font-size: var(--landing-body-4-size); line-height: var(--landing-body-4-line-height); }
 .review-heading { display: block; }
 .review-heading h2 { max-width: 18ch; }
@@ -424,7 +428,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 /* Match the reference canvas literally: zinc-50 at 80% over white resolves to
  * #fbfbfb, with 1px zinc-ink dots at 7% opacity on an 18px grid. */
 .care-workflow-stage { position: relative; width: 100%; height: 226px; overflow: hidden; border: 1px solid #f4f4f5; border-radius: .75rem; background-color: #fbfbfb; background-image: radial-gradient(rgba(24,24,27,.07) 1px, transparent 1px); background-size: 18px 18px; }
-.care-workflow-canvas { position: absolute; top: 0; left: 0; width: 736px; height: 226px; transform: scale(var(--care-scale, 1)); transform-origin: top left; }
+.care-workflow-canvas { position: absolute; top: 0; left: 0; width: 736px; height: 226px; }
 .care-workflow-canvas > svg { position: absolute; inset: 0; width: 736px; height: 226px; }
 /* The reference uses two coincident paths: a quiet solid rail below a moving
  * dashed route. Idle/done routes keep drifting at 1.4s; only the active route
@@ -446,7 +450,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .care-node[data-status="done"] { border-color: #10b98180; }.care-node[data-status="done"] > i { color: #18181b; background: #18181b1f; }.care-node[data-status="done"] > em { border-color: #e4e4e7; color: #3f3f46; }
 /* Match the Motion reference: the 10px point starts on the path itself, fades
  * in for 180ms and travels for the full 700ms with the same easing and glow. */
-.care-travel-pulse { position: absolute; z-index: 4; top: 0; left: 0; display: none; width: 10px; height: 10px; border-radius: 50%; opacity: 0; background: #18181b; box-shadow: 0 0 14px 3px #18181b59; offset-rotate: 0deg; }.care-travel-pulse[data-active] { display: block; animation: care-travel .7s cubic-bezier(.5,0,.5,1) both; }
+.care-travel-pulse { position: absolute; z-index: 4; top: 0; left: 0; display: none; width: 10px; height: 10px; border-radius: 50%; opacity: 0; background: #18181b; box-shadow: 0 0 14px 3px #18181b59; offset-rotate: 0deg; }.care-travel-pulse[data-active] { display: block; }
 
 /* The day/night cycle belongs to the card's visible state rather than hover.
  * That gives touch devices the same story and lets desktop hover enter/leave
@@ -459,7 +463,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @keyframes hours-title-color { 0%, 12%, 88%, 100% { color: var(--color-text); } 38%, 62% { color: var(--color-white); } }
 @keyframes hours-body-color { 0%, 12%, 88%, 100% { color: var(--color-text-muted); } 38%, 62% { color: color-mix(in srgb, var(--color-white) 76%, transparent); } }
 @keyframes workflow-dash { to { stroke-dashoffset: -24; } }
-@keyframes care-travel { 0% { offset-distance: 0%; opacity: 0; } 25.714% { opacity: 1; } 100% { offset-distance: 100%; opacity: 1; } }
 @keyframes care-node-halo { from { opacity: .65; transform: scale(.98); } to { opacity: 0; transform: scale(1.1); } }
 @keyframes care-chip-pop { from { opacity: 0; transform: translateY(5px) scale(.5); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes care-spinner { to { transform: rotate(360deg); } }
@@ -657,10 +660,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .case-section { padding-block: 4rem; }
   .case-heading { margin-bottom: 2rem; }
   .coverflow { padding-bottom: 4.25rem; }
-  .coverflow-track { height: clamp(24rem, calc(28vw + 17.1875rem), 27.5rem); }
-  .case-card { width: min(84vw, 31rem); height: clamp(24rem, calc(28vw + 17.1875rem), 27.5rem); transform: translateX(calc(-50% + (var(--offset) * 72vw))) translateZ(calc(var(--abs-offset) * -150px)) rotateY(calc(var(--offset) * -9deg)) scale(calc(1 - (var(--abs-offset) * .08))); }
-  .coverflow--five .coverflow-track { height: clamp(24rem, calc(28vw + 17.1875rem), 27.5rem); }
-  .coverflow--five .case-card { width: min(84vw, 31rem); transform: translateX(calc(-50% + (var(--offset) * 72vw))) translateZ(calc(var(--abs-offset) * -150px)) rotateY(calc(var(--offset) * -9deg)) scale(calc(1 - (var(--abs-offset) * .08))); }
+  .coverflow-track { min-height: clamp(24rem, calc(28vw + 17.1875rem), 27.5rem); }
+  .case-card { width: min(84vw, 31rem); height: clamp(24rem, calc(28vw + 17.1875rem), 27.5rem); transform: translateX(calc(var(--offset) * 72vw)) translateZ(calc(var(--abs-offset) * -150px)) rotateY(calc(var(--offset) * -9deg)) scale(calc(1 - (var(--abs-offset) * .08))); }
+  .coverflow--five .coverflow-track { min-height: clamp(24rem, calc(28vw + 17.1875rem), 27.5rem); }
+  .coverflow--five .case-card { width: min(84vw, 31rem); transform: translateX(calc(var(--offset) * 72vw)) translateZ(calc(var(--abs-offset) * -150px)) rotateY(calc(var(--offset) * -9deg)) scale(calc(1 - (var(--abs-offset) * .08))); }
   .case-copy { padding: 1rem 1.25rem 1.25rem; }
   .case-copy h3 { margin: .375rem 0 .5rem; }
   .faq-section-inner { width: min(100% - 2.5rem, 42.5rem); }
