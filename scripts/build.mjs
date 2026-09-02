@@ -15,7 +15,8 @@ await build({
     main: resolve(root, "src/main.js"),
     "implant-scenes": resolve(root, "src/implant-scenes.js"),
     general: resolve(root, "src/general.js"),
-    whitening: resolve(root, "src/whitening.js")
+    whitening: resolve(root, "src/whitening.js"),
+    location: resolve(root, "src/location.js")
   },
   outdir: resolve(dist, "src"),
   bundle: true,
@@ -30,7 +31,8 @@ await build({
     styles: resolve(root, "src/styles.css"),
     "implant-scenes": resolve(root, "src/implant-scenes.css"),
     general: resolve(root, "src/general.css"),
-    whitening: resolve(root, "src/whitening.css")
+    whitening: resolve(root, "src/whitening.css"),
+    location: resolve(root, "src/location.css")
   },
   outdir: resolve(dist, "src"),
   bundle: true,
@@ -57,8 +59,13 @@ if (/\bfrom\s*["']gsap(?:\/ScrollTrigger)?["']/.test(whiteningBundle)) {
   throw new Error("whitening.js must be the bundled browser entry");
 }
 
+const locationBundle = await readFile(resolve(dist, "src/location.js"), "utf8");
+if (/\bfrom\s*["']gsap(?:\/ScrollTrigger)?["']/.test(locationBundle)) {
+  throw new Error("location.js must be the bundled browser entry");
+}
+
 const stamp = new Date().toISOString();
-for (const page of ["index.html", "implant.html", "general.html", "whitening.html"]) {
+for (const page of ["index.html", "implant.html", "general.html", "whitening.html", "location.html"]) {
   const source = await readFile(resolve(root, page), "utf8");
   await writeFile(resolve(dist, page), source.replace("{{BUILD_TIME}}", stamp));
 }

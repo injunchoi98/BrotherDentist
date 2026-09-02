@@ -8,6 +8,7 @@ const css = (await Promise.all([
   "src/implant-scenes.css",
   "src/general.css",
   "src/whitening.css",
+  "src/location.css",
 ].map((file) => readFile(resolve(root, file), "utf8")))).join("\n");
 // Cloudflare checks out only this repository; validate the committed deployment
 // snapshot instead of relying on the parent workspace's token file.
