@@ -1,5 +1,5 @@
 import { doctors } from "../data.js";
-import { responsivePicture, webpSrcset } from "../utils/responsive-image.js";
+import { responsivePicture, webpSource, webpSrcset } from "../utils/responsive-image.js";
 
 export function initDoctorGallery() {
   const root = document.querySelector("[data-doctors]");
@@ -23,7 +23,7 @@ export function initDoctorGallery() {
     const doctor = doctors[current];
     root.classList.add("is-changing");
     window.setTimeout(() => {
-      image.src = doctor.image;
+      image.src = webpSource(doctor.image, 532);
       if (source) source.srcset = webpSrcset(doctor.image, [266, 532]);
       image.alt = `${doctor.name} ${doctor.role} 프로필 이미지`;
       name.textContent = doctor.name;

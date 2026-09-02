@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>365서울감동치과 OG</title>
+    <style>
+      :root {
+        --og-brand: #3182f6;
+        --og-ink: #191f28;
+        --og-muted: #4e5968;
+        --og-canvas: #f2f4f6;
+        --og-visual-start: #e8f3ff;
+        --og-visual-end: #dceaff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      body {
+        background: var(--og-canvas);
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+          "Noto Sans KR", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: geometricPrecision;
+      }
+
+      .og-canvas {
+        position: relative;
+        isolation: isolate;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: var(--og-canvas);
+      }
+
+      .og-copy {
+        position: absolute;
+        z-index: 3;
+        top: 215px;
+        left: 72px;
+        width: 560px;
+      }
+
+      .og-kicker {
+        margin: 0 0 18px;
+        color: var(--og-muted);
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1.25;
+        letter-spacing: -0.035em;
+      }
+
+      .og-title {
+        margin: 0;
+        color: var(--og-ink);
+        font-size: 72px;
+        font-weight: 700;
+        line-height: 1.08;
+        letter-spacing: -0.045em;
+        white-space: nowrap;
+      }
+
+      .og-title__number {
+        color: var(--og-brand);
+        letter-spacing: -0.025em;
+      }
+
+      .og-visual {
+        position: absolute;
+        z-index: 1;
+        top: 48px;
+        right: 0;
+        bottom: 0;
+        width: 566px;
+        overflow: hidden;
+        border-radius: 64px 0 0;
+        background: linear-gradient(
+          145deg,
+          var(--og-visual-start) 0%,
+          var(--og-visual-end) 100%
+        );
+      }
+
+      .og-building {
+        position: absolute;
+        z-index: 2;
+        right: -50px;
+        bottom: -2px;
+        width: 690px;
+        max-width: none;
+        height: auto;
+        filter: saturate(1.03) contrast(1.04)
+          drop-shadow(0 24px 30px rgb(18 53 105 / 18%));
+      }
+    </style>
+  </head>
+  <body>
+    <main class="og-canvas" aria-label="365서울감동치과 오픈 그래프 이미지">
+      <section class="og-copy" aria-label="병원 소개">
+        <p class="og-kicker">감동을 드리는 치과</p>
+        <h1 class="og-title"><span class="og-title__number">365</span>서울감동치과</h1>
+      </section>
+
+      <div class="og-visual" aria-hidden="true"></div>
+      <img
+        class="og-building"
+        src="../../assets/images/clinic-exterior-actual.png"
+        alt=""
+      />
+    </main>
+  </body>
+</html>

@@ -7,7 +7,8 @@
     "generate:implant-sequence": "node scripts/generate-implant-digital-sequence.mjs",
     "check:images": "node scripts/check-images.mjs",
     "check:typography": "node scripts/check-typography.mjs",
-    "build": "npm run generate:images && npm run check:images && npm run check:typography && node scripts/build.mjs",
+    "check:seo": "node scripts/check-seo.mjs",
+    "build": "npm run generate:images && npm run check:images && npm run check:typography && node scripts/build.mjs && npm run check:seo",
     "dev": "npm run generate:images && vite --host 127.0.0.1 --port 4173 --strictPort"
   },
   "dependencies": {

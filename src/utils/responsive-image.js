@@ -6,8 +6,10 @@ const escapeAttribute = (value) => String(value)
 
 const imageStem = (source) => source.split("/").at(-1).replace(/\.[^.]+$/, "");
 
+export const webpSource = (source, width) => `./assets/images/webp/${imageStem(source)}-${width}.webp`;
+
 export const webpSrcset = (source, widths) => widths
-  .map((width) => `./assets/images/webp/${imageStem(source)}-${width}.webp ${width}w`)
+  .map((width) => `${webpSource(source, width)} ${width}w`)
   .join(", ");
 
 export const responsivePicture = ({
@@ -21,5 +23,5 @@ export const responsivePicture = ({
   imageAttributes = "",
 }) => `<picture>
   <source type="image/webp" srcset="${webpSrcset(source, widths)}" sizes="${escapeAttribute(sizes)}" />
-  <img${className ? ` class="${escapeAttribute(className)}"` : ""} src="${escapeAttribute(source)}" alt="${escapeAttribute(alt)}" width="${width}" height="${height}" loading="lazy" decoding="async"${imageAttributes ? ` ${imageAttributes}` : ""} />
+  <img${className ? ` class="${escapeAttribute(className)}"` : ""} src="${escapeAttribute(webpSource(source, widths.at(-1)))}" alt="${escapeAttribute(alt)}" width="${width}" height="${height}" loading="lazy" decoding="async"${imageAttributes ? ` ${imageAttributes}` : ""} />
 </picture>`;

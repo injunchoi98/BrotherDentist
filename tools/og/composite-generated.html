@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>365서울감동치과 OG 합성</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body,
+      .canvas {
+        width: 1200px;
+        height: 630px;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      .canvas {
+        position: relative;
+        background: #fff;
+      }
+
+      .base {
+        position: absolute;
+        z-index: 0;
+        inset: 0;
+        width: 1200px;
+        height: 630px;
+        object-fit: fill;
+      }
+
+      .building {
+        position: absolute;
+        z-index: 5;
+        right: -100px;
+        bottom: -2px;
+        width: 640px;
+        height: auto;
+        filter: drop-shadow(0 20px 24px rgb(6 22 52 / 20%));
+      }
+    </style>
+  </head>
+  <body>
+    <main class="canvas">
+      <img class="base" alt="" />
+      <img
+        class="building"
+        src="../../assets/images/clinic-exterior-actual.png"
+        alt=""
+      />
+    </main>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const value = Number(params.get("variant"));
+      const variant = Number.isInteger(value) && value >= 1 && value <= 5 ? value : 1;
+      document.querySelector(".base").src =
+        `../../assets/images/og-generated-base-${variant}.png`;
+    </script>
+  </body>
+</html>
