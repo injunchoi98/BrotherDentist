@@ -10,7 +10,6 @@ import { initFeatureVisuals } from "./components/feature-visuals.js";
 import { initReviewMarquee } from "./components/review-marquee.js";
 import { initSiteHeader } from "./components/site-header.js";
 import { initShowcaseScroll } from "./components/showcase-scroll.js";
-import { initViewportDebug } from "./components/viewport-debug.js";
 import { initKakaoStableViewportHeight } from "./utils/viewport-state.js";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -36,7 +35,6 @@ runInitializer("equipment-stack", initEquipmentStack);
 runInitializer("evidence-scroll", initEvidenceScroll);
 runInitializer("feature-visuals", initFeatureVisuals);
 runInitializer("showcase-scroll", initShowcaseScroll);
-runInitializer("viewport-debug", initViewportDebug);
 
 // ScrollTrigger already refreshes on DOMContentLoaded, load, resize, and visibility changes.
 // Web-font completion is the only extra layout event it cannot observe directly.

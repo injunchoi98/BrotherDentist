@@ -1,5 +1,6 @@
 import { ArrowDown, ArrowUpRight, CalendarTick, ChatRoundDots, Location } from "reicon";
 import { initCoverflow } from "./components/coverflow.js";
+import { initFaqSection } from "./components/faq-section.js";
 import { initSiteHeader } from "./components/site-header.js";
 
 const generalCases = [
@@ -45,6 +46,29 @@ const generalCases = [
   },
 ];
 
+const generalFaqs = [
+  {
+    question: "일반진료센터에서는 어떤 진료를 받을 수 있나요?",
+    answer: "365서울감동치과 일반진료센터에서는 치아미백, 충치치료, 심미치료, 신경치료, 스케일링, 지각과민처치, 불소도포, 실란트, 보톡스, 턱관절 물리치료, 이갈이 장치, 틀니 제작 등을 상담할 수 있습니다.",
+  },
+  {
+    question: "일반진료센터에도 전문의가 있나요?",
+    answer: "네. 365서울감동치과 일반진료센터는 분야별 의료진이 함께 환자의 구강 상태를 확인하고 필요한 치료 방향을 안내합니다.",
+  },
+  {
+    question: "치아가 시린 경우 어떤 진료를 받아야 하나요?",
+    answer: "치아 시림은 지각과민, 충치, 치아 마모, 잇몸 내려앉음 등 원인이 다양합니다. 치아와 잇몸 상태를 함께 확인해 원인에 맞는 치료 방향을 정하는 것이 좋습니다.",
+  },
+  {
+    question: "스케일링은 정기적으로 받아야 하나요?",
+    answer: "네. 치석과 치태는 양치만으로 완전히 제거하기 어려울 수 있어 정기적인 스케일링과 검진이 필요합니다. 잇몸 상태에 따라 관리 주기는 달라질 수 있습니다.",
+  },
+  {
+    question: "충치치료는 레진, 인레이, 크라운 중 어떻게 결정하나요?",
+    answer: "충치의 깊이와 범위, 치아 위치, 씹는 힘, 남아 있는 치아 구조를 확인한 뒤 결정합니다. 작은 충치는 레진으로 치료할 수 있고, 범위가 넓으면 인레이나 크라운이 필요할 수 있습니다.",
+  },
+];
+
 const initActionIcons = () => {
   const icons = {
     booking: CalendarTick,
@@ -67,4 +91,10 @@ const initActionIcons = () => {
 
 initActionIcons();
 initCoverflow(document.querySelector("[data-general-coverflow]"), generalCases);
+initFaqSection(document.querySelector("[data-general-faq]"), {
+  label: "FAQ",
+  title: "일반진료,\n무엇이 궁금하세요?",
+  subtitle: "진료 전에 많이 물어보시는 내용을 먼저 정리했습니다.",
+  items: generalFaqs,
+});
 initSiteHeader({ hero: document.querySelector(".hyuk-hero") });

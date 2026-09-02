@@ -1,0 +1,195 @@
+@import "./styles.css";
+
+.whitening-page { background: var(--color-white); }
+
+.aesthetic-hero {
+  position: relative;
+  overflow: clip;
+  padding-top: var(--header-height);
+  background: var(--color-white);
+}
+
+.aesthetic-hero-intro {
+  position: relative;
+  z-index: 20;
+  display: grid;
+  justify-items: center;
+  margin-bottom: -3rem;
+  padding: 3rem 1.5rem 0;
+  text-align: center;
+}
+
+.aesthetic-hero-intro h1 {
+  margin: 0;
+  font-family: var(--landing-font-family);
+  font-size: var(--landing-heading-2-size);
+  font-weight: var(--landing-font-weight-regular);
+  line-height: var(--landing-heading-2-line-height);
+  letter-spacing: -.04em;
+  text-wrap: balance;
+}
+
+.aesthetic-hero-intro h1 span { display: block; }
+.aesthetic-hero-accent { color: #4f46e5; }
+
+.aesthetic-hero-intro > p {
+  max-width: 44rem;
+  margin: 1rem 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--landing-body-2-size);
+  line-height: var(--landing-body-2-line-height);
+  letter-spacing: -.025em;
+}
+
+.aesthetic-hero-glow {
+  position: absolute;
+  z-index: 10;
+  top: calc(var(--header-height) + 10rem);
+  left: 0;
+  width: 100%;
+  height: 70svh;
+  opacity: .66;
+  background: linear-gradient(to right, #808080, #663399, #0000ff);
+  filter: blur(84px);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Port of the referenced Animated Scroll Gallery component: sticky viewport,
+ * 75deg-to-flat grid, scale settle, and independently traveling columns. */
+.aesthetic-gallery {
+  position: relative;
+  height: 350svh;
+  min-height: 350svh;
+  background: var(--color-white);
+  perspective: 1000px;
+  perspective-origin: center top;
+  transform-style: preserve-3d;
+}
+
+html[data-kakao-in-app] .aesthetic-gallery {
+  height: calc(var(--kakao-stable-viewport-height) * 3.5);
+  min-height: calc(var(--kakao-stable-viewport-height) * 3.5);
+}
+
+.aesthetic-gallery-sticky {
+  position: sticky;
+  left: 0;
+  top: 0;
+  height: 100svh;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--color-white);
+  perspective: 1000px;
+  perspective-origin: center top;
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+}
+
+html[data-kakao-in-app] .aesthetic-gallery-sticky {
+  height: var(--kakao-stable-viewport-height);
+  min-height: var(--kakao-stable-viewport-height);
+}
+
+.aesthetic-gallery-grid {
+  display: grid;
+  width: calc(166.666667% + .333333rem);
+  height: 100%;
+  margin-left: calc(-33.333333% - .166667rem);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: .5rem;
+  border-radius: 1rem;
+  perspective: 1000px;
+  transform: rotateX(75deg) scale(1.2);
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.aesthetic-gallery-column {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: .5rem;
+  will-change: transform;
+}
+
+.aesthetic-gallery-column[data-gallery-column="left"],
+.aesthetic-gallery-column[data-gallery-column="right"],
+.aesthetic-gallery-column[data-gallery-column="outer-left"],
+.aesthetic-gallery-column[data-gallery-column="outer-right"] { margin-top: -.5rem; }
+.aesthetic-gallery-column[data-gallery-column="center"] { margin-top: -50%; }
+
+.aesthetic-gallery-column picture {
+  display: block;
+  flex: none;
+  overflow: hidden;
+  border-radius: .375rem;
+  background: var(--color-white);
+  box-shadow: 0 1px 3px rgba(16, 22, 21, .14);
+}
+
+.aesthetic-gallery-column img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.aesthetic-gallery[data-pin-disabled] {
+  height: auto;
+  min-height: var(--pin-fallback-min-height, 30rem);
+}
+
+.aesthetic-gallery[data-pin-disabled] .aesthetic-gallery-sticky {
+  position: relative;
+  height: auto;
+  min-height: var(--pin-fallback-min-height, 30rem);
+}
+
+.aesthetic-gallery[data-pin-disabled] .aesthetic-gallery-grid {
+  min-height: var(--pin-fallback-min-height, 30rem);
+  transform: none;
+  will-change: auto;
+}
+
+.aesthetic-gallery[data-pin-disabled] .aesthetic-gallery-column {
+  will-change: auto;
+}
+
+.aesthetic-treatment-cards .treatment-card { color: var(--color-text); }
+.aesthetic-treatment-cards .treatment-card picture { border-radius: var(--radius-card); }
+
+.aesthetic-case-note { max-width: 46rem; margin: 1rem 0 0; color: var(--color-text-muted); }
+.aesthetic-case-section .case-heading { align-items: start; }
+
+@media (max-width: 48rem) {
+  .aesthetic-hero { padding-top: var(--header-height-mobile); }
+  .aesthetic-hero-intro { margin-bottom: -2rem; padding: 2.75rem 1.25rem 0; }
+  .aesthetic-hero-intro > p br { display: none; }
+  .aesthetic-hero-glow { top: calc(var(--header-height-mobile) + 9rem); height: 62svh; filter: blur(64px); }
+  .aesthetic-gallery {
+    height: 180svh;
+    min-height: 180svh;
+  }
+  html[data-kakao-in-app] .aesthetic-gallery {
+    height: calc(var(--kakao-stable-viewport-height) * 1.8);
+    min-height: calc(var(--kakao-stable-viewport-height) * 1.8);
+  }
+  .aesthetic-gallery-grid {
+    width: 180%;
+    margin-left: -40%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .aesthetic-gallery-column-outer { display: none; }
+  .aesthetic-gallery-column picture { border-radius: .25rem; }
+  .aesthetic-gallery-column img { aspect-ratio: 4 / 3; }
+  .aesthetic-case-note { margin-top: .75rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aesthetic-gallery { height: auto; min-height: 100svh; }
+  html[data-kakao-in-app] .aesthetic-gallery { height: auto; min-height: var(--kakao-stable-viewport-height); }
+  .aesthetic-gallery-sticky { position: relative; }
+  .aesthetic-gallery-grid { transform: none !important; will-change: auto; }
+  .aesthetic-gallery-column { transform: none !important; will-change: auto; }
+}
