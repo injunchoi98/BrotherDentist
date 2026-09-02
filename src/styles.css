@@ -550,6 +550,42 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .showcase[data-pin-disabled] .showcase-static-final > picture { width: min(100%, 86rem); margin-inline: auto; }
 .showcase[data-pin-disabled] .showcase-static-final img { width: 100%; height: auto; aspect-ratio: 1387 / 560; object-fit: contain; }
 
+/* Production viewport diagnostics are query-gated with ?viewport-debug=1.
+ * The fixed-height runway lets a real device collapse and reopen its browser
+ * chrome while the readout stays visible, without making the test surface
+ * depend on the viewport units it is measuring. */
+.viewport-debug-section { display: none; color: var(--color-text); background: var(--color-gray); }
+html[data-viewport-debug] .viewport-debug-section { display: block; }
+.viewport-debug-shell { position: relative; min-height: 112rem; padding-block: clamp(5rem, 9vw, 8rem); }
+.viewport-debug-heading { display: grid; gap: .75rem; margin-bottom: 2rem; }
+.viewport-debug-heading > p:first-child { margin: 0; color: var(--color-brand); font-weight: var(--landing-font-weight-bold); }
+.viewport-debug-heading > p:last-child { max-width: 42rem; }
+.viewport-debug-sticky { position: sticky; top: calc(var(--header-height) + 1rem); overflow: hidden; border: 1px solid var(--color-line); border-radius: var(--radius-card); background: var(--color-white); }
+.viewport-debug-toolbar { display: flex; min-height: 4.5rem; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--color-line); }
+.viewport-debug-toolbar > div { display: grid; gap: .2rem; }
+.viewport-debug-toolbar span { color: var(--color-text-muted); }
+.viewport-debug-toolbar strong { font-size: var(--landing-body-3-size); line-height: var(--landing-body-3-line-height); }
+.viewport-debug-toolbar button { min-height: 2.75rem; border: 1px solid var(--color-line); border-radius: .75rem; padding-inline: 1rem; color: var(--color-text); background: var(--color-white); font-size: var(--landing-ui-control-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-ui-control-line-height); cursor: pointer; }
+.viewport-debug-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; }
+.viewport-debug-grid > div { display: grid; min-width: 0; gap: .25rem; padding: .85rem 1rem; border-right: 1px solid var(--color-line); border-bottom: 1px solid var(--color-line); }
+.viewport-debug-grid > div:nth-child(3n) { border-right: 0; }
+.viewport-debug-grid dt { color: var(--color-text-muted); font-size: var(--landing-ui-label-size); line-height: var(--landing-ui-label-line-height); }
+.viewport-debug-grid dd { min-width: 0; margin: 0; overflow-wrap: anywhere; font-size: var(--landing-ui-control-size); font-weight: var(--landing-font-weight-bold); line-height: var(--landing-ui-control-line-height); font-variant-numeric: tabular-nums; }
+.viewport-debug-log { display: grid; gap: .75rem; padding: 1rem 1.25rem 1.25rem; }
+.viewport-debug-log h3 { margin: 0; color: var(--color-text-muted); }
+.viewport-debug-log ol { height: 14rem; overflow: auto; display: grid; align-content: start; gap: .35rem; margin: 0; padding: 0; list-style: none; }
+.viewport-debug-log li { display: grid; grid-template-columns: 5rem minmax(7rem, auto) minmax(0, 1fr); gap: .75rem; min-width: 0; color: var(--color-text-muted); font-size: var(--landing-ui-meta-size); line-height: var(--landing-ui-meta-line-height); font-variant-numeric: tabular-nums; }
+.viewport-debug-log li span { color: var(--color-text); font-weight: var(--landing-font-weight-bold); }
+.viewport-debug-log code { min-width: 0; overflow-wrap: anywhere; color: inherit; font: inherit; }
+.viewport-debug-probes { position: fixed; top: 0; left: 0; width: 0; height: 0; overflow: hidden; visibility: hidden; contain: strict; pointer-events: none; }
+.viewport-debug-probes i { position: absolute; top: 0; left: 0; display: block; width: 1px; }
+/* Diagnostic exception: these non-layout probes are the only vh/dvh/lvh
+ * consumers on the main page and only expose their resolved pixel values. */
+.viewport-debug-probes [data-viewport-probe="svh"] { height: 100svh; }
+.viewport-debug-probes [data-viewport-probe="vh"] { height: 100vh; }
+.viewport-debug-probes [data-viewport-probe="dvh"] { height: 100dvh; }
+.viewport-debug-probes [data-viewport-probe="lvh"] { height: 100lvh; }
+
 .visit-section { padding-block: clamp(5rem, 9vw, 8rem); color: var(--color-text); background: #f3f3f3; }
 .visit-information { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr) minmax(0, .8fr); gap: clamp(2rem, 6vw, 6rem); align-items: start; }
 .visit-information h2 { max-width: 14ch; margin: 0; font-size: var(--landing-heading-3-size); line-height: var(--landing-heading-3-line-height); }
@@ -841,6 +877,52 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 @media (max-width: 20rem) {
   .footer-navigation { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+@media (max-width: 64rem) {
+  .viewport-debug-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .viewport-debug-grid > div:nth-child(3n) { border-right: 1px solid var(--color-line); }
+  .viewport-debug-grid > div:nth-child(2n) { border-right: 0; }
+}
+
+@media (max-width: 48rem) {
+  .viewport-debug-shell { min-height: 104rem; padding-block: 4rem; }
+  .viewport-debug-sticky { top: calc(var(--header-height-mobile) + .75rem); }
+  .viewport-debug-toolbar { align-items: flex-start; flex-direction: column; }
+  .viewport-debug-toolbar button { width: 100%; }
+  .viewport-debug-grid { grid-template-columns: 1fr; }
+  .viewport-debug-grid > div, .viewport-debug-grid > div:nth-child(2n), .viewport-debug-grid > div:nth-child(3n) { border-right: 0; }
+  .viewport-debug-log li { grid-template-columns: 4.5rem minmax(0, 1fr); gap: .25rem .5rem; }
+  .viewport-debug-log code { grid-column: 1 / -1; }
+}
+
+/* Kakao's WKWebView has shipped builds where even the resolved small viewport
+ * unit changes with its toolbar. Keep every main-page scroll runway and sticky
+ * viewport on the opening minimum captured by viewport-state.js. */
+html[data-kakao-in-app] .hero { min-height: var(--kakao-stable-viewport-height); }
+html[data-kakao-in-app] .concern-section { height: calc((var(--kakao-stable-viewport-height) * 4) + var(--concern-scroll-extension)); min-height: calc((var(--kakao-stable-viewport-height) * 4) + var(--concern-scroll-extension)); }
+html[data-kakao-in-app] .concern-sticky { height: var(--kakao-stable-viewport-height); min-height: var(--kakao-stable-viewport-height); }
+html[data-kakao-in-app] .concern-section[data-pin-disabled] .concern-fallback-list { min-height: max(var(--kakao-stable-viewport-height), var(--pin-fallback-min-height)); }
+html[data-kakao-in-app] .brand-reveal { height: calc(var(--kakao-stable-viewport-height) * 3.2); }
+html[data-kakao-in-app] .brand-sticky { min-height: var(--kakao-stable-viewport-height); }
+html[data-kakao-in-app] .showcase { height: calc(var(--kakao-stable-viewport-height) * 5.5); min-height: calc(var(--kakao-stable-viewport-height) * 5.5); }
+html[data-kakao-in-app] .showcase-sticky { height: var(--kakao-stable-viewport-height); min-height: var(--kakao-stable-viewport-height); }
+
+@media (min-width: 64.0625rem) {
+  html[data-kakao-in-app] .evidence-nav { top: calc(var(--kakao-stable-viewport-height) * .5); }
+  html[data-kakao-in-app] .evidence-panels article { min-height: var(--kakao-stable-viewport-height); }
+  html[data-kakao-in-app] .equipment-evidence-panel { min-height: calc(var(--kakao-stable-viewport-height) * 5.2) !important; }
+  html[data-kakao-in-app] .equipment-stack-stage { height: clamp(26rem, calc(var(--kakao-stable-viewport-height) - 18rem), 27.5rem); }
+  html[data-kakao-in-app] .equipment-card-media { height: clamp(11.5rem, calc(var(--kakao-stable-viewport-height) - 32.5rem), 13rem); }
+}
+
+@media (max-width: 48rem) {
+  html[data-kakao-in-app] .site-nav { min-height: var(--kakao-stable-viewport-height); }
+  html[data-kakao-in-app] .concern-section { height: calc((var(--kakao-stable-viewport-height) * 3) + var(--concern-scroll-extension)); min-height: calc((var(--kakao-stable-viewport-height) * 3) + var(--concern-scroll-extension)); }
+  html[data-kakao-in-app] .showcase { height: calc(var(--kakao-stable-viewport-height) * 8.2); min-height: calc(var(--kakao-stable-viewport-height) * 8.2); }
+  html[data-kakao-in-app] .showcase[data-pin-disabled] .showcase-scene { min-height: max(33rem, calc(var(--kakao-stable-viewport-height) * .88)); }
+  html[data-kakao-in-app] .showcase[data-pin-disabled] .showcase-scene-referral { min-height: max(42rem, var(--kakao-stable-viewport-height)); }
+  html[data-kakao-in-app] .showcase[data-pin-disabled] .showcase-scene-revisit { min-height: max(38rem, calc(var(--kakao-stable-viewport-height) * .92)); }
 }
 
 @media (prefers-reduced-motion: reduce) {

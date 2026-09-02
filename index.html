@@ -8,8 +8,9 @@
     <title>365서울감동치과의원</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%232763ea%22/><text x=%2232%22 y=%2240%22 font-size=%2226%22 text-anchor=%22middle%22 fill=%22white%22>365</text></svg>" />
     <link rel="preload" as="image" href="./assets/images/webp/clinic-hero-poster-1920.webp" type="image/webp" fetchpriority="high" />
-    <link rel="stylesheet" href="./src/styles.css?v=20260901-layout-performance-1" />
-    <script type="module" src="./src/main.js?v=20260901-layout-performance-1"></script>
+    <script>if(new URLSearchParams(location.search).get("viewport-debug")==="1")document.documentElement.setAttribute("data-viewport-debug","");</script>
+    <link rel="stylesheet" href="./src/styles.css?v=20260902-kakao-viewport-debug-1" />
+    <script type="module" src="./src/main.js?v=20260902-kakao-viewport-debug-1"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
@@ -581,6 +582,58 @@
             <h3><span class="showcase-static-final-line">당신의 미소를 되찾는 감동</span><span class="showcase-static-final-line showcase-static-final-accent">감동과 함께 웃으세요</span></h3>
             <picture><source type="image/webp" srcset="./assets/images/webp/clinic-exterior-generated-v2-960.webp 960w, ./assets/images/webp/clinic-exterior-generated-v2-1540.webp 1540w, ./assets/images/webp/clinic-exterior-generated-v2-2240.webp 2240w, ./assets/images/webp/clinic-exterior-generated-v2-3080.webp 3080w" sizes="(max-width: 48rem) 100vw, 86rem" /><img src="./assets/images/clinic-exterior-generated-v2.png" alt="" width="1537" height="1023" loading="lazy" decoding="async" /></picture>
           </article>
+        </div>
+      </section>
+
+      <section class="viewport-debug-section" data-viewport-debug-section aria-labelledby="viewport-debug-title">
+        <div class="landing-container viewport-debug-shell">
+          <header class="viewport-debug-heading">
+            <p class="landing-ui-label">실기기 진단 도구</p>
+            <h2 class="landing-heading-3" id="viewport-debug-title">모바일 viewport와 CLS</h2>
+            <p class="landing-body-3">카카오 인앱 브라우저에서 주소창과 하단 바가 움직일 때 각 viewport 값과 Layout Shift를 실시간으로 기록합니다.</p>
+          </header>
+          <div class="viewport-debug-sticky">
+            <div class="viewport-debug-toolbar">
+              <div>
+                <span class="landing-ui-label">최근 이벤트</span>
+                <strong data-viewport-value="last-event">초기화 중</strong>
+              </div>
+              <button type="button" data-viewport-reset>기록 초기화</button>
+            </div>
+            <dl class="viewport-debug-grid">
+              <div><dt>CSS 100svh</dt><dd data-viewport-value="css-svh">—</dd></div>
+              <div><dt>CSS 100vh</dt><dd data-viewport-value="css-vh">—</dd></div>
+              <div><dt>CSS 100dvh</dt><dd data-viewport-value="css-dvh">—</dd></div>
+              <div><dt>CSS 100lvh</dt><dd data-viewport-value="css-lvh">—</dd></div>
+              <div><dt>window.innerHeight</dt><dd data-viewport-value="inner-height">—</dd></div>
+              <div><dt>document.clientHeight</dt><dd data-viewport-value="client-height">—</dd></div>
+              <div><dt>visualViewport.height</dt><dd data-viewport-value="visual-height">—</dd></div>
+              <div><dt>visualViewport.offsetTop</dt><dd data-viewport-value="visual-offset">—</dd></div>
+              <div><dt>visualViewport.scale</dt><dd data-viewport-value="visual-scale">—</dd></div>
+              <div><dt>window.outerHeight</dt><dd data-viewport-value="outer-height">—</dd></div>
+              <div><dt>screen.height</dt><dd data-viewport-value="screen-height">—</dd></div>
+              <div><dt>공통 small viewport</dt><dd data-viewport-value="small-height">—</dd></div>
+              <div><dt>Kakao 고정 높이</dt><dd data-viewport-value="stable-height">—</dd></div>
+              <div><dt>viewport 너비</dt><dd data-viewport-value="viewport-width">—</dd></div>
+              <div><dt>scrollY</dt><dd data-viewport-value="scroll-y">—</dd></div>
+              <div><dt>누적 CLS</dt><dd data-viewport-value="cls">0.00000</dd></div>
+              <div><dt>최근 shift 소스</dt><dd data-viewport-value="last-shift">없음</dd></div>
+              <div><dt>Kakao 감지</dt><dd data-viewport-value="kakao">—</dd></div>
+              <div><dt>스크롤 모드</dt><dd data-viewport-value="scroll-mode">—</dd></div>
+              <div><dt>레이아웃</dt><dd data-viewport-value="layout">—</dd></div>
+              <div><dt>동작 줄이기</dt><dd data-viewport-value="reduced-motion">—</dd></div>
+            </dl>
+            <div class="viewport-debug-log">
+              <h3 class="landing-ui-label">높이 변경 이벤트</h3>
+              <ol data-viewport-event-log aria-label="viewport 높이 변경 기록"></ol>
+            </div>
+          </div>
+          <div class="viewport-debug-probes" aria-hidden="true">
+            <i data-viewport-probe="svh"></i>
+            <i data-viewport-probe="vh"></i>
+            <i data-viewport-probe="dvh"></i>
+            <i data-viewport-probe="lvh"></i>
+          </div>
         </div>
       </section>
 

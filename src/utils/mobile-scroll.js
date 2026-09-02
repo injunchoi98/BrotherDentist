@@ -9,7 +9,13 @@ const interactiveIgnore = "a, button, input, textarea, select, [data-nav]";
 const clampProgress = gsap.utils.clamp(0, 1);
 
 const shouldUseMobileStageEffects = () => (
-  mobileTouchInput.matches && !reducedMotionInput.matches
+  mobileTouchInput.matches
+  && !reducedMotionInput.matches
+  // Kakao's moving toolbar can emit elastic scroll corrections while the
+  // finger is still down. Boundary locking would fight that native movement,
+  // so Kakao keeps the same continuous ScrollTrigger timeline without any
+  // touch Observer or scroll-position restoration.
+  && !document.documentElement.hasAttribute("data-kakao-in-app")
 );
 
 const subscribeMobileScrollEffects = (listener) => {
@@ -117,6 +123,12 @@ export function createBoundaryLimitedScrollTrigger({
   const create = () => {
     destroyInstances();
     const mobileTouchEffects = shouldUseMobileStageEffects();
+    const kakaoInApp = document.documentElement.hasAttribute("data-kakao-in-app");
+    document.documentElement.dataset.showcaseTouchMode = mobileTouchEffects
+      ? "boundary-observer"
+      : kakaoInApp
+        ? "native-kakao"
+        : "standard";
     const reducedMotion = reducedMotionInput.matches;
     const {
       onEnter: originalOnEnter,
